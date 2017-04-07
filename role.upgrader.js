@@ -1,8 +1,7 @@
 module.exports = {
     run: function(creep, options) {
-
         if(creep.carry[RESOURCE_ENERGY] === 0) {
-            creep.memory.ugprading = false
+            creep.memory.upgrading = false
         }
 
         if(creep.carry[RESOURCE_ENERGY] === creep.carryCapacity) {

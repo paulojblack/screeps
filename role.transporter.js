@@ -2,7 +2,7 @@ module.exports = {
     run: function(creep) {
         var targets = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return (structure.structureType === STRUCTURE_CONTAINER) && structure.store[RESOURCE_ENERGY] < 2000
+                    return (structure.structureType === STRUCTURE_CONTAINER) && structure.store[RESOURCE_ENERGY] < structure.storeCapacity
                 }
             }),
             sources = creep.room.find(FIND_MY_STRUCTURES, {

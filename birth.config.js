@@ -1,7 +1,7 @@
 module.exports = {
     HARVESTER: {
-        COUNT: 7,
-        BODY: [WORK, WORK, WORK, CARRY,MOVE],
+        COUNT: 9,
+        BODY: [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE],
         MEM: {
             role: 'harvester',
             id: Math.ceil(Math.random() * 50),
@@ -9,8 +9,8 @@ module.exports = {
         }
     },
     UPGRADER: {
-        COUNT: 3,
-        BODY: [WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE],
+        COUNT: 4,
+        BODY: [WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],
         MEM: {
             role: 'upgrader',
             upgrading: false,
@@ -19,8 +19,8 @@ module.exports = {
         }
     },
     BUILDER: {
-        COUNT: 2,
-        BODY: [WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE],
+        COUNT: 3,
+        BODY: [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE],
         MEM: {
             role: 'builder',
             id: Math.ceil(Math.random() * 50),
@@ -28,7 +28,7 @@ module.exports = {
         }
     },
     REPAIRER: {
-        COUNT: 2,
+        COUNT: 1,
         BODY: [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE],
         MEM: {
             role: 'repairer',
@@ -37,7 +37,7 @@ module.exports = {
         }
     },
     TRANSPORTER: {
-        COUNT: 2,
+        COUNT: 3,
         BODY: [ CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE],
         MEM: {
             role: 'transporter',

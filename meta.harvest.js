@@ -26,25 +26,22 @@ var metaHarvest = {
             if(creep.withdraw(availableContainer, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
                 creep.moveTo(availableContainer, {visualizePathStyle: {stroke: '#ffaa00'}});
             }
-        // }
-    } else if(creep.room.energyAvailable >= 200 && creep.memory.role === 'builder') {
-
-                var spawns = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-                    filter: (structure) => {
-                        return (structure.structureType === STRUCTURE_EXTENSION ||
-                            structure.structureType === STRUCTURE_SPAWN) && structure.energy >= 50
-                    }
-                });
-
-                if(creep.withdraw(spawns[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                    creep.moveTo(spawns[0], {visualizePathStyle: {stroke: '#ffaa00'}});
-                }
-            }
-        }
-    // } else if (creep.memory.role !== 'upgrader'){
-    //         getNaturalEnergySource(creep);
-	//     }
-    // }
+    // } else if(creep.room.energyAvailable >= 200 && creep.memory.role === 'builder') {
+    //
+    //             var spawns = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+    //                 filter: (structure) => {
+    //                     return (structure.structureType === STRUCTURE_EXTENSION ||
+    //                         structure.structureType === STRUCTURE_SPAWN) && structure.energy >= 50
+    //                 }
+    //             });
+    //
+    //             if(creep.withdraw(spawns[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+    //                 creep.moveTo(spawns[0], {visualizePathStyle: {stroke: '#ffaa00'}});
+    //             }
+    } else if (creep.memory.role === 'builder'){
+            getNaturalEnergySource(creep);
+	    }
+    }
 }
 
 module.exports = metaHarvest

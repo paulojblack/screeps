@@ -8,7 +8,7 @@ var reporter = require('reporter'),
 
 module.exports.loop = function () {
     //Room info
-    for(var room in Game.rooms) {
+    Object.keys(Game.rooms).forEach((room) => {
         var thisRoom = Game.rooms[room],
             creepsByRole = {
                 harvesters: _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester'),
@@ -26,7 +26,7 @@ module.exports.loop = function () {
         reporter.standardRoom(room, creepsByRole);
         birther.simpleBirthing(creepsByRole);
         delegator.standardDelegate(thisRoom);
-    }
+    })
 
     console.log('Tick is healthy, time: ' + Game.time);
 }

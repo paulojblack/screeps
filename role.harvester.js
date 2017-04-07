@@ -1,5 +1,3 @@
-var roleBuilder = require('role.builder');
-
 module.exports = {
 
     /** @param {Creep} creep **/
@@ -22,7 +20,5 @@ module.exports = {
                 }
             }
         }
-
-        creep.say('harvest')
 	}
 };

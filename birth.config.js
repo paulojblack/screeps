@@ -9,7 +9,7 @@ module.exports = {
         }
     },
     UPGRADER: {
-        COUNT: 7,
+        COUNT: 3,
         BODY: [WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE],
         MEM: {
             role: 'upgrader',
@@ -37,7 +37,7 @@ module.exports = {
         }
     },
     TRANSPORTER: {
-        COUNT: 3,
+        COUNT: 2,
         BODY: [ CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE],
         MEM: {
             role: 'transporter',

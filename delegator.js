@@ -32,7 +32,7 @@ module.exports = {
                 roleRepairer.run(creep, options);
             }
             if(creep.memory.role === 'transporter') {
-                roleTransporter.run(creep, options);
+                // roleTransporter.run(creep, options);
             }
         })
     }

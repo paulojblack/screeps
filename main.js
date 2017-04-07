@@ -3,6 +3,7 @@ var reporter = require('reporter'),
     birther = require('birther'),
     utility = require('utility'),
     construction = require('meta.construction'),
+    supplyChain = require('supply.chain'),
     timers = require('timers');
 
 module.exports.loop = function () {
@@ -21,7 +22,8 @@ module.exports.loop = function () {
             timers.ten()
         }
 
-        reporter.standardRoom(room, creepsByRole)
+        supplyChain.run(creepsByRole.transporters);
+        reporter.standardRoom(room, creepsByRole);
         birther.simpleBirthing(creepsByRole);
         delegator.standardDelegate(thisRoom);
     }

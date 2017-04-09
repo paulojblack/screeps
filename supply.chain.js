@@ -2,7 +2,7 @@ module.exports = {
     /*
     Parent spawn -> Container1 -> ... -> Final Container
     Each transport has one parent node and one child node
-    For N nodes we need N-1 transporters
+    For N nodes we need N-1 suppliers
     If the parent node of the transport is empty it will move to the next up the chain
     If the child node of the transport is full it will wait until there is space to deposit
 
@@ -18,29 +18,28 @@ module.exports = {
     //Creep 4: C3->C4
      */
 
-    run: function(transporters) {
-        transporters.forEach((transporter, index) => {
-            var creep = Game.creeps[transporter.name],
+    run: function(suppliers) {
+        suppliers.forEach((supplier, index) => {
+            var creep = Game.creeps[supplier.name],
                 containers = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
                         return (structure.structureType === STRUCTURE_CONTAINER)
                     }
                 }),
-                spawn = creep.room.find(FIND_STRUCTURES, {
+                source,
+                target;
+
+            //two transports working the spawn
+            if (index <= 1) {
+                source = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                     filter: (structure) => {
                         return (structure.structureType === STRUCTURE_EXTENSION ||
                                 structure.structureType === STRUCTURE_SPAWN) && structure.energy === structure.energyCapacity
                     }
-                }),
-                source;
-
-            //two transports working the spawn
-            if (index <= 1) {
-                creep.say('me')
-                source = spawn;
-                target = index[0];
+                });
+                target = containers[0];
             } else {
-                // Subtract one to account for zeroeth creep Spwn->C0
+                // Subtract to account for zero and first creep Spwn->C0
                 source = containers[index - 2];
                 target = containers[index - 1]
             }
@@ -52,7 +51,6 @@ module.exports = {
                  creep.memory.loaded = true
             }
 
-
             if (creep.memory.loaded === true) {
                 if(creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
@@ -62,7 +60,7 @@ module.exports = {
                     creep.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}});
                 }
             }
-            // creep.say('transport')
+            creep.say('supply')
         })
     }
 }

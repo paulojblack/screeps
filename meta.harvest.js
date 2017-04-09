@@ -3,7 +3,7 @@ var construction = require('meta.construction'),
 
 var getNaturalEnergySource = function getNaturalEnergySource(creep) {
     var sources = creep.room.find(FIND_SOURCES),
-        sourceToMine = creep.memory.id % 2 === 0 ? 1 : 0;
+        sourceToMine = creep.memory.id % 3 === 0 ? 1 : 0;
 
     //redirect if source is dry
     sourceToMine = sources[sourceToMine].energy === 0 ? 1 : sourceToMine;
@@ -38,10 +38,12 @@ var metaHarvest = {
     //             if(creep.withdraw(spawns[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
     //                 creep.moveTo(spawns[0], {visualizePathStyle: {stroke: '#ffaa00'}});
     //             }
-    } else if (creep.memory.role === 'builder'){
+    }
+}
+    /*else if (creep.memory.role === 'builder'){
             getNaturalEnergySource(creep);
 	    }
-    }
+    } */
 }
 
 module.exports = metaHarvest

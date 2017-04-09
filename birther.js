@@ -3,7 +3,7 @@ var config = require('birth.config'),
     u = config.UPGRADER,
     b = config.BUILDER,
     r = config.REPAIRER,
-    t = config.TRANSPORTER;
+    s = config.SUPPLIER;
 
 module.exports = {
     simpleBirthing: function(creepsByRole) {
@@ -43,11 +43,11 @@ module.exports = {
             console.log('Spawning new repairer');
         }
 
-        if (creepsByRole.transporters.length < t.COUNT) {
+        if (creepsByRole.suppliers.length < s.COUNT) {
             Game.spawns['Fatherland'].createCreep(
-                t.BODY,
+                s.BODY,
                 undefined,
-                t.MEM
+                s.MEM
             );
             console.log('Spawning new transporter');
         }

@@ -22,7 +22,7 @@ module.exports.loop = function () {
             timers.ten()
         }
 
-        supplyChain.run(creepsByRole.suppliers);
+        // supplyChain.run(creepsByRole.suppliers);
         reporter.standardRoom(room, creepsByRole);
         birther.simpleBirthing(creepsByRole);
         delegator.standardDelegate(thisRoom);

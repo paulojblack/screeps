@@ -1,16 +1,18 @@
+var birthUtils = require('birth.utils');
+
 module.exports = {
     HARVESTER: {
-        COUNT: 7,
-        BODY: [WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE],
+        COUNT: 4,
+        BODY: [WORK, WORK, CARRY, MOVE],
         MEM: {
             role: 'harvester',
-            id: Math.ceil(Math.random() * 50),
+            identity: Math.ceil(Math.random() * 50),
             capability: ['harvest']
         }
     },
     UPGRADER: {
-        COUNT: 7,
-        BODY: [WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],
+        COUNT: 1,
+        BODY: [WORK, CARRY, MOVE, MOVE],
         MEM: {
             role: 'upgrader',
             upgrading: false,
@@ -19,8 +21,8 @@ module.exports = {
         }
     },
     BUILDER: {
-        COUNT: 3,
-        BODY: [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE],
+        COUNT: 2,
+        BODY: [WORK, CARRY, MOVE, MOVE],
         MEM: {
             role: 'builder',
             id: Math.ceil(Math.random() * 50),
@@ -29,7 +31,7 @@ module.exports = {
     },
     REPAIRER: {
         COUNT: 1,
-        BODY: [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE],
+        BODY: [WORK, CARRY, CARRY, MOVE],
         MEM: {
             role: 'repairer',
             id: Math.ceil(Math.random() * 50),
@@ -37,7 +39,7 @@ module.exports = {
         }
     },
     SUPPLIER: {
-        COUNT: 4,
+        COUNT: 0,
         BODY: [ CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE],
         MEM: {
             role: 'supplier',

@@ -4,6 +4,8 @@ module.exports = {
 
     /** @param {Creep} creep **/
     run: function(creep, options) {
+        // harvesters =  _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester')
+        // console.log(harvesters.length)
 
         if(!creep.memory.harvesting && creep.carry.energy === 0) {
             creep.memory.harvesting = true;

@@ -2,49 +2,58 @@ var birthUtils = require('birth.utils');
 
 module.exports = {
     HARVESTER: {
-        COUNT: 4,
-        BODY: [WORK, WORK, CARRY, MOVE],
+        COUNT: birthUtils.getDynamicUnitCount('harvester'),
+        BODY: birthUtils.bodyParser([3, 2, 2]),
         MEM: {
             role: 'harvester',
-            identity: Math.ceil(Math.random() * 50),
+            identity: birthUtils.assignIdentity(birthUtils.getDynamicUnitCount('harvester'), 'harvester'),
             capability: ['harvest']
         }
     },
     UPGRADER: {
-        COUNT: 1,
-        BODY: [WORK, CARRY, MOVE, MOVE],
+        COUNT: birthUtils.getDynamicUnitCount('upgrader'),
+        BODY: birthUtils.bodyParser([2, 4, 3]),
         MEM: {
             role: 'upgrader',
             upgrading: false,
-            id: Math.ceil(Math.random() * 50),
+            identity: birthUtils.assignIdentity(birthUtils.getDynamicUnitCount('upgrader'), 'upgrader'),
             capability: ['harvest', 'construction']
         }
     },
     BUILDER: {
-        COUNT: 2,
-        BODY: [WORK, CARRY, MOVE, MOVE],
+        COUNT: birthUtils.getDynamicUnitCount('builder'),
+        BODY: birthUtils.bodyParser([3, 3, 2]),
         MEM: {
             role: 'builder',
-            id: Math.ceil(Math.random() * 50),
+            identity: birthUtils.assignIdentity(birthUtils.getDynamicUnitCount('builder'), 'builder'),
             capability: ['harvest', 'construction']
         }
     },
     REPAIRER: {
-        COUNT: 1,
-        BODY: [WORK, CARRY, CARRY, MOVE],
+        COUNT: birthUtils.getDynamicUnitCount('repairer'),
+        BODY: birthUtils.bodyParser([2, 3, 2]),
         MEM: {
             role: 'repairer',
-            id: Math.ceil(Math.random() * 50),
+            identity: birthUtils.assignIdentity(birthUtils.getDynamicUnitCount('repairer'), 'repairer'),
             capability: ['harvest', 'construction']
         }
     },
     SUPPLIER: {
-        COUNT: 0,
-        BODY: [ CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE],
+        COUNT: birthUtils.getDynamicUnitCount('supplier'),
+        BODY: [0, 0, 0],
         MEM: {
             role: 'supplier',
-            id: Math.ceil(Math.random() * 100),
+            identity: birthUtils.assignIdentity(birthUtils.getDynamicUnitCount('supplier'), 'supplier'),
             capability: ['transport']
+        }
+    },
+    DEFENSE_ENGINEER: {
+        COUNT: birthUtils.getDynamicUnitCount('defense_engineer'),
+        BODY: [2, 4, 3],
+        MEM: {
+            role: 'defense_engineer',
+            identity: birthUtils.assignIdentity(birthUtils.getDynamicUnitCount('defense_engineer'), 'defense_engineer'),
+            capability: ['defender']
         }
     }
 }

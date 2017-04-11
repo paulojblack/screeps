@@ -5,8 +5,10 @@ var getNaturalEnergySource = function getNaturalEnergySource(creep) {
     var sources = creep.room.find(FIND_SOURCES),
         sourceToMine = creep.memory.id % 2 === 0 ? 1 : 0;
 
+    var harv = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester')
+    sourceToMine = _.findIndex(harv, creep) >= 3 ? 0 : 1
     //redirect if source is dry
-    sourceToMine = 1//sources[sourceToMine].energy === 0 ? 1 : sourceToMine;
+    // sourceToMine = 1//sources[sourceToMine].energy === 0 ? 1 : sourceToMine;
 
     if(creep.harvest(sources[sourceToMine]) == ERR_NOT_IN_RANGE) {
         creep.moveTo(sources[sourceToMine], {visualizePathStyle: {stroke: '#0dff00'}});
@@ -18,7 +20,7 @@ var metaHarvest = {
     getOptimalEnergySource: function(creep){
         var availableContainer = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return structure.structureType === STRUCTURE_CONTAINER && structure.store[RESOURCE_ENERGY] >= 200
+                    return structure.structureType === STRUCTURE_CONTAINER && structure.store[RESOURCE_ENERGY] > 0
                 }
         });
 
@@ -30,7 +32,7 @@ var metaHarvest = {
                 var spawns = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                     filter: (structure) => {
                         return (structure.structureType === STRUCTURE_EXTENSION ||
-                            structure.structureType === STRUCTURE_SPAWN)
+                            structure.structureType === STRUCTURE_SPAWN) && structure.energy >= 50
                     }
                 });
 

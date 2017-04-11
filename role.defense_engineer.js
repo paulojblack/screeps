@@ -13,7 +13,10 @@ module.exports = {
 	    if(creep.memory.repairing) {
             var target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return structure.hits < structure.hitsMax
+                    return (structure.structureType === STRUCTURE_WALL ||
+                        structure.structureType === STRUCTURE_RAMPART ||
+                        structure.structureType === STRUCTURE_TOWER) && structure.hits < structure.hitsMax
+
                 }
             })
 
@@ -31,6 +34,6 @@ module.exports = {
             options.chooseEnergySource(creep);
 	    }
 
-        creep.say('repair')
+        creep.say('def eng')
 	}
 };

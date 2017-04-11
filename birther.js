@@ -3,21 +3,12 @@ var config = require('birth.config'),
     u = config.UPGRADER,
     b = config.BUILDER,
     r = config.REPAIRER,
-    s = config.SUPPLIER;
+    s = config.SUPPLIER,
+    de = config.DEFENSE_ENGINEER;
 
 module.exports = {
     simpleBirthing: function(creepsByRole) {
-        // creepsByRole.harvesters.forEach((har, ind) => {
-        //     // console.log(har.memory.identity)
-        //     // console.log(ind)
-        //
-        //     var check = [0, 1, 2, 3, 4, 5, 6, 7],
-        //         current = [0, 1, 2, 3, 4, 7];
-        //     console.log('My diff')
-        //     console.log(_.difference(check, current))
-        //     console.log(Array.apply(null, Array(5)).map(function (x, i) { return i; }))
-        //     // har.memory.identity = ind;
-        // })
+
         if(creepsByRole.harvesters.length < h.COUNT) {
             Game.spawns['Fatherland'].createCreep(
                 h.BODY,
@@ -61,6 +52,15 @@ module.exports = {
                 s.MEM
             );
             console.log('Spawning new transporter');
+        }
+
+        if (creepsByRole.defense_engineers.length < de.COUNT) {
+            Game.spawns['Fatherland'].createCreep(
+                de.BODY,
+                undefined,
+                de.MEM
+            );
+            console.log('Spawning new defense engineer');
         }
 
         if(Game.spawns['Fatherland'].spawning) {

@@ -11,7 +11,7 @@ module.exports = {
 	        creep.memory.building = true;
 	        creep.say('🚧 build');
 	    }
-        // creep.memory.building = true;
+
 	    if(creep.memory.building) {
             var target = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
 

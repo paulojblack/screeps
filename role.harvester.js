@@ -1,12 +1,7 @@
-var roleBuilder = require('role.builder');
-
 module.exports = {
 
     /** @param {Creep} creep **/
     run: function(creep, options) {
-        // harvesters =  _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester')
-        // console.log(harvesters.length)
-
         if(!creep.memory.harvesting && creep.carry.energy === 0) {
             creep.memory.harvesting = true;
 	    }
@@ -19,12 +14,28 @@ module.exports = {
         } else {
             var target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                     filter: (structure) => {
-                        return (structure.structureType === STRUCTURE_EXTENSION ||
+                        return ((structure.structureType === STRUCTURE_EXTENSION ||
                                 structure.structureType === STRUCTURE_SPAWN ||
-                                structure.structureType === STRUCTURE_TOWER) && structure.energy < structure.energyCapacity;
+                                structure.structureType === STRUCTURE_TOWER) &&
+                                structure.energy < structure.energyCapacity) ||
+                                (structure.structureType === STRUCTURE_CONTAINER &&
+                                        structure.store[RESOURCE_ENERGY] < 2000);
                     }
-            });
+            })
+
             if(target) {
+
+                if(creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
+                }
+
+            } else {
+                target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return structure.structureType === STRUCTURE_CONTAINER //&& structure.store[RESOURCE_ENERGY] >= 200
+                    }
+                });
+
                 if(creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
                 }

@@ -1,30 +1,29 @@
 var reporter = require('reporter'),
     delegator = require('delegator'),
     birther = require('birther'),
-    utility = require('utility'),
     construction = require('meta.construction'),
     supplyChain = require('supply.chain'),
+    globals = require('globals')
     timers = require('timers');
 
 module.exports.loop = function () {
-    //Room info
     Object.keys(Game.rooms).forEach((room) => {
-        var thisRoom = Game.rooms[room],
-            creepsByRole = {
-                harvesters: _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester'),
-                upgraders: _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader'),
-                builders: _.filter(Game.creeps, (creep) => creep.memory.role == 'builder'),
-                repairers: _.filter(Game.creeps, (creep) => creep.memory.role == 'repairer'),
-                suppliers: _.filter(Game.creeps, (creep) => creep.memory.role == 'transporter' || creep.memory.role == 'supplier')
-            };
+        var thisRoom = Game.rooms[room];
 
-        if(Game.time % 10 === 0) {
-            timers.ten()
+        // if(Game.time % 10 === 0) {
+        //     timers.ten()
+        // }
+        //
+        for(var name in Memory.creeps) {
+            if(!Game.creeps[name]) {
+                delete Memory.creeps[name];
+                console.log('Clearing non-existing creep memory:', name);
+            }
         }
 
         // supplyChain.run(creepsByRole.suppliers);
-        reporter.standardRoom(room, creepsByRole);
-        birther.simpleBirthing(creepsByRole);
+        reporter.standardRoom(room, thisRoom);
+        birther.simpleBirthing(thisRoom.creepsByRole);
         delegator.standardDelegate(thisRoom);
     })
 

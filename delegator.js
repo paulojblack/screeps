@@ -31,7 +31,7 @@ module.exports = {
             if(creep.memory.role === 'repairer') {
                 roleRepairer.run(creep, options);
             }
-            if(creep.memory.role === 'transporter') {
+            if(creep.memory.role === 'supplier') {
                 // roleTransporter.run(creep, options);
             }
         })

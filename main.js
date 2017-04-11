@@ -3,17 +3,21 @@ var reporter = require('reporter'),
     birther = require('birther'),
     construction = require('meta.construction'),
     supplyChain = require('supply.chain'),
-    globals = require('globals')
+    // globals = require('globals')
     timers = require('timers');
 
 module.exports.loop = function () {
     Object.keys(Game.rooms).forEach((room) => {
-        var thisRoom = Game.rooms[room];
+        var thisRoom = Game.rooms[room],
+            creepsByRole = {
+                harvesters: _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester'),
+                upgraders: _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader'),
+                builders: _.filter(Game.creeps, (creep) => creep.memory.role == 'builder'),
+                repairers: _.filter(Game.creeps, (creep) => creep.memory.role == 'repairer'),
+                suppliers: _.filter(Game.creeps, (creep) => creep.memory.role == 'supplier'),
+                defense_engineers: _.filter(Game.creeps, (creep) => creep.memory.role == 'defense_engineer')
+            };
 
-        // if(Game.time % 10 === 0) {
-        //     timers.ten()
-        // }
-        //
         for(var name in Memory.creeps) {
             if(!Game.creeps[name]) {
                 delete Memory.creeps[name];
@@ -22,8 +26,8 @@ module.exports.loop = function () {
         }
 
         // supplyChain.run(creepsByRole.suppliers);
-        reporter.standardRoom(room, thisRoom);
-        birther.simpleBirthing(thisRoom.creepsByRole);
+        reporter.standardRoom(room, creepsByRole);
+        birther.simpleBirthing(creepsByRole);
         delegator.standardDelegate(thisRoom);
     })
 

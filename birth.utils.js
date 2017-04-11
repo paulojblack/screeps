@@ -32,20 +32,15 @@ module.exports = {
     Controls unit production depending on situation. Prevents overproduction of non-resource gathering units.
      */
     getDynamicUnitCount: (role) => {
-        var creepsByRole = {
-            harvesters: _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester'),
-            upgraders: _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader'),
-            builders: _.filter(Game.creeps, (creep) => creep.memory.role == 'builder'),
-            repairers: _.filter(Game.creeps, (creep) => creep.memory.role == 'repairer'),
-            suppliers: _.filter(Game.creeps, (creep) => creep.memory.role == 'transporter' || creep.memory.role == 'supplier')
-        },
+        var harvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
+
         DEFAULT_CONFIGURATION = {
             'harvester': 7,
-            'upgrader':2,
+            'upgrader':5,
             'builder': 0,
             'repairer': 1,
             'supplier': 0,
-            'defense_engineer': 0
+            'defense_engineer': 1
         },
         HARVESTER_MINIMUM = {
             'harvester': DEFAULT_CONFIGURATION['harvester'],
@@ -56,10 +51,11 @@ module.exports = {
             'defense_engineer': 0
         }
 
-        if (creepsByRole.harvesters.length < DEFAULT_CONFIGURATION['harvester']) {
+        if (harvesters.length < DEFAULT_CONFIGURATION['harvester']) {
+            console.log('HARVESTER EMERGENCY ACTIVATED')
             return HARVESTER_MINIMUM[role]
+        } else {
+            return DEFAULT_CONFIGURATION[role]
         }
-
-        return DEFAULT_CONFIGURATION[role]
     }
 }

@@ -3,7 +3,7 @@ var birthUtils = require('birth.utils');
 module.exports = {
     HARVESTER: {
         COUNT: birthUtils.getDynamicUnitCount('harvester'),
-        BODY: birthUtils.bodyParser([3, 2, 2]),
+        BODY: birthUtils.bodyParser([3, 4, 1]),
         MEM: {
             role: 'harvester',
             identity: birthUtils.assignIdentity(birthUtils.getDynamicUnitCount('harvester'), 'harvester'),
@@ -49,10 +49,9 @@ module.exports = {
     },
     DEFENSE_ENGINEER: {
         COUNT: birthUtils.getDynamicUnitCount('defense_engineer'),
-        BODY: [2, 4, 3],
+        BODY: [2, 3, 3],
         MEM: {
             role: 'defense_engineer',
-            identity: birthUtils.assignIdentity(birthUtils.getDynamicUnitCount('defense_engineer'), 'defense_engineer'),
             capability: ['defender']
         }
     }

@@ -1,3 +1,4 @@
+//DEPRECATED
 module.exports = {
     getRoomStructuresById: function(thisRoom) {
         return _.reduce(thisRoom.find(FIND_MY_STRUCTURES), function(res, val, key) {

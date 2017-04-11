@@ -8,7 +8,6 @@ var config = require('birth.config'),
 
 module.exports = {
     simpleBirthing: function(creepsByRole) {
-
         if(creepsByRole.harvesters.length < h.COUNT) {
             Game.spawns['Fatherland'].createCreep(
                 h.BODY,

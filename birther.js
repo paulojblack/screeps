@@ -50,7 +50,7 @@ module.exports = {
                 undefined,
                 s.MEM
             );
-            console.log('Spawning new transporter');
+            console.log('Spawning new supplier');
         }
 
         if (creepsByRole.defense_engineers.length < de.COUNT) {

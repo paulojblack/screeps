@@ -22,7 +22,7 @@ module.exports = {
     },
     BUILDER: {
         COUNT: birthUtils.getDynamicUnitCount('builder'),
-        BODY: birthUtils.bodyParser([3, 3, 2]),
+        BODY: birthUtils.bodyParser([4, 2, 2]),
         MEM: {
             role: 'builder',
             identity: birthUtils.assignIdentity(birthUtils.getDynamicUnitCount('builder'), 'builder'),
@@ -40,7 +40,7 @@ module.exports = {
     },
     SUPPLIER: {
         COUNT: birthUtils.getDynamicUnitCount('supplier'),
-        BODY: [0, 0, 0],
+        BODY: birthUtils.bodyParser([0, 8, 3]),
         MEM: {
             role: 'supplier',
             identity: birthUtils.assignIdentity(birthUtils.getDynamicUnitCount('supplier'), 'supplier'),
@@ -49,7 +49,7 @@ module.exports = {
     },
     DEFENSE_ENGINEER: {
         COUNT: birthUtils.getDynamicUnitCount('defense_engineer'),
-        BODY: [2, 3, 3],
+        BODY: birthUtils.bodyParser([2, 3, 2]),
         MEM: {
             role: 'defense_engineer',
             capability: ['defender']

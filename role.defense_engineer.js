@@ -34,6 +34,6 @@ module.exports = {
             options.chooseEnergySource(creep);
 	    }
 
-        creep.say('def eng')
+        creep.say('def-eng')
 	}
 };

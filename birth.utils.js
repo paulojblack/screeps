@@ -36,8 +36,8 @@ module.exports = {
 
         DEFAULT_CONFIGURATION = {
             'harvester': 7,
-            'upgrader':5,
-            'builder': 0,
+            'upgrader':2,
+            'builder': 3,
             'repairer': 1,
             'supplier': 0,
             'defense_engineer': 1

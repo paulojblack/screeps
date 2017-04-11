@@ -29,20 +29,25 @@ module.exports = {
                 source,
                 target;
 
+
+            //just the one for now
+            source = containers[0];
+            target = containers[2]
+
             //two transports working the spawn
-            if (index <= 1) {
-                source = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-                    filter: (structure) => {
-                        return (structure.structureType === STRUCTURE_EXTENSION ||
-                                structure.structureType === STRUCTURE_SPAWN) && structure.energy === structure.energyCapacity
-                    }
-                });
-                target = containers[0];
-            } else {
-                // Subtract to account for zero and first creep Spwn->C0
-                source = containers[index - 2];
-                target = containers[index - 1]
-            }
+            // if (index <= 1) {
+            //     source = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+            //         filter: (structure) => {
+            //             return (structure.structureType === STRUCTURE_EXTENSION ||
+            //                     structure.structureType === STRUCTURE_SPAWN) && structure.energy === structure.energyCapacity
+            //         }
+            //     });
+            //     target = containers[0];
+            // } else {
+            //     // Subtract to account for zero and first creep Spwn->C0
+            //     source = containers[index - 2];
+            //     target = containers[index - 1]
+            // }
 
             if(creep.carry[RESOURCE_ENERGY] === 0) {
                     creep.memory.loaded = false

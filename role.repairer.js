@@ -13,7 +13,7 @@ module.exports = {
 	    if(creep.memory.repairing) {
             var target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return structure.hits < structure.hitsMax
+                    return structure.structureType === STRUCTURE_ROAD && structure.hits < structure.hitsMax
                 }
             })
 

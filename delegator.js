@@ -3,6 +3,7 @@ var roleHarvester = require('role.harvester'),
     roleBuilder = require('role.builder'),
     roleRepairer = require('role.repairer'),
     roleTransporter = require('role.transporter'),
+    roleDefenseEngineer = require('role.defense_engineer'),
     harvest = require('meta.harvest');
 
 module.exports = {
@@ -16,6 +17,9 @@ module.exports = {
                 options.chooseEnergySource = harvest.getNaturalEnergySource
             }
             if(creep.memory.capability.includes('construction')) {
+                options.chooseEnergySource = harvest.getOptimalEnergySource
+            }
+            if(creep.memory.capability.includes('defender')) {
                 options.chooseEnergySource = harvest.getOptimalEnergySource
             }
 
@@ -33,6 +37,9 @@ module.exports = {
             }
             if(creep.memory.role === 'supplier') {
                 // roleTransporter.run(creep, options);
+            }
+            if(creep.memory.role === 'defense_engineer') {
+                roleDefenseEngineer.run(creep, options);
             }
         })
     }

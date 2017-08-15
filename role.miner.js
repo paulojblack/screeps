@@ -10,7 +10,7 @@ module.exports = {
         if (creep.pos.isEqualTo(container.pos)) {
             creep.harvest(source);
         } else {
-            creep.moveTo(source);
+            creep.moveTo(container);
         }
     }
 };

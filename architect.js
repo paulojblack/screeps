@@ -6,7 +6,6 @@ architectOrchestra = (spawn) => {
         controllerPath(spawn, room);
         room.memory.initPaths = true;
     }
-    // storagePath(room)
 }
 
 sourcePath = (spawn, room) => {

@@ -42,19 +42,6 @@ Room.prototype.sourceReport = (room, sourceMap) => {
     room.visual.text('Info TTL:  ' + (100 - Game.time % 100), 1, 3, { align: 'left', color: 'red' });
 }
 
-//possible work spaces surrounding source
-// Room.prototype.getSourceWorkspaces = (room, source) => {
-//     const sourceBoundingBox = architect.getBoundingBox(source.pos, room)
-//     //3x3 grid surrounding source
-//     let workSpaces = 9;
-//
-//     _.find(_.values(sourceBoundingBox), (tile) => {
-//         workSpaces -= _.filter(_.flattenDeep(_.values(tile)), {terrain: 'wall'}).length;
-//     });
-//
-//     return workSpaces;
-// }
-
 Room.prototype.analysis = (room) => {
     let roomInfo = {
         contrLevel: room.controller.level,
@@ -70,36 +57,43 @@ Room.prototype.determineSocialOrder = (roomLevel) => {
     let desiredCreeps = {}
 
     if (roomLevel === 1) {
+        Memory.listOfRoles = ['harvester', 'upgrader', 'builder'];
         for (let role of Memory.listOfRoles) {
             desiredCreeps[role] = 1;
         }
         desiredCreeps.harvester = 3;
         desiredCreeps.builder = 3;
         desiredCreeps.upgrader = 2;
-        desiredCreeps.repairer = 0;
     }
 
     if (roomLevel === 2) {
+        Memory.listOfRoles = ['harvester', 'upgrader', 'repairer', 'builder', 'miner', 'lorry', 'longLorry'];
         for (let role of Memory.listOfRoles) {
-            desiredCreeps[role] = 3;
+            desiredCreeps[role] = 2;
         }
 
         desiredCreeps.miner = 2;
-        desiredCreeps.upgrader = 5;
-        desiredCreeps.longLorry = 1;
-        desiredCreeps.harvester = 1;
+        desiredCreeps.builder = 5;
+        desiredCreeps.upgrader = 2;
+        desiredCreeps.longLorry = 0;
+        desiredCreeps.lorry = 1;
+        desiredCreeps.harvester = 3;
+        desiredCreeps.repairer = 1;
     }
 
     if (roomLevel === 3) {
+        Memory.listOfRoles = ['harvester', 'upgrader', 'repairer', 'builder', 'miner', 'lorry', 'longLorry'];
         for (let role of Memory.listOfRoles) {
-            desiredCreeps[role] = 4;
+            desiredCreeps[role] = 2;
         }
-        
+
         desiredCreeps.miner = 2;
-        desiredCreeps.upgrader = 5;
-        desiredCreeps.longLorry = 1;
+        desiredCreeps.builder = 3;
+        desiredCreeps.upgrader = 1;
+        desiredCreeps.longLorry = 0;
+        desiredCreeps.lorry = 1;
         desiredCreeps.harvester = 1;
     }
-
-    return desiredCreeps
+    Memory.desiredCreeps = desiredCreeps;
+    return;
 }

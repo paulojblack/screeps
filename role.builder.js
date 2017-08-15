@@ -1,9 +1,7 @@
 var roleUpgrader = require('role.upgrader');
 
 module.exports = {
-    // a function to run the logic for this role
-    /** @param {Creep} creep */
-    run: function (creep) {
+    run: (creep) => {
         try {
             // if target is defined and creep is not in target room
             if (creep.memory.target != undefined && creep.room.name != creep.memory.target) {
@@ -33,9 +31,7 @@ module.exports = {
                 else {
                     roleUpgrader.run(creep);
                 }
-            }
-
-            else {
+            } else {
                 creep.getEnergy(creep, true, true);
             }
         } catch(e) {

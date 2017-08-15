@@ -1,7 +1,8 @@
+let roleLorry = require('role.lorry')
 module.exports = {
     // a function to run the logic for this role
     /** @param {Creep} creep */
-    run: function(creep) {
+    run: (creep) => {
         if (creep.memory.working === true && creep.carry.energy === 0) {
             creep.memory.working = false;
         }
@@ -17,7 +18,7 @@ module.exports = {
             })[0];
 
             if (targetContainer == undefined) {
-                targetContainer = creep.room.storage;
+                roleLorry.run(creep)
             }
 
             // if we found one
@@ -36,7 +37,7 @@ module.exports = {
                 })[0];
 
                 if (sourceContainer === undefined) {
-                    sourceContainer = creep.room.storage;
+                    roleLorry.run(creep)
                 }
 
                 if (sourceContainer !== undefined) {

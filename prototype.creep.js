@@ -24,7 +24,7 @@ Creep.prototype.getEnergy = (creep, useContainer, useSource) => {
         // find closest container
         container = creep.pos.findClosestByPath(FIND_STRUCTURES, {
             filter: s => (s.structureType == STRUCTURE_CONTAINER || s.structureType == STRUCTURE_STORAGE) &&
-            s.store[RESOURCE_ENERGY] > 0
+            s.store[RESOURCE_ENERGY] > 200
         });
         // if one was found
         if (container != undefined) {
@@ -33,12 +33,12 @@ Creep.prototype.getEnergy = (creep, useContainer, useSource) => {
             }
         }
     }
+
     // if no container was found and the Creep should look for Sources
     if (container == undefined && useSource) {
         let source = creep.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
 
-        if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
-            // move towards it
+        if (creep.harvest(source) === ERR_NOT_IN_RANGE) {
             creep.moveTo(source);
         }
     }

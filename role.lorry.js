@@ -1,8 +1,6 @@
-
+var roleBuilder = require('role.builder');
 module.exports = {
-    // a function to run the logic for this role
-    /** @param {Creep} creep */
-    run: function(creep) {
+    run: (creep) => {
         if (creep.memory.working === true && creep.carry.energy === 0) {
             creep.memory.working = false;
         }
@@ -31,6 +29,8 @@ module.exports = {
                         // move towards it
                         creep.moveTo(structure);
                     }
+                } else {
+                    roleBuilder.run(creep)
                 }
             } else {
                 // find closest container
@@ -38,17 +38,16 @@ module.exports = {
                     filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] > 0
                 });
 
-                if (container === undefined) {
-                    container = creep.room.storage;
-                }
+                // if (container === undefined) {
+                //     container = creep.room.storage;
+                // }
 
-                // if one was found
-                if (container !== undefined) {
-                    // try to withdraw energy, if the container is not in range
+                if (container !== undefined && container !== null) {
                     if (creep.withdraw(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                        // move towards it
                         creep.moveTo(container);
                     }
+                } else {
+                    roleBuilder.run(creep)
                 }
             }
         }

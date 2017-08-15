@@ -3,6 +3,8 @@ module.exports = {
     // a function to run the logic for this role
     /** @param {Creep} creep */
     run: (creep) => {
+        // console.log(creep.room.name)
+        // console.log("Rally_"+creep)
         if (creep.memory.working === true && creep.carry.energy === 0) {
             creep.memory.working = false;
         }
@@ -31,7 +33,8 @@ module.exports = {
             }
             } else {
                 let spawn = creep.room.find(FIND_MY_SPAWNS)[0]
-                let sourceContainer = spawn.pos.findInRange(FIND_STRUCTURES, 15, {
+
+                let sourceContainer = creep.room.find(FIND_SOURCES)[0].pos.findInRange(FIND_STRUCTURES, 8, {
                     filter: s => (s.structureType === STRUCTURE_CONTAINER &&
                     s.store[RESOURCE_ENERGY] >= (s.storeCapacity / 5))
                 })[0];

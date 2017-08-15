@@ -14,8 +14,8 @@ Room.prototype.sourceInfo = (room, spawn) => {
         pathFromSpawn = spawn.pos.findPathTo(source)
         sourceMap.sources[source.id] = {
             pathFromSpawn: pathFromSpawn,
-            energyCap: spawn.energyCapacity,
-            workSpaces: architect.checkBoxTiles.call(architect, room, source, 'work')
+            energyCap: spawn.energyCapacity
+            // workSpaces: architect.checkBoxTiles.call(architect, room, source, 'work')
         }
 
 
@@ -32,7 +32,7 @@ Room.prototype.sourceInfo = (room, spawn) => {
     });
     spawn.memory.sourceMap = sourceMap
     //Report
-    room.sourceReport(room, sourceMap);
+    // room.sourceReport(room, sourceMap);
     return sourceMap
 }
 
@@ -40,17 +40,6 @@ Room.prototype.sourceReport = (room, sourceMap) => {
     room.visual.text('Source Report', 1, 1, { align: 'left', color: 'orange' });
     room.visual.text('Count ' + sourceMap.total, 1, 2, { align: 'left', color: 'green' });
     room.visual.text('Info TTL:  ' + (100 - Game.time % 100), 1, 3, { align: 'left', color: 'red' });
-}
-
-Room.prototype.analysis = (room) => {
-    let roomInfo = {
-        contrLevel: room.controller.level,
-        eAvail: room.energyAvailable,
-        eCap: room.energyCapacityAvailable
-    };
-
-    return roomInfo;
-    // let socialOrder = room.determineSocialOrder
 }
 
 Room.prototype.determineSocialOrder = (roomLevel) => {
@@ -67,32 +56,33 @@ Room.prototype.determineSocialOrder = (roomLevel) => {
     }
 
     if (roomLevel === 2) {
-        Memory.listOfRoles = ['harvester', 'upgrader', 'repairer', 'builder', 'miner', 'lorry', 'longLorry'];
-        for (let role of Memory.listOfRoles) {
-            desiredCreeps[role] = 2;
-        }
-
-        desiredCreeps.miner = 2;
-        desiredCreeps.builder = 5;
-        desiredCreeps.upgrader = 2;
-        desiredCreeps.longLorry = 0;
-        desiredCreeps.lorry = 1;
-        desiredCreeps.harvester = 3;
-        desiredCreeps.repairer = 1;
-    }
-
-    if (roomLevel === 3) {
-        Memory.listOfRoles = ['harvester', 'upgrader', 'repairer', 'builder', 'miner', 'lorry', 'longLorry'];
+        Memory.listOfRoles = ['harvester', 'upgrader', 'repairer', 'builder', 'miner', 'lorry', 'longLorry', 'wallRepairer'];
         for (let role of Memory.listOfRoles) {
             desiredCreeps[role] = 2;
         }
 
         desiredCreeps.miner = 2;
         desiredCreeps.builder = 3;
-        desiredCreeps.upgrader = 1;
-        desiredCreeps.longLorry = 0;
+        desiredCreeps.upgrader = 2;
+        desiredCreeps.longLorry = 3;
         desiredCreeps.lorry = 1;
         desiredCreeps.harvester = 1;
+        desiredCreeps.repairer = 1;
+    }
+
+    if (roomLevel === 3) {
+        Memory.listOfRoles = ['harvester', 'upgrader', 'repairer', 'builder', 'miner', 'lorry', 'longLorry', 'wallRepairer', 'grunt'];
+        for (let role of Memory.listOfRoles) {
+            desiredCreeps[role] = 2;
+        }
+
+        desiredCreeps.miner = 2;
+        desiredCreeps.builder = 3;
+        desiredCreeps.upgrader = 3;
+        desiredCreeps.longLorry = 1;
+        desiredCreeps.lorry = 2;
+        desiredCreeps.harvester = 1;
+        desiredCreeps.grunt = 0;
     }
     Memory.desiredCreeps = desiredCreeps;
     return;

@@ -3,7 +3,10 @@ require('prototype.room');
 require('prototype.creep');
 require('prototype.tower');
 const architect = require('architect').architectOrchestra;
-
+//TODO
+// Track units not in room for spawn control
+// Clean up redundant code
+//
 module.exports.loop = function() {
     for (let spawnName in Game.spawns) {
         let spawn = Game.spawns[spawnName];

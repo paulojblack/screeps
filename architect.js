@@ -22,6 +22,7 @@ controllerPath = (spawn, room) => {
     })
 };
 
+/*
 storagePath = (room) => {
     let structure = room.find(FIND_MY_STRUCTURES, {
         filter: (s) => (s.structureType == STRUCTURE_EXTENSION
@@ -57,9 +58,9 @@ getBoundingBox = (pos, room, x, y) => {
 
     return room.lookAtArea(y-1, x-1, y+1, x+1);
 }
-
+*/
 module.exports = {
-    checkBoxTiles: checkBoxTiles,
+    //checkBoxTiles: checkBoxTiles,
     architectOrchestra: architectOrchestra
 
 }

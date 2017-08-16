@@ -2,35 +2,33 @@ var roleBuilder = require('role.builder');
 
 module.exports = {
     // a function to run the logic for this role
-    /** @param {Creep} creep */
-    run: (creep) => {
-        if (creep.memory.working === true && creep.carry.energy === 0) {
-            creep.memory.working = false;
+    /** @param {Creep} this */
+    run: function() {
+        if (this.memory.working === true && this.carry.energy === 0) {
+            this.memory.working = false;
         }
-        // if creep is harvesting energy but is full
-        else if (creep.memory.working === false && creep.carry.energy === creep.carryCapacity) {
-            creep.memory.working = true;
+        // if this is harvesting energy but is full
+        else if (this.memory.working === false && this.carry.energy === this.carryCapacity) {
+            this.memory.working = true;
         }
 
-        if (creep.memory.working == true) {
-            let structure = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+        if (this.memory.working == true) {
+            let structure = this.pos.findClosestByPath(FIND_STRUCTURES, {
                 filter: (s) => s.hits < s.hitsMax && s.structureType != STRUCTURE_WALL
             });
 
             if (structure != undefined) {
                 // try to repair it, if it is out of range
-                if (creep.repair(structure) == ERR_NOT_IN_RANGE) {
+                if (this.repair(structure) == ERR_NOT_IN_RANGE) {
                     // move towards it
-                    creep.moveTo(structure);
+                    this.moveTo(structure);
                 }
             } else {
-                // look for construction sites
-                roleBuilder.run(creep);
+                roleBuilder.run.call(this);
             }
         }
-        // if creep is supposed to get energy
         else {
-            creep.getEnergy(creep, true, true);
+            this.getNewEnergy(true, true);
         }
     }
 };

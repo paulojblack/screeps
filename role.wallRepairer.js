@@ -1,17 +1,17 @@
 var roleBuilder = require('role.builder');
 
 module.exports = {
-    /** @param {Creep} creep */
-    run: function(creep) {
-        if (creep.memory.working == true && creep.carry.energy == 0) {
-            creep.memory.working = false;
+    /** @param {Creep} this */
+    run: function() {
+        if (this.memory.working == true && this.carry.energy == 0) {
+            this.memory.working = false;
         }
-        else if (creep.memory.working == false && creep.carry.energy == creep.carryCapacity) {
-            creep.memory.working = true;
+        else if (this.memory.working == false && this.carry.energy == this.carryCapacity) {
+            this.memory.working = true;
         }
 
-        if (creep.memory.working == true) {
-            var walls = creep.room.find(FIND_STRUCTURES, {
+        if (this.memory.working == true) {
+            var walls = this.room.find(FIND_STRUCTURES, {
                 filter: (s) => (s.structureType == STRUCTURE_WALL || s.structureType == STRUCTURE_RAMPART)
             });
 
@@ -31,16 +31,15 @@ module.exports = {
             }
 
             if (target != undefined) {
-                if (creep.repair(target) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(target);
+                if (this.repair(target) == ERR_NOT_IN_RANGE) {
+                    this.moveTo(target);
                 }
-            }
-            else {
-                roleBuilder.run(creep);
+            } else {
+                roleBuilder.run.call(this);
             }
         }
         else {
-            creep.getEnergy(creep, true, true);
+            this.getNewEnergy(true, true);
         }
     }
 };

@@ -1,41 +1,47 @@
 var roleUpgrader = require('role.upgrader');
 
 module.exports = {
-    run: (creep) => {
-        try {
-            // if target is defined and creep is not in target room
-            if (creep.memory.target != undefined && creep.room.name != creep.memory.target) {
+    run: function() {
+        // try {
+            // if target is defined and this is not in target room
+            if (this.memory.target != undefined && this.room.name != this.memory.target) {
                 // find exit to target room
-                var exit = creep.room.findExitTo(creep.memory.target);
+                let exit = this.room.findExitTo(this.memory.target);
                 // move to exit
-                creep.moveTo(creep.pos.findClosestByRange(exit));
+                this.moveTo(this.pos.findClosestByRange(exit));
 
                 return;
             }
 
-            if (creep.memory.working === true && creep.carry.energy === 0) {
-                creep.memory.working = false;
+            if (this.memory.working === true && this.carry.energy === 0) {
+                this.memory.working = false;
             }
-            // if creep is harvesting energy but is full
-            else if (creep.memory.working !== true && creep.carry.energy === creep.carryCapacity) {
-                creep.memory.working = true;
+            // if this is harvesting energy but is full
+            else if (this.memory.working !== true && this.carry.energy === this.carryCapacity) {
+                this.memory.working = true;
             }
 
-            // if creep is supposed to complete a constructionSite
-            if (creep.memory.working == true) {
-                var constructionSite = creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
+            // if this is supposed to complete a constructionSite
+            if (this.memory.working == true) {
+                let constructionSite = this.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
 
-                if (constructionSite != undefined && creep.build(constructionSite) === ERR_NOT_IN_RANGE) {
-                    creep.moveTo(constructionSite);
+                //TODO generalize
+                //check adjacent room
+                if (constructionSite === undefined) {
+                    constructionSite = Game.rooms['E12N39'].find(FIND_CONSTRUCTION_SITES)
+                }
+            
+                if (constructionSite !== undefined && this.build(constructionSite) === ERR_NOT_IN_RANGE) {
+                    this.moveTo(constructionSite);
                 }
                 else {
-                    roleUpgrader.run(creep);
+                    roleUpgrader.run.call(this);
                 }
             } else {
-                creep.getEnergy(creep, true, true);
+                this.getNewEnergy(true, true);
             }
-        } catch(e) {
-            console.log(e)
-        }
+        // } catch(e) {
+        //     console.log(e)
+        // }
     }
 };

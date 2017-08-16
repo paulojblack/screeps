@@ -1,10 +1,11 @@
 var roleBuilder = require('role.builder');
 module.exports = {
-    run: (creep) => {
+    run: function() {
         let flag;
         let target;
-
-        target = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS, {
+        // console.log(Game.getObjectById('59940ff7bbe0903fb0c2d4c7'))
+        // this.attack(Game.getObjectById('59940ff7bbe0903fb0c2d4c7'))
+        target = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS, {
             filter:(enemy) => {
                 for(let part in enemy.body){
                     if(part.type == ATTACK || part.type == RANGED_ATTACK || part.type == HEAL){
@@ -16,36 +17,41 @@ module.exports = {
         });
 
         if (target) {
-            if (creep.attack(target) != OK){
-                creep.moveTo(target);
+            console.log(target)
+            if (this.attack(target) != OK){
+                console.log(target)
+                this.moveTo(target);
             }
 
             return;
-        // } else if (creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES)) {
-        //     target = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES);
-        //
-        //     if(target){
-        //         if(creep.attack(target) == ERR_NOT_IN_RANGE){
-        //             creep.moveTo(target);
-        //         }
-        //     }
+        } else if (this.pos.findClosestByRange(FIND_STRUCTURES)) {
+            // console.log(this.pos.findClosestByRange(FIND_STRUCTURES))
+            // console.log(this.body.forEach((i) => console.log(JSON.stringify(i))))
+            target = Game.getObjectById('59940ffaa0ada570902c99f3')//this.pos.findClosestByRange(FIND_STRUCTURES);
+            // console.log(target)
+            if(target){
+                if(this.attack(target) == ERR_NOT_IN_RANGE){
+
+                    this.moveTo(target);
+                }
+            }
         } else {
-            target = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+            target = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
             if (target) {
                 //These targets are specifically enemies WITHOUT any warfare body parts.
-                if(creep.attack(target) == ERR_NOT_IN_RANGE){
-                    creep.moveTo(target);
+                if(this.attack(target) == ERR_NOT_IN_RANGE){
+                    this.moveTo(target);
                 }
             } else if (Game.flags.Grunt) {
                 //places to be
                 flag = Game.flags['Grunt']
             } else {
                 //nothin to do
-                flag = Game.flags["Rally_"+creep.memory.home];
+                flag = Game.flags["Rally_"+this.memory.home];
             }
 
-            if (flag && !creep.pos.isEqualTo(flag.pos)) {
-                creep.moveTo(flag);
+            if (flag && !this.pos.isEqualTo(flag.pos)) {
+                this.moveTo(flag);
             }
         }
     }

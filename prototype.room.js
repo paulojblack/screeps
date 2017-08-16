@@ -1,47 +1,5 @@
 const architect = require('architect');
 
-Room.prototype.sourceInfo = (room, spawn) => {
-    const sources = room.find(FIND_SOURCES);
-    let sourceMap = {
-        total: sources.length,
-        sources: {}
-    };
-
-    let closestToSpawn;
-    let closestPathDistance = 0;
-
-    sources.forEach((source) => {
-        pathFromSpawn = spawn.pos.findPathTo(source)
-        sourceMap.sources[source.id] = {
-            pathFromSpawn: pathFromSpawn,
-            energyCap: spawn.energyCapacity
-            // workSpaces: architect.checkBoxTiles.call(architect, room, source, 'work')
-        }
-
-
-        if (pathFromSpawn.length > closestPathDistance) {
-            closestToSpawn = source.id
-            closestPathDistance = pathFromSpawn.length
-        }
-
-        if (sourceMap.sources[source.id]['needsWork'] === undefined) {
-            sourceMap.sources[source.id].needsWork = true;
-        }
-
-        sourceMap.closestToSpawn = closestToSpawn;
-    });
-    spawn.memory.sourceMap = sourceMap
-    //Report
-    // room.sourceReport(room, sourceMap);
-    return sourceMap
-}
-
-Room.prototype.sourceReport = (room, sourceMap) => {
-    room.visual.text('Source Report', 1, 1, { align: 'left', color: 'orange' });
-    room.visual.text('Count ' + sourceMap.total, 1, 2, { align: 'left', color: 'green' });
-    room.visual.text('Info TTL:  ' + (100 - Game.time % 100), 1, 3, { align: 'left', color: 'red' });
-}
-
 Room.prototype.determineSocialOrder = (roomLevel) => {
     let desiredCreeps = {}
 
@@ -79,11 +37,58 @@ Room.prototype.determineSocialOrder = (roomLevel) => {
         desiredCreeps.miner = 2;
         desiredCreeps.builder = 3;
         desiredCreeps.upgrader = 3;
-        desiredCreeps.longLorry = 1;
+        desiredCreeps.longLorry = 2;
         desiredCreeps.lorry = 2;
         desiredCreeps.harvester = 1;
         desiredCreeps.grunt = 0;
+        desiredCreeps.wallRepairer = 1;
+        desiredCreeps.repairer = 1;
+    }
+
+    if (roomLevel >= 4) {
+        Memory.listOfRoles = ['harvester', 'upgrader', 'repairer', 'builder', 'miner', 'lorry', 'longLorry', 'wallRepairer', 'grunt'];
+        for (let role of Memory.listOfRoles) {
+            desiredCreeps[role] = 2;
+        }
+
+        desiredCreeps.miner = 2;
+        desiredCreeps.builder = 2;
+        desiredCreeps.upgrader = 2;
+        desiredCreeps.longLorry = 2;
+        desiredCreeps.lorry = 2;
+        desiredCreeps.harvester = 1;
+        desiredCreeps.grunt = 0;
+        desiredCreeps.wallRepairer = 1;
+        desiredCreeps.repairer = 1;
     }
     Memory.desiredCreeps = desiredCreeps;
     return;
-}
+};
+
+// Caching/memory extensions
+Object.defineProperty(Room.prototype, 'sources', {
+    get: function() {
+            // If we dont have the value stored locally
+        if (!this._sources) {
+                // If we dont have the value stored in memory
+            if (!this.memory.sourceIds) {
+                    // Find the sources and store their id's in memory,
+                    // NOT the full objects
+                this.memory.sourceIds = this.find(FIND_SOURCES)
+                                        .map(source => source.id);
+            }
+            // Get the source objects from the id's in memory and store them locally
+            this._sources = this.memory.sourceIds.map(id => Game.getObjectById(id));
+        }
+        // return the locally stored value
+        return this._sources;
+    },
+    set: function(newValue) {
+        // when storing in memory you will want to change the setter
+        // to set the memory value as well as the local value
+        this.memory.sources = newValue.map(source => source.id);
+        this._sources = newValue;
+    },
+    enumerable: false,
+    configurable: true
+});

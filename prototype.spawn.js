@@ -1,5 +1,5 @@
-StructureSpawn.prototype.spawnCreepsIfNecessary = (spawn) => {
-    let room = spawn.room;
+StructureSpawn.prototype.spawnCreepsIfNecessary = function() {
+    let room = this.room;
     let existingCreeps = {};
     const creepsInRoom = room.find(FIND_MY_CREEPS);
     const maxEnergy = room.energyCapacityAvailable;
@@ -8,13 +8,19 @@ StructureSpawn.prototype.spawnCreepsIfNecessary = (spawn) => {
         existingCreeps[role] = _.sum(creepsInRoom, (c) => c.memory.role == role);
     }
 
+    console.log(JSON.stringify(existingCreeps))
+    console.log(JSON.stringify(Memory.desiredCreeps))
+    // this.createGrunt()
+    //emergency backup
+    if (creepsInRoom.length === 0) {
+        this.createHarvester();
+    }
     if (existingCreeps['harvester'] < Memory.desiredCreeps['harvester']) {
-        spawn.createCustomCreep(spawn, maxEnergy, 'harvester')
+        this.createCustomCreep(maxEnergy, 'harvester')
     } else if (existingCreeps['miner'] < Memory.desiredCreeps['miner']) {
         // check if all sources have miners
-        let sources = room.find(FIND_SOURCES);
         // iterate over all sources
-        for (let source of sources) {
+        for (let source of room.sources) {
             // if the source has no miner
             if (!_.some(creepsInRoom, c => c.memory.role == 'miner' && c.memory.sourceId == source.id)) {
                 // check whether or not the source has a container
@@ -25,31 +31,45 @@ StructureSpawn.prototype.spawnCreepsIfNecessary = (spawn) => {
                 // if there is a container next to the source
                 if (containers.length > 0) {
                     // spawn a miner
-                    name = spawn.createMiner(spawn, source.id);
+                    this.createMiner(source.id);
                     break;
                 }
             }
         }
-    } else if (false) {
-        spawn.createLongDistanceHarvester(spawn, 800, 2, spawn.room.name,'E12N39');
+    } else if (existingCreeps['lorry'] < Memory.desiredCreeps['lorry']) {
+
+        this.createCustomCreep(maxEnergy, 'lorry')
+
+    } else if (Game.time % 150 === 0) {
+        this.createCustomCreep(maxEnergy, 'longDistanceHarvester', {
+            role: 'longDistanceHarvester',
+            home: this.room.name,
+            target: 'E12N39',
+            working: false
+        });
+
     } else if (existingCreeps['harvester'] >= Memory.desiredCreeps['harvester']) {
         Memory.listOfRoles.forEach((role) => {
             if (role !== 'miner' || role !== 'grunt') {
                 if (existingCreeps[role] < Memory.desiredCreeps[role]) {
-                    spawn.createCustomCreep(spawn, maxEnergy, role);
+                    this.createCustomCreep(maxEnergy, role);
                 }
             }
         });
         //TODO THIS SHIT IS CRAZY
-        // spawn.createGrunt(spawn)
+        // this.createGrunt()
     }
 }
-StructureSpawn.prototype.createMiner = (spawn, id) => {
-    return spawn.createCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE], undefined,
+StructureSpawn.prototype.createHarvester = function(id) {
+    return this.createCreep([WORK, CARRY, CARRY, MOVE], undefined,
+        { role: 'harvester', sourceId: id, working: false });
+};
+StructureSpawn.prototype.createMiner = function(id) {
+    return this.createCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE], undefined,
         { role: 'miner', sourceId: id, working: false });
 };
 
-StructureSpawn.prototype.createGrunt = (spawn, id) => {
+StructureSpawn.prototype.createGrunt = function(id) {
     let body = [];
 
     for (let i = 0; i < 7; i++) {
@@ -59,13 +79,15 @@ StructureSpawn.prototype.createGrunt = (spawn, id) => {
         body.push(MOVE);
     }
 
-    return spawn.createCreep(body, undefined,
-        { role: 'grunt', home: spawn.room.name });
+    return this.createCreep(body, undefined,
+        { role: 'grunt', home: this.room.name });
 };
 
-StructureSpawn.prototype.createLongDistanceHarvester = (spawn, energy, numberOfWorkParts, home, target) => {
+StructureSpawn.prototype.createLongDistanceHarvester = function(energy, numberOfWorkParts, home, target) {
     // create a body with the specified number of WORK parts and one MOVE part per non-MOVE part
     let body = [];
+    // let auxiliaryType;
+
     for (let i = 0; i < numberOfWorkParts; i++) {
         body.push(WORK);
     }
@@ -83,7 +105,7 @@ StructureSpawn.prototype.createLongDistanceHarvester = (spawn, energy, numberOfW
     }
 
     // create creep with the created body
-    return spawn.createCreep(body, undefined, {
+    return this.createCreep(body, undefined, {
         role: 'longDistanceHarvester',
         home: home,
         target: target,
@@ -91,7 +113,7 @@ StructureSpawn.prototype.createLongDistanceHarvester = (spawn, energy, numberOfW
     });
 };
 
-StructureSpawn.prototype.createCustomCreep = (spawn, energy, roleName) => {
+StructureSpawn.prototype.createCustomCreep = function(energy, roleName, initialMemory) {
     // create a balanced body as big as possible with the given energy
     let numberOfParts = Math.floor(energy / 200);
     // make sure the creep is not too big (more than 50 parts)
@@ -107,6 +129,14 @@ StructureSpawn.prototype.createCustomCreep = (spawn, energy, roleName) => {
     for (let i = 0; i < numberOfParts; i++) {
         body.push(MOVE);
     }
+
+    if (initialMemory === undefined) {
+        initialMemory = { role: roleName, working: false, home: this.room }
+    }
     // create creep with the created body and the given role
-    return spawn.createCreep(body, undefined, { role: roleName, working: false });
+    return this.createCreep(body, undefined, initialMemory);
 };
+
+let constants = {
+    foo: 'bar'
+}

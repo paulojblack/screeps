@@ -1,22 +1,22 @@
 module.exports = {
-    run: (creep) => {
+    run: function() {
         try {
-            if (creep.memory.working === true && creep.carry.energy === 0) {
+            if (this.memory.working === true && this.carry.energy === 0) {
 
-                creep.memory.working = false;
+                this.memory.working = false;
             }
-            else if (creep.memory.working !== true && creep.carry.energy === creep.carryCapacity) {
-                creep.memory.working = true;
+            else if (this.memory.working !== true && this.carry.energy === this.carryCapacity) {
+                this.memory.working = true;
             }
-            // if creep is supposed to transfer energy to the controller
-            if (creep.memory.working === true) {
+            // if this is supposed to transfer energy to the controller
+            if (this.memory.working === true) {
                 // instead of upgraderController we could also use:
-                if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(creep.room.controller);
+                if (this.upgradeController(this.room.controller) == ERR_NOT_IN_RANGE) {
+                    this.moveTo(this.room.controller);
                 }
             }
             else {
-                creep.getEnergy(creep, true, true);
+                this.getNewEnergy(true, true);
             }
         } catch(e) {
             console.log(e);

@@ -1,15 +1,15 @@
 var roleBuilder = require('role.builder');
 module.exports = {
-    run: (creep) => {
-        if (creep.memory.working === true && creep.carry.energy === 0) {
-            creep.memory.working = false;
+    run: function () {
+        if (this.memory.working === true && this.carry.energy === 0) {
+            this.memory.working = false;
         }
-        else if (creep.memory.working == false && creep.carry.energy === creep.carryCapacity) {
-            creep.memory.working = true;
+        else if (this.memory.working == false && this.carry.energy === this.carryCapacity) {
+            this.memory.working = true;
         }
 
-        if (creep.memory.working === true) {
-            var structure = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
+        if (this.memory.working === true) {
+            var structure = this.pos.findClosestByPath(FIND_MY_STRUCTURES, {
                 filter: (s) => (s.structureType === STRUCTURE_SPAWN
                     || s.structureType === STRUCTURE_EXTENSION
                     || s.structureType === STRUCTURE_TOWER)
@@ -17,31 +17,31 @@ module.exports = {
                 });
 
                 if (structure == undefined) {
-                    structure = creep.room.storage;
+                    structure = this.room.storage;
                 }
 
                 if (structure != undefined) {
-                    if (creep.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(structure);
+                    if (this.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                        this.moveTo(structure);
                     }
                 } else {
-                    roleBuilder.run(creep)
+                    roleBuilder.run.call(this)
                 }
             } else {
-                let container = creep.pos.findClosestByPath(FIND_STRUCTURES, {
-                    filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] > 0
+                let container = this.pos.findClosestByPath(FIND_STRUCTURES, {
+                    filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] > 700
                 });
 
                 // if (container === undefined) {
-                //     container = creep.room.storage;
+                //     container = this.room.storage;
                 // }
 
                 if (container !== undefined && container !== null) {
-                    if (creep.withdraw(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(container);
+                    if (this.withdraw(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                        this.moveTo(container);
                     }
                 } else {
-                    roleBuilder.run(creep)
+                    roleBuilder.run.call(this)
                 }
             }
         }

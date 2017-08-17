@@ -1,9 +1,14 @@
 var roleBuilder = require('role.builder');
 
 module.exports = {
-    // a function to run the logic for this role
-    /** @param {Creep} this */
     run: function() {
+        if (this.memory.target !== undefined && this.room.name !== this.memory.target                    ) {
+            let exit = this.room.findExitTo(Game.rooms[this.memory.target]);
+            this.moveTo(this.pos.findClosestByRange(exit));
+
+            return
+        }
+
         if (this.memory.working === true && this.carry.energy === 0) {
             this.memory.working = false;
         }

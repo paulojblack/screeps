@@ -12,8 +12,16 @@ const roles = {
     grunt: require('military.grunt')
 };
 
-Creep.prototype.runRole = function(creep) {
-    roles[this.memory.role].run.call(this);    
+Creep.prototype.runRole = function() {
+    try {
+        roles[this.memory.role].run.call(this);
+    } catch(e) {
+        console.log('Creep coord fuckup');
+        console.log(this)
+        console.log(this.pos)
+        console.log(JSON.stringify(this.memory))
+        console.log(e)
+    }
 };
 
 Creep.prototype.getEnergy = function(creep, useContainer, useSource) {

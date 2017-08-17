@@ -3,19 +3,17 @@ require('prototype.spawn');
 require('prototype.room');
 require('prototype.creep');
 require('prototype.tower');
+const constants = require('constants');
 const architect = require('architect').architectOrchestra;
 //TODO
 // Track units not in room for spawn control
 // Clean up redundant code
 
 module.exports.loop = () => {
-    for (let spawnName in Game.spawns) {
-        let spawn = Game.spawns[spawnName];
-        if (Game.time % 150 === 0) {
-            architect(spawn);
-            spawn.room.determineSocialOrder(spawn.room.controller.level)
+    for (room in constants.myRooms) {
+        if (Game.rooms[room]) {
+            roomOrchestra.call(Game.rooms[room])
         }
-        spawn.spawnCreepsIfNecessary(spawn);
     }
 
     for (name in Game.creeps) {
@@ -33,5 +31,21 @@ module.exports.loop = () => {
     for (let tower of towers) {
         tower.defend(tower);
     }
+
     console.log('Next tick')
 };
+
+const roomOrchestra = function() {
+    if (this.config.type === 'base') {
+        for (let spawn of this.find(FIND_MY_SPAWNS)) {
+            if (Game.time % 150 === 0) {
+                architect(spawn);
+            }
+            spawn.spawnCreepsIfNecessary(spawn);
+        }
+    }
+    // console.log(JSON.stringify(this.config))
+    if (this.config.type === 'scavenge') {
+        this.composeScavenge();
+    }
+}

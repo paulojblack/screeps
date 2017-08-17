@@ -1,11 +1,13 @@
 const architect = require('architect');
+let constants = require('constants');
 
-Room.prototype.determineSocialOrder = (roomLevel) => {
-    let desiredCreeps = {}
+Room.prototype.baseOrder = (roomLevel) => {
+    let desiredCreeps = {};
+    let listOfRoles;
 
     if (roomLevel === 1) {
-        Memory.listOfRoles = ['harvester', 'upgrader', 'builder'];
-        for (let role of Memory.listOfRoles) {
+        listOfRoles = ['harvester', 'upgrader', 'builder'];
+        for (let role of listOfRoles) {
             desiredCreeps[role] = 1;
         }
         desiredCreeps.harvester = 3;
@@ -14,8 +16,8 @@ Room.prototype.determineSocialOrder = (roomLevel) => {
     }
 
     if (roomLevel === 2) {
-        Memory.listOfRoles = ['harvester', 'upgrader', 'repairer', 'builder', 'miner', 'lorry', 'longLorry', 'wallRepairer'];
-        for (let role of Memory.listOfRoles) {
+        listOfRoles = ['harvester', 'upgrader', 'repairer', 'builder', 'miner', 'lorry', 'longLorry', 'wallRepairer'];
+        for (let role of listOfRoles) {
             desiredCreeps[role] = 2;
         }
 
@@ -29,8 +31,8 @@ Room.prototype.determineSocialOrder = (roomLevel) => {
     }
 
     if (roomLevel === 3) {
-        Memory.listOfRoles = ['harvester', 'upgrader', 'repairer', 'builder', 'miner', 'lorry', 'longLorry', 'wallRepairer', 'grunt'];
-        for (let role of Memory.listOfRoles) {
+        listOfRoles = ['harvester', 'upgrader', 'repairer', 'builder', 'miner', 'lorry', 'longLorry', 'wallRepairer', 'grunt'];
+        for (let role of listOfRoles) {
             desiredCreeps[role] = 2;
         }
 
@@ -46,26 +48,50 @@ Room.prototype.determineSocialOrder = (roomLevel) => {
     }
 
     if (roomLevel >= 4) {
-        Memory.listOfRoles = ['harvester', 'upgrader', 'repairer', 'builder', 'miner', 'lorry', 'longLorry', 'wallRepairer', 'grunt'];
-        for (let role of Memory.listOfRoles) {
+        listOfRoles = ['harvester', 'upgrader', 'repairer', 'builder', 'miner', 'lorry', 'longLorry', 'wallRepairer', 'grunt'];
+        for (let role of listOfRoles) {
             desiredCreeps[role] = 2;
         }
 
         desiredCreeps.miner = 2;
-        desiredCreeps.builder = 2;
-        desiredCreeps.upgrader = 2;
-        desiredCreeps.longLorry = 2;
-        desiredCreeps.lorry = 2;
+        desiredCreeps.builder = 1;
+        desiredCreeps.upgrader = 1;
+        desiredCreeps.longLorry = 1;
+        desiredCreeps.lorry = 1;
         desiredCreeps.harvester = 1;
         desiredCreeps.grunt = 0;
         desiredCreeps.wallRepairer = 1;
         desiredCreeps.repairer = 1;
     }
-    Memory.desiredCreeps = desiredCreeps;
-    return;
+
+    return desiredCreeps;
 };
 
+Room.prototype.composeScavenge = function() {
+    const parent = Game.rooms[this.config.companionRoom];
+    if (parent.energyAvailable === parent.energyCapacityAvailable && Game.time % 10 === 0) {
+        const spawn = parent.find(FIND_MY_SPAWNS)[0];
+        spawn.createScavengers(this);
+    }
+}
+
 // Caching/memory extensions
+Object.defineProperty(Room.prototype, 'config', {
+    get: function() {
+        if (!this._config) {
+            let config = constants.myRooms[this.name];
+            if (config.type === 'base') {
+                config.localOrder = this.baseOrder(this.controller.level);
+            }
+
+            this._config = config;
+        }
+        return this._config
+    },
+    enumerable: false,
+    configurable: true
+});
+
 Object.defineProperty(Room.prototype, 'sources', {
     get: function() {
             // If we dont have the value stored locally

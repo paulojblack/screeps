@@ -3,6 +3,7 @@ var roleBuilder = require('role.builder');
 module.exports = {
     /** @param {Creep} this */
     run: function() {
+        this.memory.working = false
         if (this.memory.working == true && this.carry.energy == 0) {
             this.memory.working = false;
         }

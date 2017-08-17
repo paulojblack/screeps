@@ -3,6 +3,7 @@ module.exports = {
     run: function() {
         let source = Game.getObjectById(this.memory.sourceId);
         let container;
+
         try {
             if (!this.memory.positioned) {
                 if (!this.memory.target || this.room.name === this.memory.target) {
@@ -24,6 +25,8 @@ module.exports = {
                 }
             }
         } catch(e) {
+            console.log('Miner fuckup')
+            console.log(this)
             console.log(e)
         }
     }

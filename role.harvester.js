@@ -22,7 +22,7 @@ module.exports = {
                 }
             }
         } else {
-            return this.getNewEnergy(true, true);
+            return this.getEnergy(true, true);
         }
     }
 }

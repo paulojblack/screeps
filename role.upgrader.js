@@ -16,7 +16,7 @@ module.exports = {
                 }
             }
             else {
-                this.getNewEnergy(true, true);
+                this.getEnergy(true, true);
             }
         } catch(e) {
             console.log(e);

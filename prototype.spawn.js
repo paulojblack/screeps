@@ -70,12 +70,6 @@ StructureSpawn.prototype.doctrineMiner = function(creepList, maxEnergy, childRoo
         }
     }
 };
-//
-// StructureSpawn.prototype.createMiner = function(initialMemory) {
-//     // Game.spawns['Spawn1'].createCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE], undefined,
-//     //     { role: 'miner', target: 'E12N39', sourceId: '5982fec6b097071b4adc17c2', working: false });
-//     return this.createCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE], undefined, initialMemory);
-// };
 
 StructureSpawn.prototype.createGrunt = function(initialMemory) {
     let body = [];

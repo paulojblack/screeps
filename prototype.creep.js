@@ -13,10 +13,6 @@ const roles = {
 };
 
 Creep.prototype.runRole = function() {
-    // if (this.name === 'Hannah') {
-    //     console.log(this)
-    //     console.log(this.pos)
-    // }
     try {
         roles[this.memory.role].run.call(this);
     } catch(e) {
@@ -28,8 +24,9 @@ Creep.prototype.runRole = function() {
     }
 };
 
-Creep.prototype.getNewEnergy = function(useContainer, useSource) {
+Creep.prototype.getEnergy = function(useContainer, useSource) {
     let container;
+
     if (useContainer) {
         container = this.pos.findClosestByRange(this.room.containers, {
             filter: s => s.structureType == STRUCTURE_CONTAINER &&
@@ -49,11 +46,11 @@ Creep.prototype.getNewEnergy = function(useContainer, useSource) {
         }
     }
 
-    if (container === undefined && useSource) {
+    if (!container && useSource) {
         let source = this.pos.findClosestByRange(this.room.sources);
 
         if (this.harvest(source) === ERR_NOT_IN_RANGE) {
-            this.moveTo(source);
+            return this.moveTo(source);
         }
     }
 };

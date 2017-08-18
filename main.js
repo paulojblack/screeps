@@ -36,7 +36,7 @@ module.exports.loop = function() {
           tower.defend(tower);
       }
 
-    //   console.log('Next tick')
+      console.log('Next tick')
   });
 }
 

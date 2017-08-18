@@ -12,7 +12,7 @@ Room.prototype.baseOrder = (roomLevel) => {
         }
         desiredCreeps.harvester = 3;
         desiredCreeps.builder = 3;
-        desiredCreeps.upgrader = 2;
+        desiredCreeps.upgrader = 6;
     }
 
     if (roomLevel === 2) {

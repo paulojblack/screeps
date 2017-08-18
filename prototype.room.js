@@ -55,7 +55,7 @@ Room.prototype.baseOrder = (roomLevel) => {
 
         desiredCreeps.miner = 2;
         desiredCreeps.builder = 1;
-        desiredCreeps.upgrader = 1;
+        desiredCreeps.upgrader = 4;
         desiredCreeps.longLorry = 2;
         desiredCreeps.lorry = 2;
         desiredCreeps.harvester = 1;

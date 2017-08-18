@@ -1,6 +1,5 @@
 module.exports = {
     run: function() {
-        this.say('ll')
         if (this.memory.working === true && this.carry.energy === 0) {
             this.memory.working = false;
         }

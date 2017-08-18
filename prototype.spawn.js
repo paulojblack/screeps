@@ -1,65 +1,81 @@
 StructureSpawn.prototype.spawnCreepsIfNecessary = function() {
     let room = this.room;
-    let existingCreeps = {};
-    const creepsInRoom = room.find(FIND_MY_CREEPS);
-
-    // console.log(test.length)
-    // console.log(JSON.stringify(test))
-    // for (c of test) {
-    //     console.log(c.memory.role)
-    // }
+    let localOrder = room.config.localOrder;
+    let existingCreeps = _.mapValues(localOrder, (role) => 0);
     const maxEnergy = room.energyCapacityAvailable;
+    const creepList = _.filter(Game.creeps, function(c) {return c.memory.target === room.name});
 
-    for (let role in room.config.localOrder) {
-        existingCreeps[role] = _.sum(creepsInRoom, (c) => c.memory.role === role);
+    for (role in localOrder) {
+        existingCreeps[role] = _.sum(creepList, (c) => c.memory.role === role)
     }
+
+    console.log('I have')
     console.log(JSON.stringify(existingCreeps))
+    // console.log(JSON.stringify(Object.getOwnPropertyNames(Game.creeps).length))
+    console.log('I want')
     console.log(JSON.stringify(room.config.localOrder))
-    //emergency backup
-    if (creepsInRoom.length === 0) {
-        this.createHarvester();
-    }
-
-    if (existingCreeps['harvester'] < room.config.localOrder['harvester']) {
-        this.createCustomCreep(maxEnergy, 'harvester')
-    } else if (existingCreeps['miner'] < room.config.localOrder['miner']) {
-        // check if all sources have miners
-        // iterate over all sources
-        for (let source of room.sources) {
-            if (!_.some(creepsInRoom, c => c.memory.role == 'miner' && c.memory.sourceId == source.id)) {
-                let containers = source.pos.findInRange(FIND_STRUCTURES, 1, {
-                    filter: s => s.structureType == STRUCTURE_CONTAINER
-                });
-                // if there is a container next to the source
-                if (containers.length > 0) {
-                    // spawn a miner
-                    this.createCustomCreep(maxEnergy, 'miner',
-                    {role: 'miner', working: false, target: this.room.name, sourceId: source.id});
-                    break;
-                }
-            }
-        }
-    } else if (existingCreeps['lorry'] < room.config.localOrder['lorry']) {
-        this.createCustomCreep(maxEnergy, 'lorry')
-    } else if (existingCreeps['harvester'] >= room.config.localOrder['harvester']) {
+    // console.log(JSON.stringify(room.containers[0]))
+    if (existingCreeps['harvester'] === 0) {
+        this.createHarvester({role: 'harvester', working: false, home: this.room.name, target: this.room.name});
+    } else if (existingCreeps['miner'] < localOrder['miner']) {
+        this.doctrineMiner(creepList, maxEnergy);
+    } else if (existingCreeps['lorry'] < localOrder['lorry']) {
+        this.createLorry({role: 'lorry', working: false, home: this.room.name, target: this.room.name})
+    } else {
         for (role in room.config.localOrder) {
             if (role !== 'miner' || role !== 'grunt') {
-                if (existingCreeps[role] < room.config.localOrder[role]) {
+                if (existingCreeps[role] < localOrder[role]) {
                     this.createCustomCreep(maxEnergy, role, { role: role, working: false, home: room.name, target: room.name});
                 }
             }
         }
     }
-}
-StructureSpawn.prototype.createHarvester = function(id) {
-    return this.createCreep([WORK, CARRY, CARRY, MOVE], undefined,
-        { role: 'harvester', sourceId: id, working: false });
 };
-StructureSpawn.prototype.createMiner = function(initialMemory) {
-    // Game.spawns['Spawn1'].createCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE], undefined,
-    //     { role: 'miner', target: 'E12N39', sourceId: '5982fec6b097071b4adc17c2', working: false });
-    return this.createCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE], undefined, initialMemory);
+
+StructureSpawn.prototype.createHarvester = function(initialMemory) {
+    return this.createCreep([WORK, CARRY, CARRY, MOVE], undefined, initialMemory) ;
 };
+
+StructureSpawn.prototype.createLorry = function(initialMemory) {
+    return this.createCreep([WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE], undefined, initialMemory) ;
+};
+
+StructureSpawn.prototype.doctrineMiner = function(creepList, maxEnergy, childRoom) {
+    let sources;
+    let targetName;
+
+    if (!childRoom) {
+        sources = this.room.sources;
+        targetName = this.room.name;
+    } else {
+        sources = childRoom.sources;
+        targetName = childRoom.name;
+    }
+
+    for (let source of sources) {
+
+        if (!_.some(creepList, c => c.memory.role == 'miner' && c.memory.sourceId == source.id)) {
+            let containers = source.pos.findInRange(FIND_STRUCTURES, 1, {
+                filter: s => s.structureType == STRUCTURE_CONTAINER
+            });
+            // if there is a container next to the source
+            if (containers.length > 0) {
+
+                const initialMemory = {role: 'miner', working: false, home: this.room.name, target: targetName, sourceId: source.id}
+
+                this.createCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE], undefined, initialMemory);
+
+                break;
+            }
+        }
+    }
+};
+//
+// StructureSpawn.prototype.createMiner = function(initialMemory) {
+//     // Game.spawns['Spawn1'].createCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE], undefined,
+//     //     { role: 'miner', target: 'E12N39', sourceId: '5982fec6b097071b4adc17c2', working: false });
+//     return this.createCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE], undefined, initialMemory);
+// };
 
 StructureSpawn.prototype.createGrunt = function(initialMemory) {
     let body = [];
@@ -117,14 +133,11 @@ StructureSpawn.prototype.createCustomCreep = function(energy, roleName, initialM
     if (roleName === 'grunt') {
         return this.createGrunt(initialMemory)
     }
-    if (roleName === 'miner') {
-        return this.createMiner(initialMemory)
-    }
 
     // create a balanced body as big as possible with the given energy
     let numberOfParts = Math.floor(energy / 200);
     // make sure the creep is not too big (more than 50 parts)
-    numberOfParts = Math.min(numberOfParts, Math.floor(50 / 3));
+    numberOfParts = Math.min(numberOfParts, 5);
 
     let body = [];
     for (let i = 0; i < numberOfParts; i++) {
@@ -145,8 +158,8 @@ StructureSpawn.prototype.createCustomCreep = function(energy, roleName, initialM
 };
 
 StructureSpawn.prototype.createScavengers = function(childRoom) {
-    let existingCreeps = _.mapValues(childRoom.config.localOrder, (role) => 0);
     let localOrder = childRoom.config.localOrder;
+    let existingCreeps = _.mapValues(localOrder, (role) => 0);
     const creepList = _.filter(Game.creeps, function(c) {return c.memory.target === childRoom.name});
 
     for (creep of creepList) {
@@ -157,10 +170,13 @@ StructureSpawn.prototype.createScavengers = function(childRoom) {
         localOrder.builder = 1;
     }
     for (role in localOrder) {
-        if (Game.time % 10 === 0) {
-            console.log('In', childRoom, 'for', role, 'exist',existingCreeps[role], 'desire', localOrder[role]);
-        }
+        console.log('In', childRoom, 'for', role, 'exist',existingCreeps[role], 'desire', localOrder[role]);
         if (existingCreeps[role] < localOrder[role]) {
+            if (role === 'miner') {
+                return this.doctrineMiner(creepList, this.room.energyCapacityAvailable, childRoom);
+            } else {
+
+            }
             console.log('Attempting to spawn scavenger')
             this.createCustomCreep(this.room.energyCapacityAvailable, role,
                 {role: role, working: false, home: this.room.name, target: childRoom.name}

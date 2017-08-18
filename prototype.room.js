@@ -40,7 +40,7 @@ Room.prototype.baseOrder = (roomLevel) => {
         desiredCreeps.builder = 3;
         desiredCreeps.upgrader = 3;
         desiredCreeps.longLorry = 2;
-        desiredCreeps.lorry = 2;
+        desiredCreeps.lorry = 3;
         desiredCreeps.harvester = 1;
         desiredCreeps.grunt = 0;
         desiredCreeps.wallRepairer = 1;
@@ -56,10 +56,10 @@ Room.prototype.baseOrder = (roomLevel) => {
         desiredCreeps.miner = 2;
         desiredCreeps.builder = 1;
         desiredCreeps.upgrader = 1;
-        desiredCreeps.longLorry = 1;
-        desiredCreeps.lorry = 1;
+        desiredCreeps.longLorry = 2;
+        desiredCreeps.lorry = 2;
         desiredCreeps.harvester = 1;
-        desiredCreeps.grunt = 0;
+        desiredCreeps.grunt = 1;
         desiredCreeps.wallRepairer = 1;
         desiredCreeps.repairer = 1;
     }
@@ -69,7 +69,7 @@ Room.prototype.baseOrder = (roomLevel) => {
 
 Room.prototype.composeScavenge = function() {
     const parent = Game.rooms[this.config.companionRoom];
-    if (parent.energyAvailable === parent.energyCapacityAvailable && Game.time % 10 === 0) {
+    if (parent.energyAvailable === parent.energyCapacityAvailable && Game.time % 3 === 0) {
         const spawn = parent.find(FIND_MY_SPAWNS)[0];
         spawn.createScavengers(this);
     }
@@ -92,26 +92,36 @@ Object.defineProperty(Room.prototype, 'config', {
     configurable: true
 });
 
+//NEED TO ADD A CACHE REFRESH
+Object.defineProperty(Room.prototype, 'containers', {
+    get: function() {
+        if (!this._containers) {
+            if (!this.memory.containerIds) {
+                this.memory.containerIds = this.find(FIND_STRUCTURES, {
+                    filter: s => s.structureType === STRUCTURE_CONTAINER
+                }).map(cont => cont.id);
+            }
+
+            this._containers = this.memory.containerIds.map(id => Game.getObjectById(id))
+        }
+        return this._containers
+    },
+    enumerable: false,
+    configurable: true
+});
+
 Object.defineProperty(Room.prototype, 'sources', {
     get: function() {
-            // If we dont have the value stored locally
         if (!this._sources) {
-                // If we dont have the value stored in memory
             if (!this.memory.sourceIds) {
-                    // Find the sources and store their id's in memory,
-                    // NOT the full objects
                 this.memory.sourceIds = this.find(FIND_SOURCES)
                                         .map(source => source.id);
             }
-            // Get the source objects from the id's in memory and store them locally
             this._sources = this.memory.sourceIds.map(id => Game.getObjectById(id));
         }
-        // return the locally stored value
         return this._sources;
     },
     set: function(newValue) {
-        // when storing in memory you will want to change the setter
-        // to set the memory value as well as the local value
         this.memory.sources = newValue.map(source => source.id);
         this._sources = newValue;
     },

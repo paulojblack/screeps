@@ -18,22 +18,37 @@ module.exports = {
         }
 
         if (this.memory.working == true) {
-            let structure = this.pos.findClosestByPath(FIND_STRUCTURES, {
-                filter: (s) => s.hits < s.hitsMax && s.structureType != STRUCTURE_WALL
-            });
+            if (this.room.name === this.memory.target) {
+                let structure = this.pos.findClosestByRange(FIND_STRUCTURES, {
+                    filter: (s) => s.hits < s.hitsMax && s.structureType != STRUCTURE_WALL
+                });
 
-            if (structure != undefined) {
-                // try to repair it, if it is out of range
-                if (this.repair(structure) == ERR_NOT_IN_RANGE) {
-                    // move towards it
-                    this.moveTo(structure);
+                if (structure != undefined) {
+                    // try to repair it, if it is out of range
+                    if (this.repair(structure) == ERR_NOT_IN_RANGE) {
+                        // move towards it
+                        this.moveTo(structure);
+                    }
+                } else {
+                    roleBuilder.run.call(this);
                 }
             } else {
-                roleBuilder.run.call(this);
+                var exit = this.room.findExitTo(Game.rooms[this.memory.home]);
+
+                return this.moveTo(this.pos.findClosestByRange(exit));
             }
-        }
-        else {
-            this.getNewEnergy(true, true);
+        } else {
+            if (this.room.name === this.memory.target) {
+                if (this.memory.target !== this.memory.home) {
+                    return this.getNewEnergy(false, true);
+                } else {
+                    return this.getNewEnergy(true, true);
+                }
+            } else {
+                var exit = this.room.findExitTo(this.memory.target);
+
+                return this.moveTo(this.pos.findClosestByRange(exit));
+            }
         }
     }
 };

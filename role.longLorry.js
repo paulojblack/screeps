@@ -1,8 +1,6 @@
-let roleLorry = require('role.lorry')
 module.exports = {
-    // a function to run the logic for this role
-    /** @param {Creep} this */
     run: function() {
+        this.say('ll')
         if (this.memory.working === true && this.carry.energy === 0) {
             this.memory.working = false;
         }
@@ -12,11 +10,8 @@ module.exports = {
 
         // if this is supposed to transfer energy to a structure
         if (this.memory.working === true) {
-            let targetContainer = this.room.controller.pos.findInRange(FIND_STRUCTURES, 5, {
-                filter: s => s.structureType === STRUCTURE_CONTAINER
-            })[0];
-            targetContainer = this.room.storage;
-            console.log(targetContainer)
+            let targetContainer = this.room.storage;
+
             if (targetContainer === undefined) {
                 targetContainer = this.room.storage;
                 if (this.transfer(targetContainer, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
@@ -27,17 +22,12 @@ module.exports = {
                     this.moveTo(targetContainer);
                 }
             }
-            // if (targetContainer === undefined) {
-            //     roleLorry.run.call(this)
-            // }
-            // if we found one
         } else {
-                let sourceContainer = this.room.sources[0].pos.findInRange(FIND_STRUCTURES, 8, {
-                    filter: s => (s.structureType === STRUCTURE_CONTAINER &&
-                    s.store[RESOURCE_ENERGY] > 600)
-                })[0];
+                let sourceContainer = this.pos.findClosestByRange(this.room.containers, {
+                    filter: s => s.store[RESOURCE_ENERGY] > 300
+                });
 
-                if (sourceContainer !== undefined) {
+                if (sourceContainer) {
                     if (this.withdraw(sourceContainer, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                         this.moveTo(sourceContainer);
                     }

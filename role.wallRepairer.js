@@ -31,7 +31,7 @@ module.exports = {
                 }
             }
 
-            if (target != undefined) {
+            if (target !== undefined) {
                 if (this.repair(target) == ERR_NOT_IN_RANGE) {
                     this.moveTo(target);
                 }

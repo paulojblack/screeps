@@ -13,6 +13,10 @@ const roles = {
 };
 
 Creep.prototype.runRole = function() {
+    // if (this.name === 'Hannah') {
+    //     console.log(this)
+    //     console.log(this.pos)
+    // }
     try {
         roles[this.memory.role].run.call(this);
     } catch(e) {
@@ -24,49 +28,29 @@ Creep.prototype.runRole = function() {
     }
 };
 
-Creep.prototype.getEnergy = function(creep, useContainer, useSource) {
-    let container;
-    // this.say("hello")
-    if (useContainer) {
-        container = creep.pos.findClosestByPath(FIND_STRUCTURES, {
-            filter: s => (s.structureType == STRUCTURE_CONTAINER || s.structureType == STRUCTURE_STORAGE) &&
-            s.store[RESOURCE_ENERGY] > 300
-        });
-
-        if (container != undefined) {
-            if (creep.withdraw(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(container);
-            }
-        }
-    }
-
-    if (container == undefined && useSource) {
-        let source = creep.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
-
-        if (creep.harvest(source) === ERR_NOT_IN_RANGE) {
-            creep.moveTo(source);
-        }
-    }
-};
-
 Creep.prototype.getNewEnergy = function(useContainer, useSource) {
     let container;
-
     if (useContainer) {
-        container = this.pos.findClosestByPath(FIND_STRUCTURES, {
-            filter: s => (s.structureType == STRUCTURE_CONTAINER || s.structureType == STRUCTURE_STORAGE) &&
-            s.store[RESOURCE_ENERGY] > 300
+        container = this.pos.findClosestByRange(this.room.containers, {
+            filter: s => s.structureType == STRUCTURE_CONTAINER &&
+            s.store[RESOURCE_ENERGY] > 500
         });
 
-        if (container != undefined) {
+        if (!container && this.room.storage) {
+            if (this.room.storage.store[RESOURCE_ENERGY] >= 500) {
+                container = this.room.storage;
+            }
+        }
+
+        if (container) {
             if (this.withdraw(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                this.moveTo(container);
+                return this.moveTo(container);
             }
         }
     }
 
-    if (container == undefined && useSource) {
-        let source = this.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
+    if (container === undefined && useSource) {
+        let source = this.pos.findClosestByRange(this.room.sources);
 
         if (this.harvest(source) === ERR_NOT_IN_RANGE) {
             this.moveTo(source);

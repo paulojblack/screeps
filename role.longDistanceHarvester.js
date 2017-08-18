@@ -2,6 +2,7 @@ let roleBuilder = require('role.builder');
 let roleRepairer = require('role.repairer');
 module.exports = {
     run: function() {
+
         if (this.memory.working == true && this.carry.energy == 0) {
             this.memory.working = false;
         }
@@ -11,7 +12,7 @@ module.exports = {
 
         if (this.memory.working === true) {
             if (this.room.name === this.memory.home) {
-                let structure = this.pos.findClosestByPath(FIND_MY_STRUCTURES, {
+                let structure = this.pos.findClosestByRange(FIND_MY_STRUCTURES, {
                     filter: (s) => (s.structureType == STRUCTURE_SPAWN
                         || s.structureType == STRUCTURE_EXTENSION
                         || s.structureType == STRUCTURE_TOWER)
@@ -28,31 +29,31 @@ module.exports = {
                             this.moveTo(structure);
                         }
                     }
-                }
-                else {
+                } else {
                     var exit = this.room.findExitTo(Game.rooms[this.memory.home]);
                     this.moveTo(this.pos.findClosestByRange(exit));
                 }
             } else {
                 if (this.room.name === this.memory.target) {
-                    let source = this.room.find(FIND_STRUCTURES, {
-                        filter: (i) => i.structureType == STRUCTURE_CONTAINER &&
-                        i.store[RESOURCE_ENERGY] > 0
-                    })[0];
+                    let source = this.room.containers[0];
 
                     if (source) {
                         if (this.withdraw(source, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                            this.moveTo(source);
-                        }
-                    } else {
-                        source = this.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
-
-                        if (this.harvest(source) !== 0) {
-                            this.moveTo(source);
+                            return this.moveTo(source);
                         }
                     }
-                }
-                else {
+
+                    //No usable container
+                    source = this.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
+
+                    if (source) {
+                        if (this.harvest(source) !== 0) {
+                            return this.moveTo(source);
+                        }
+                    }
+
+                    roleRepairer.run.call(this)
+                } else {
                     var exit = this.room.findExitTo(this.memory.target);
                     this.moveTo(this.pos.findClosestByRange(exit));
                 }

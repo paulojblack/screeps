@@ -13,18 +13,15 @@ module.exports = {
             let structure = this.pos.findClosestByRange(FIND_MY_STRUCTURES, {
                     filter: (s) => (s.structureType == STRUCTURE_SPAWN
                         || s.structureType == STRUCTURE_EXTENSION
-                        || s.structureType == STRUCTURE_CONTAINER
                         || s.structureType == STRUCTURE_TOWER)
                         && s.energy < s.energyCapacity
                     });
-            // console.log(this.transfer(structure, RESOURCE_ENERGY))
+
             if (structure != undefined) {
-                console.log('in the if')
                 if (this.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     return this.moveTo(structure);
                 }
             } else {
-                // console.log('in the if')
                 return roleBuilder.run.call(this);
             }
         } else {

@@ -1,6 +1,5 @@
 module.exports = {
     run: function() {
-        console.log('im an ugprader')
         try {
             if (this.memory.working === true && this.carry.energy === 0) {
 

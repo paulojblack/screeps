@@ -92,16 +92,14 @@ var extensionSitePlanner = function(offset_x, offset_y) {
 const roomOrchestra = function() {
     let room = this;
 
-    if (room.config.type === 'base') {
-        for (let spawn of room.find(FIND_MY_SPAWNS)) {
-            if (Game.time % 1 === 0) {
-                architect(spawn);
-            }
-            spawn.spawnCreepsIfNecessary(spawn);
+    for (let spawn of room.find(FIND_MY_SPAWNS)) {
+        if (Game.time % 1 === 0) {
+            architect(spawn);
         }
+        spawn.spawnCreepsIfNecessary(spawn);
     }
 
-    if (room.config.type === 'scavenge') {
-        room.composeScavenge();
-    }
+    // if (room.config.type === 'scavenge') {
+    //     room.composeScavenge();
+    // }
 }

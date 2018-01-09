@@ -14,10 +14,9 @@ const roles = {
 
 Creep.prototype.runRole = function() {
     try {
-        // console.log('creep room', JSON.stringify(this.room.lookAtArea(10,5,11,7)))
         roles[this.memory.role].run.call(this);
     } catch(e) {
-        console.log('Creep coord fuckup');
+        console.log('Creep coord error');
         console.log(this)
         console.log(this.pos)
         console.log(JSON.stringify(this.memory))
@@ -35,8 +34,9 @@ Creep.prototype.getEnergy = function(useContainer, useSource) {
     let container;
 
     if (useContainer) {
-        container = this.pos.findClosestByRange(this.room.containers, {
-            filter: s => s.structureType == STRUCTURE_CONTAINER &&
+
+        container = this.pos.findClosestByRange(FIND_STRUCTURES, {
+            filter: s => s.structureType === STRUCTURE_CONTAINER &&
             s.store[RESOURCE_ENERGY] > 500
         });
 

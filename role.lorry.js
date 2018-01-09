@@ -27,9 +27,10 @@ module.exports = {
             } else {
                 let container = this.room.storage;
 
-                if (container && container.store[RESOURCE_ENERGY] <= 1000) {
-                    container = this.pos.findClosestByRange(this.room.containers, {
-                        filter: s => s.store[RESOURCE_ENERGY] > 100
+                if (!container || (container && container.store[RESOURCE_ENERGY] <= 1000)) {
+                    container = this.room.find(FIND_MY_SPAWNS)[0].pos.findClosestByRange(FIND_STRUCTURES, {
+                        filter: s => s.structureType === STRUCTURE_CONTAINER
+                        && s.store[RESOURCE_ENERGY] > 100
                     });
                 }
 

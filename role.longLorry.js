@@ -1,5 +1,6 @@
 module.exports = {
     run: function() {
+        this.say(this.memory.role)
         if (this.memory.working === true && this.carry.energy === 0) {
             this.memory.working = false;
         }
@@ -7,28 +8,32 @@ module.exports = {
             this.memory.working = true;
         }
 
-        // if this is supposed to transfer energy to a structure
         if (this.memory.working === true) {
-            let targetContainer = this.room.storage;
+            // Send to empty containers near controller
+            let target = this.room.controller.pos.findClosestByRange(FIND_STRUCTURES, {
+                filter: s => s.structureType == STRUCTURE_CONTAINER
+            });
+            console.log(target)
 
-            if (targetContainer === undefined) {
-                targetContainer = this.room.storage;
-                if (this.transfer(targetContainer, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    this.moveTo(targetContainer);
+            if (target && target.store[RESOURCE_ENERGY] <= target.storeCapacity) {
+
+                if (this.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                    this.moveTo(target);
                 }
             } else {
-                if (this.transfer(targetContainer, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    this.moveTo(targetContainer);
+                if (this.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                    this.moveTo(target);
                 }
             }
         } else {
-                let sourceContainer = this.pos.findClosestByRange(this.room.containers, {
-                    filter: s => s.store[RESOURCE_ENERGY] > 300
+                let source = this.room.find(FIND_MY_SPAWNS)[0].pos.findClosestByRange(FIND_STRUCTURES, {
+                    filter: s => s.structureType == STRUCTURE_CONTAINER &&
+                    s.store[RESOURCE_ENERGY] > 100
                 });
 
-                if (sourceContainer) {
-                    if (this.withdraw(sourceContainer, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                        this.moveTo(sourceContainer);
+                if (source) {
+                    if (this.withdraw(source, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                        this.moveTo(source);
                     }
                 }
             }

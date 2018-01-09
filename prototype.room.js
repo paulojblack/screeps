@@ -1,78 +1,44 @@
 const architect = require('architect');
 let constants = require('constants');
 
-Room.prototype.baseOrder = (roomLevel) => {
-    // for (literal in roleMap.harvester.partLiterals) {
-    //
-    //     console.log('literal',literal)
-    // }
-    // for (ratio in roleMap.harvester.partRatios) {
-    //     console.log('ratio', JSON.stringify(ratio))
-    // }
-    // console.log(JSON.stringify(roleMap))
-    let desiredCreeps = {};
-    let listOfRoles;
+Room.prototype.getRoomRoleMap = (roomLevel) => {
+    let roleMap = constants.roleMap;
 
     if (roomLevel === 1) {
-        listOfRoles = ['harvester', 'upgrader', 'builder'];
-        for (let role of listOfRoles) {
-            desiredCreeps[role] = 1;
-        }
-        desiredCreeps.harvester = 3;
-        desiredCreeps.builder = 3;
-        desiredCreeps.upgrader = 6;
+        roleMap['harvester'].count = 3;
+        roleMap['builder'].count = 2;
+        roleMap['upgrader'].count = 3;
     }
 
     if (roomLevel === 2) {
-        listOfRoles = ['harvester', 'upgrader', 'repairer', 'builder', 'miner', 'lorry', 'longLorry', 'wallRepairer'];
-        for (let role of listOfRoles) {
-            desiredCreeps[role] = 0;
-        }
-
-        desiredCreeps.miner = 0;
-        desiredCreeps.builder = 3;
-        desiredCreeps.upgrader = 2;
-        desiredCreeps.longLorry = 0;
-        desiredCreeps.lorry = 0;
-        desiredCreeps.harvester = 3;
-        desiredCreeps.repairer = 1;
+        roleMap['harvester'].count = 2;
+        roleMap['builder'].count = 2;
+        roleMap['upgrader'].count = 3;
+        roleMap['miner'].count = 2;
+        roleMap['repairer'].count = 1;
+        roleMap['lorry'].count = 1;
+        roleMap['longLorry'].count = 1;
     }
 
     if (roomLevel === 3) {
-        listOfRoles = ['harvester', 'upgrader', 'repairer', 'builder', 'miner', 'lorry', 'longLorry', 'wallRepairer', 'grunt'];
-        for (let role of listOfRoles) {
-            desiredCreeps[role] = 2;
-        }
-
-        desiredCreeps.miner = 2;
-        desiredCreeps.builder = 3;
-        desiredCreeps.upgrader = 3;
-        desiredCreeps.longLorry = 2;
-        desiredCreeps.lorry = 3;
-        // desiredCreeps.harvester = 1;
-        desiredCreeps.grunt = 0;
-        desiredCreeps.wallRepairer = 1;
-        desiredCreeps.repairer = 1;
+        roleMap['harvester'].count = 2;
+        roleMap['builder'].count = 2;
+        roleMap['upgrader'].count = 3;
+        roleMap['miner'].count = 2;
+        roleMap['repairer'].count = 1;
+        roleMap['lorry'].count = 1;
     }
 
     if (roomLevel >= 4) {
-        listOfRoles = ['harvester', 'upgrader', 'repairer', 'builder', 'miner', 'lorry', 'longLorry', 'wallRepairer', 'grunt'];
-        for (let role of listOfRoles) {
-            desiredCreeps[role] = 2;
-        }
-
-        desiredCreeps.miner = 2;
-        desiredCreeps.builder = 1;
-        desiredCreeps.upgrader = 4;
-        desiredCreeps.longLorry = 2;
-        desiredCreeps.lorry = 2;
-        // desiredCreeps.harvester = 1;
-        desiredCreeps.grunt = 1;
-        desiredCreeps.wallRepairer = 1;
-        desiredCreeps.repairer = 1;
+        roleMap['harvester'].count = 3;
+        roleMap['builder'].count = 2;
+        roleMap['upgrader'].count = 3;
+        roleMap['miner'].count = 2;
+        roleMap['repairer'].count = 1;
+        roleMap['lorry'].count = 1;
     }
 
-    return desiredCreeps;
+    return roleMap;
 };
 
 Room.prototype.composeScavenge = function() {
@@ -84,21 +50,21 @@ Room.prototype.composeScavenge = function() {
 }
 
 // Caching/memory extensions
-Object.defineProperty(Room.prototype, 'config', {
-    get: function() {
-        if (!this._config) {
-            let config = constants.myRooms[this.name];
-            if (config.type === 'base') {
-                config.localOrder = this.baseOrder(this.controller.level);
-            }
-
-            this._config = config;
-        }
-        return this._config
-    },
-    enumerable: false,
-    configurable: true
-});
+// Object.defineProperty(Room.prototype, 'config', {
+//     get: function() {
+//         if (!this._config) {
+//             let config = constants.myRooms[this.name];
+//             if (config.type === 'base') {
+//                 config.localOrder = this.baseOrder(this.controller.level);
+//             }
+//
+//             this._config = config;
+//         }
+//         return this._config
+//     },
+//     enumerable: false,
+//     configurable: true
+// });
 
 //NEED TO ADD A CACHE REFRESH
 Object.defineProperty(Room.prototype, 'containers', {

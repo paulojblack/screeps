@@ -10,17 +10,56 @@ exports.myRooms = {
 
 exports.roleMap = {
     harvester: {
-        count: 3,
+        count: 0,
         partsRatio: {
             CARRY: 0.5,
             MOVE: 0.5
         },
         partsLiteral: {
-            WORK: 1
+            WORK: 2
         }
     },
     upgrader: {
-        count: 4,
+        count: 0,
+        partsRatio: {
+            CARRY: 0.5,
+            MOVE: 0.5
+        },
+        partsLiteral: {
+            WORK: 2
+        }
+    },
+    repairer: {
+        count: 0,
+        partsRatio: {
+            CARRY: 0.5,
+            MOVE: 0.5
+        },
+        partsLiteral: {
+            WORK: 2
+        }
+    },
+    builder: {
+        count: 0,
+        partsRatio: {
+            CARRY: 0.5,
+            MOVE: 0.5
+        },
+        partsLiteral: {
+            WORK: 2
+        }
+    },
+    miner: {
+        count: 0,
+        partsRatio: {
+            WORK: 0.5
+        },
+        partsLiteral: {
+            MOVE: 1
+        }
+    },
+    lorry: {
+        count: 0,
         partsRatio: {
             CARRY: 0.5,
             MOVE: 0.5
@@ -29,18 +68,8 @@ exports.roleMap = {
             WORK: 1
         }
     },
-    // repairer: {
-    //     count: 3,
-    //     partsRatio: {
-    //         CARRY: 0.5,
-    //         MOVE: 0.5
-    //     },
-    //     partsLiteral: {
-    //         WORK: 1
-    //     }
-    // },
-    builder: {
-        count: 3,
+    longLorry: {
+        count: 0,
         partsRatio: {
             CARRY: 0.5,
             MOVE: 0.5
@@ -49,38 +78,8 @@ exports.roleMap = {
             WORK: 1
         }
     }
-    // miner: {
-    //     count: 3,
-    //     partsRatio: {
-    //         CARRY: 0.5,
-    //         MOVE: 0.5
-    //     },
-    //     partsLiteral: {
-    //         WORK: 1
-    //     }
-    // },
-    // lorry: {
-    //     count: 3,
-    //     partsRatio: {
-    //         CARRY: 0.5,
-    //         MOVE: 0.5
-    //     },
-    //     partsLiteral: {
-    //         WORK: 1
-    //     }
-    // },
-    // longLorry: {
-    //     count: 3,
-    //     partsRatio: {
-    //         CARRY: 0.5,
-    //         MOVE: 0.5
-    //     },
-    //     partsLiteral: {
-    //         WORK: 1
-    //     }
-    // },
     // wallRepairer: {
-    //     count: 3,
+    //     count: 0,
     //     partsRatio: {
     //         CARRY: 0.5,
     //         MOVE: 0.5
@@ -90,7 +89,7 @@ exports.roleMap = {
     //     }
     // },
     // grunt: {
-    //     count: 3,
+    //     count: 0,
     //     partsRatio: {
     //         CARRY: 0.5,
     //         MOVE: 0.5

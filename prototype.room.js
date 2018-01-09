@@ -26,10 +26,10 @@ Room.prototype.baseOrder = (roomLevel) => {
     if (roomLevel === 2) {
         listOfRoles = ['harvester', 'upgrader', 'repairer', 'builder', 'miner', 'lorry', 'longLorry', 'wallRepairer'];
         for (let role of listOfRoles) {
-            desiredCreeps[role] = 2;
+            desiredCreeps[role] = 0;
         }
 
-        desiredCreeps.miner = 2;
+        desiredCreeps.miner = 0;
         desiredCreeps.builder = 3;
         desiredCreeps.upgrader = 2;
         desiredCreeps.longLorry = 0;

@@ -1,6 +1,7 @@
 var roleMap = require('constants').roleMap;
 
 StructureSpawn.prototype.spawnCreepsIfNecessary = function() {
+    let spawn = this;
     let room = this.room;
     let localOrder = room.config.localOrder;
     let existingCreeps = _.mapValues(localOrder, (role) => 0);
@@ -11,6 +12,11 @@ StructureSpawn.prototype.spawnCreepsIfNecessary = function() {
         existingCreeps[role] = _.sum(creepList, (c) => c.memory.role === role)
     }
 
+    // 300 is the amount a spawn can hold
+    if (room.energyAvailable >= 300) {
+        return spawn.composeCreeps.call(spawn, existingCreeps)
+    }
+
     // console.log('I have')
     // console.log(JSON.stringify(existingCreeps))
     //
@@ -19,49 +25,108 @@ StructureSpawn.prototype.spawnCreepsIfNecessary = function() {
     //
     // console.log('energy cap av', maxEnergy)
     // console.log(room.energyAvailable)
-    console.log(JSON.stringify(roleMap))
+    // console.log(JSON.stringify(roleMap))
 
-    if (room.energyAvailable >= 300) {
-        // console.log(room.baseOrder())
-    }
-    if (existingCreeps['harvester'] < localOrder['harvester']) {
-        this.createHarvester({
-            role: 'harvester',
+    // if (existingCreeps['harvester'] < localOrder['harvester']) {
+    //     this.createHarvester({
+    //         role: 'harvester',
+    //         working: false,
+    //         binaryID: existingCreeps['harvester'] % 2 === 0 ? 'even' : 'odd',
+    //         home: this.room.name,
+    //         target: this.room.name
+    //     });
+    // // } else if (existingCreeps['miner'] < localOrder['miner']) {
+    // //     this.doctrineMiner(creepList, maxEnergy);
+    // } else if (existingCreeps['lorry'] < localOrder['lorry']) {
+    //     this.createLorry({
+    //         role: 'lorry',
+    //         working: false,
+    //         binaryID: existingCreeps['lorry'] % 2 === 0 ? 'even' : 'odd',
+    //         home: this.room.name,
+    //         target: this.room.name
+    //     })
+    // } else {
+    //     for (role in room.config.localOrder) {
+    //         if (role !== 'miner' || role !== 'grunt') {
+    //             if (existingCreeps[role] < localOrder[role]) {
+    //                 this.createCustomCreep(
+    //                     maxEnergy,
+    //                     role,
+    //                     {
+    //                         role: role,
+    //                         working: false,
+    //                         binaryID: existingCreeps[role] % 2 === 0 ? 'even' : 'odd',
+    //                         home: room.name,
+    //                         target: room.name
+    //                     }
+    //                 );
+    //             }
+    //         }
+    //     }
+    // }
+};
+
+StructureSpawn.prototype.composeCreeps = function(existingCreeps) {
+    let spawn = this;
+    let room = spawn.room;
+
+    for (role in roleMap) {
+        let buildSchema = roleMap[role];
+        // Go to next iteration if number of workers is satisfied
+        if (existingCreeps[role] === buildSchema.count) {
+            continue
+        }
+
+        let tempBody = [];
+        let memory = {
+            role: role,
             working: false,
+            //TODO change this so we have unique IDs (1,2,3,4) which the creep spawned to replace
+            //a dead creep will be assigned.
             binaryID: existingCreeps['harvester'] % 2 === 0 ? 'even' : 'odd',
-            home: this.room.name,
-            target: this.room.name
-        });
-    } else if (existingCreeps['miner'] < localOrder['miner']) {
-        this.doctrineMiner(creepList, maxEnergy);
-    } else if (existingCreeps['lorry'] < localOrder['lorry']) {
-        this.createLorry({
-            role: 'lorry',
-            working: false,
-            binaryID: existingCreeps['lorry'] % 2 === 0 ? 'even' : 'odd',
-            home: this.room.name,
-            target: this.room.name
-        })
-    } else {
-        for (role in room.config.localOrder) {
-            if (role !== 'miner' || role !== 'grunt') {
-                if (existingCreeps[role] < localOrder[role]) {
-                    this.createCustomCreep(
-                        maxEnergy,
-                        role,
-                        {
-                            role: role,
-                            working: false,
-                            binaryID: existingCreeps[role] % 2 === 0 ? 'even' : 'odd',
-                            home: room.name,
-                            target: room.name
-                        }
-                    );
-                }
+            home: room.name,
+            target: room.name
+        }
+        // Start by adding literals
+        for (literal in buildSchema.partsLiteral) {
+            for (let i = 0; i < buildSchema.partsLiteral[literal]; i++) {
+                tempBody.push(literal)
             }
         }
+
+        //TODO make sure this numnber is created from the total energy subtracted by energy
+        //consumed from each part literal
+        let remainingParts = Math.floor((room.energyAvailable - 100) / 50)
+
+        for (ratio in buildSchema.partsRatio) {
+            // The number of remaining parts (after literal), multiplied by the fraction of parts
+            // allocated for this part type.
+            // Use floor to make sure we don't err above remaining energy
+            let partCount = Math.floor(remainingParts * buildSchema.partsRatio[ratio])
+
+            for (let i = 0; i < partCount; i++) {
+                tempBody.push(ratio)
+            }
+        }
+
+        //Monkey patch for now
+        let body = tempBody.map( (val) => {
+            if (val ==='WORK') {
+                return WORK
+            }
+            if (val ==='MOVE') {
+                return MOVE
+            }
+            if (val ==='CARRY') {
+                return CARRY
+            }
+        })
+
+        return spawn.createCreep(body, undefined, memory);
     }
-};
+
+}
+
 
 StructureSpawn.prototype.createHarvester = function(initialMemory) {
     return this.createCreep([WORK, CARRY, CARRY, MOVE], undefined, initialMemory) ;
@@ -198,7 +263,7 @@ StructureSpawn.prototype.createCustomCreep = function(energy, roleName, initialM
     if (initialMemory === undefined) {
         initialMemory = { role: roleName, working: false, home: this.room.name, target: this.room.name }
     }
-    // create creep with the created body and the given role
+    // create creep with the desired body and the given role
     return this.createCreep(body, undefined, initialMemory);
 };
 

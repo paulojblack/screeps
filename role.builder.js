@@ -3,11 +3,7 @@ var roleUpgrader = require('role.upgrader');
 module.exports = {
     run: function() {
         try {
-            console.log(this)
-            console.log(this.pos)
-            console.log(this.memory.target)
-            console.log(this.memory.working)
-            // if target is defined and this is not in target room
+
             if (this.memory.target !== undefined && this.room.name !== this.memory.target) {
                 let exit = this.room.findExitTo(Game.rooms[this.memory.target]);
                 this.moveTo(this.pos.findClosestByRange(exit));
@@ -24,7 +20,7 @@ module.exports = {
             if (this.memory.working == true) {
                 if (this.room.name === this.memory.target) {
                     let constructionSite = this.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
-                    console.log(constructionSite)
+
                     if (constructionSite !== undefined && this.build(constructionSite) === ERR_NOT_IN_RANGE) {
                         return this.moveTo(constructionSite);
                     }

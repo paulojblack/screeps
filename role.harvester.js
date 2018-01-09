@@ -1,3 +1,5 @@
+var roleBuilder = require('role.builder');
+
 module.exports = {
     run: function() {
         if (this.memory.working !== false && this.carry.energy === 0) {
@@ -15,11 +17,15 @@ module.exports = {
                         || s.structureType == STRUCTURE_TOWER)
                         && s.energy < s.energyCapacity
                     });
-
+            // console.log(this.transfer(structure, RESOURCE_ENERGY))
             if (structure != undefined) {
+                console.log('in the if')
                 if (this.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     return this.moveTo(structure);
                 }
+            } else {
+                // console.log('in the if')
+                return roleBuilder.run.call(this);
             }
         } else {
             return this.getEnergy(true, true);

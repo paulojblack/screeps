@@ -14,6 +14,7 @@ const roles = {
 
 Creep.prototype.runRole = function() {
     try {
+        // console.log('creep room', JSON.stringify(this.room.lookAtArea(10,5,11,7)))
         roles[this.memory.role].run.call(this);
     } catch(e) {
         console.log('Creep coord fuckup');
@@ -24,6 +25,12 @@ Creep.prototype.runRole = function() {
     }
 };
 
+/**
+ * [description]
+ * @param  {[Boolean]} useContainer [description]
+ * @param  {[Boolean]} useSource    [description]
+ * @return {[type]}              [description]
+ */
 Creep.prototype.getEnergy = function(useContainer, useSource) {
     let container;
 
@@ -47,7 +54,13 @@ Creep.prototype.getEnergy = function(useContainer, useSource) {
     }
 
     if (!container && useSource) {
-        let source = this.pos.findClosestByRange(this.room.sources);
+        let source;
+
+        if (this.memory.binaryID === 'odd') {
+            source = this.room.sources[1]
+        } else {
+            source = this.room.sources[0]
+        }
 
         if (this.harvest(source) === ERR_NOT_IN_RANGE) {
             return this.moveTo(source);

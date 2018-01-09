@@ -40,7 +40,7 @@ module.exports = {
             }
         }
         else {
-            this.getNewEnergy(true, true);
+            this.getEnergy(true, true);
         }
     }
 };

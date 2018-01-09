@@ -2,6 +2,14 @@ const architect = require('architect');
 let constants = require('constants');
 
 Room.prototype.baseOrder = (roomLevel) => {
+    // for (literal in roleMap.harvester.partLiterals) {
+    //
+    //     console.log('literal',literal)
+    // }
+    // for (ratio in roleMap.harvester.partRatios) {
+    //     console.log('ratio', JSON.stringify(ratio))
+    // }
+    // console.log(JSON.stringify(roleMap))
     let desiredCreeps = {};
     let listOfRoles;
 
@@ -24,9 +32,9 @@ Room.prototype.baseOrder = (roomLevel) => {
         desiredCreeps.miner = 2;
         desiredCreeps.builder = 3;
         desiredCreeps.upgrader = 2;
-        desiredCreeps.longLorry = 3;
-        desiredCreeps.lorry = 1;
-        desiredCreeps.harvester = 1;
+        desiredCreeps.longLorry = 0;
+        desiredCreeps.lorry = 0;
+        desiredCreeps.harvester = 3;
         desiredCreeps.repairer = 1;
     }
 
@@ -41,7 +49,7 @@ Room.prototype.baseOrder = (roomLevel) => {
         desiredCreeps.upgrader = 3;
         desiredCreeps.longLorry = 2;
         desiredCreeps.lorry = 3;
-        desiredCreeps.harvester = 1;
+        // desiredCreeps.harvester = 1;
         desiredCreeps.grunt = 0;
         desiredCreeps.wallRepairer = 1;
         desiredCreeps.repairer = 1;
@@ -58,7 +66,7 @@ Room.prototype.baseOrder = (roomLevel) => {
         desiredCreeps.upgrader = 4;
         desiredCreeps.longLorry = 2;
         desiredCreeps.lorry = 2;
-        desiredCreeps.harvester = 1;
+        // desiredCreeps.harvester = 1;
         desiredCreeps.grunt = 1;
         desiredCreeps.wallRepairer = 1;
         desiredCreeps.repairer = 1;
@@ -128,3 +136,22 @@ Object.defineProperty(Room.prototype, 'sources', {
     enumerable: false,
     configurable: true
 });
+
+// Object.defineProperty(Room.prototype, 'sources', {
+//     get: function() {
+//         if (!this._sources) {
+//             if (!this.memory.sourceIds) {
+//                 this.memory.sourceIds = this.find(FIND_SOURCES)
+//                                         .map(source => source.id);
+//             }
+//             this._sources = this.memory.sourceIds.map(id => Game.getObjectById(id));
+//         }
+//         return this._sources;
+//     },
+//     set: function(newValue) {
+//         this.memory.sources = newValue.map(source => source.id);
+//         this._sources = newValue;
+//     },
+//     enumerable: false,
+//     configurable: true
+// });

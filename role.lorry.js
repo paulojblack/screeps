@@ -1,10 +1,7 @@
-// var roleBuilder = require('role.builder');
 let roleLonglorry = require('role.longLorry');
 
 module.exports = {
     run: function () {
-        this.say('l')
-        // console.log(this.room.storage.store[RESOURCE_ENERGY])
         if (this.memory.working === true && this.carry.energy === 0) {
             this.memory.working = false;
         }
@@ -30,11 +27,12 @@ module.exports = {
             } else {
                 let container = this.room.storage;
 
-                if (container.store[RESOURCE_ENERGY] <= 1000) {
+                if (container && container.store[RESOURCE_ENERGY] <= 1000) {
                     container = this.pos.findClosestByRange(this.room.containers, {
                         filter: s => s.store[RESOURCE_ENERGY] > 100
                     });
                 }
+
                 if (container) {
                     if (this.withdraw(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                         return this.moveTo(container);

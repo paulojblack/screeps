@@ -40,9 +40,9 @@ module.exports = {
         } else {
             if (this.room.name === this.memory.target) {
                 if (this.memory.target !== this.memory.home) {
-                    return this.getNewEnergy(false, true);
+                    return this.getEnergy(false, true);
                 } else {
-                    return this.getNewEnergy(true, true);
+                    return this.getEnergy(true, true);
                 }
             } else {
                 var exit = this.room.findExitTo(this.memory.target);

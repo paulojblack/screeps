@@ -1,8 +1,9 @@
 const architect = require('architect');
 let constants = require('constants');
 
-Room.prototype.creepCountByCtrlLevel = (roomLevel) => {
+Room.prototype.creepCountByCtrlLevel = (room) => {
     let roleMap = constants.roleMap;
+    let roomLevel = room.controller.level
 
     if (roomLevel === 1) {
         roleMap['harvester'].count = 3;
@@ -14,7 +15,6 @@ Room.prototype.creepCountByCtrlLevel = (roomLevel) => {
         roleMap['harvester'].count = 2;
         roleMap['builder'].count = 3;
         roleMap['upgrader'].count = 3;
-        roleMap['miner'].count = 2;
         roleMap['repairer'].count = 1;
         roleMap['lorry'].count = 2;
         roleMap['longLorry'].count = 0;
@@ -24,7 +24,6 @@ Room.prototype.creepCountByCtrlLevel = (roomLevel) => {
         roleMap['harvester'].count = 2;
         roleMap['builder'].count = 2;
         roleMap['upgrader'].count = 3;
-        roleMap['miner'].count = 2;
         roleMap['repairer'].count = 1;
         roleMap['lorry'].count = 1;
     }
@@ -33,10 +32,14 @@ Room.prototype.creepCountByCtrlLevel = (roomLevel) => {
         roleMap['harvester'].count = 2;
         roleMap['builder'].count = 2;
         roleMap['upgrader'].count = 3;
-        roleMap['miner'].count = 2;
         roleMap['repairer'].count = 1;
         roleMap['lorry'].count = 1;
     }
+
+    // Counts the number of sources with containers built
+    roleMap['miner'].count = _.filter(room.sources, function(source) {
+        return _.get(source, 'sourceConfig.hasContainer') === true
+    }).length;
 
     return roleMap;
 };
@@ -90,7 +93,7 @@ Object.defineProperty(Room.prototype, 'config', {
 
         if (!room._config) {
             let config = {
-                creepConfig: room.creepCountByCtrlLevel(room.controller.level),
+                creepConfig: room.creepCountByCtrlLevel(room),
                 desiredBuildings: constants.constructionPlanner[room.controller.level]
             }
 

@@ -16,13 +16,13 @@ module.exports.loop = function() {
       for (let room in constants.myRooms) {
           if (Game.rooms[room]) {
               roomOrchestra.call(Game.rooms[room])
-              Game.rooms[room].sources.forEach((source) => {
+              // Game.rooms[room].sources.forEach((source) => {
                   // console.log(source)
                   // console.log('Source stuff')
-                  console.log('sourceConfig', JSON.stringify(source.sourceConfig))
+                  // console.log('sourceConfig', JSON.stringify(source.sourceConfig))
                   // console.log(JSON.stringify(source))
                   // console.log(JSON.stringify(source.memory))
-              })
+              // })
               // extensionSitePlanner.call(Game.rooms[room]);
           }
       }

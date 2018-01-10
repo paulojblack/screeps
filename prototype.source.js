@@ -1,3 +1,8 @@
+/*
+TODO
+Consolidate the look at area for structures and land into one query
+*/
+
 Object.defineProperty(Source.prototype, 'memory', {
     configurable: true,
     get: function() {
@@ -21,51 +26,26 @@ Object.defineProperty(Source.prototype, 'memory', {
     }
 });
 
-Object.defineProperty(Source.prototype, 'freeSpaceCount', {
+Object.defineProperty(Source.prototype, 'sourceConfig', {
     get: function () {
-        if (this._freeSpaceCount == undefined) {
-            if (this.memory.freeSpaceCount == undefined) {
-                let freeSpaceCount = 0;
-                [this.pos.x - 1, this.pos.x, this.pos.x + 1].forEach(x => {
-                    [this.pos.y - 1, this.pos.y, this.pos.y + 1].forEach(y => {
-                        if (Game.map.getTerrainAt(x, y, this.pos.roomName) != 'wall')
-                        freeSpaceCount++;
-                    }, this);
-                }, this);
-                this.memory.freeSpaceCount = freeSpaceCount;
-            }
-            this._freeSpaceCount = this.memory.freeSpaceCount;
-        }
-        return this._freeSpaceCount;
-    },
-    enumerable: false,
-    configurable: true
-});
+        let source = this;
 
-Object.defineProperty(Source.prototype, 'hasContainer', {
-    get: function () {
-        if (this._hasContainer === undefined) {
-            if (this.memory.hasContainer === undefined) {
-                let hasContainer = {}
-
-                const boundingBox = [this.pos.y - 1, this.pos.x - 1, this.pos.y + 1, this.pos.x + 1]
-
-                const surroundingTerrain = this.room.lookForAtArea(LOOK_TERRAIN, ...boundingBox, true)
-                console.log('IN HERE')
-                surroundingTerrain.forEach((land) => {
-                    console.log(JSON.stringify(land))
-                })
-                let freeTerrain = _.filter(surroundingTerrain, {'terrain': 'plain'})
-                console.log(freeTerrain)
-                freeTerrain.forEach((land) => {
-                    console.log(JSON.stringify(land))
+        if (source._sourceConfig === undefined) {
+                const terrainDetails = getSurroundingPlains(source).map((plot) => {
+                    return {
+                        x: plot.x,
+                        y: plot.y
+                    }
                 })
 
-                this.memory.hasCsontainer = hasContainer;
-            }
-            this._hasCsontainer = this.memory.hasContainer;
+                source.memory.sourceConfig = Object.assign({},
+                    {freeSpaces: terrainDetails},
+                    checkForContainer(source)
+                );
+
+            source._sourceConfig = source.memory.sourceConfig;
         }
-        return this._hasContainer;
+        return source._sourceConfig;
     },
     enumerable: false,
     configurable: true
@@ -74,7 +54,25 @@ Object.defineProperty(Source.prototype, 'hasContainer', {
 let getSurroundingPlains = function(source) {
     const boundingBox = [source.pos.y - 1, source.pos.x - 1, source.pos.y + 1, source.pos.x + 1];
     const surroundingTerrain = source.room.lookForAtArea(LOOK_TERRAIN, ...boundingBox, true);
-
     return _.filter(surroundingTerrain, {'terrain': 'plain'})
+}
 
+let checkForContainer = function(source) {
+    const boundingBox = [source.pos.y - 1, source.pos.x - 1, source.pos.y + 1, source.pos.x + 1];
+    const structures = source.room.lookForAtArea(LOOK_STRUCTURES, ...boundingBox, true);
+    const containers = _.filter(structures, function(land) {
+        return land.structure.structureType === 'container'
+    });
+
+    if (containers.length) {
+        return {
+            hasContainer: true,
+            container: containers[0]
+        }
+    } else {
+        return {
+            hasContainer: false,
+            container: {}
+        }
+    }
 }

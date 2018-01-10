@@ -17,10 +17,11 @@ module.exports.loop = function() {
           if (Game.rooms[room]) {
               roomOrchestra.call(Game.rooms[room])
               Game.rooms[room].sources.forEach((source) => {
-                  console.log(source)
-                  console.log(source.hasContainer)
+                  // console.log(source)
+                  // console.log('Source stuff')
+                  console.log('sourceConfig', JSON.stringify(source.sourceConfig))
                   // console.log(JSON.stringify(source))
-                  console.log(JSON.stringify(source.memory))
+                  // console.log(JSON.stringify(source.memory))
               })
               // extensionSitePlanner.call(Game.rooms[room]);
           }

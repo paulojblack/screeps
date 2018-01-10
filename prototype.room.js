@@ -12,12 +12,12 @@ Room.prototype.creepCountByCtrlLevel = (roomLevel) => {
 
     if (roomLevel === 2) {
         roleMap['harvester'].count = 2;
-        roleMap['builder'].count = 2;
+        roleMap['builder'].count = 3;
         roleMap['upgrader'].count = 3;
         roleMap['miner'].count = 2;
         roleMap['repairer'].count = 1;
-        roleMap['lorry'].count = 1;
-        roleMap['longLorry'].count = 1;
+        roleMap['lorry'].count = 2;
+        roleMap['longLorry'].count = 0;
     }
 
     if (roomLevel === 3) {
@@ -40,6 +40,40 @@ Room.prototype.creepCountByCtrlLevel = (roomLevel) => {
 
     return roleMap;
 };
+
+/**
+ * Receives an array containing two x,y pairs representing opposite (left, right) corners
+ * of a 3x3 box. From these coords, create one extension construction site at each corner and one
+ * in the middle of the box
+ * ALL ARGUMENTS ORDERED X,Y
+ * @param  {[Array]} boundingBox [description]
+ * @return {[type]}             [description]
+ */
+Room.prototype.createExtensionSites = function(boundingBox) {
+    let room = this;
+    console.log(JSON.stringify(room))
+    const topLeftSite = [boundingBox[0], boundingBox[1]];
+    const constructionSites = {
+        topLeftSite: topLeftSite,
+        lowRightSite: [boundingBox[2], boundingBox[3]],
+        topRightSite: [topLeftSite[0] + 2, topLeftSite[1]],
+        lowLeftSite: [topLeftSite[0], topLeftSite[1] + 2],
+        centerSite: [topLeftSite[0] + 1, topLeftSite[1] + 1]
+    }
+
+    for (site in constructionSites) {
+        // console.log('Creating new extension')
+        // console.log('The name of the site is', site);
+        // console.log('And the pos is ', constructionSites[site])
+    }
+    // room.createConstructionSite(...topLeftSite, STRUCTURE_EXTENSION)
+    // room.createConstructionSite(...lowRightSite, STRUCTURE_EXTENSION)
+    // room.createConstructionSite(...topRightSite, STRUCTURE_EXTENSION)
+    // room.createConstructionSite(...lowLeftSite, STRUCTURE_EXTENSION)
+    // room.createConstructionSite(...centerSite, STRUCTURE_EXTENSION)
+}
+
+
 
 /*
 This object will collect all the more complex room level specifications that are

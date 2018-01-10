@@ -1,22 +1,21 @@
+let Role = require('class.role');
+
 module.exports = {
     run: function() {
         try {
-            if (this.memory.working === true && this.carry.energy === 0) {
+            let creep = this;
+            let role = new Role();
 
-                this.memory.working = false;
-            }
-            else if (this.memory.working !== true && this.carry.energy === this.carryCapacity) {
-                this.memory.working = true;
-            }
-            // if this is supposed to transfer energy to the controller
-            if (this.memory.working === true) {
-                // instead of upgraderController we could also use:
-                if (this.upgradeController(this.room.controller) == ERR_NOT_IN_RANGE) {
-                    this.moveTo(this.room.controller);
-                }
-            }
-            else {
-                this.getEnergy(true, true);
+            creep.memory.working = role.setWorkingState(creep)
+
+            if (creep.memory.working === true) {
+                return role.depositEnergy(creep, {
+                    depositTo: 'controller'
+                })
+            } else {
+                return role.getEnergy(creep, {
+                    gatherFrom: 'container'
+                });
             }
         } catch(e) {
             console.log(e);

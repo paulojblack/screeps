@@ -1,50 +1,25 @@
 var roleUpgrader = require('role.upgrader');
-
+let Role = require('class.role')
 module.exports = {
     run: function() {
         try {
+            let creep = this;
+            let role = new Role();
 
-            if (this.memory.target !== undefined && this.room.name !== this.memory.target) {
-                let exit = this.room.findExitTo(Game.rooms[this.memory.target]);
-                this.moveTo(this.pos.findClosestByRange(exit));
+            creep.memory.working = role.setWorkingState(creep);
+            creep.say('b')
 
-                return
-            }
-
-            if (this.memory.working === true && this.carry.energy === 0) {
-                this.memory.working = false;
-            } else if (this.memory.working !== true && this.carry.energy === this.carryCapacity) {
-                this.memory.working = true;
-            }
-
-            if (this.memory.working == true) {
-                if (this.room.name === this.memory.target) {
-                    let constructionSite = this.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
-
-                    if (constructionSite !== undefined && this.build(constructionSite) === ERR_NOT_IN_RANGE) {
-                        return this.moveTo(constructionSite);
-                    }
-                } else {
-                    var exit = this.room.findExitTo(Game.rooms[this.memory.target]);
-
-                    return this.moveTo(this.pos.findClosestByRange(exit));
-                }
+            if (creep.memory.working == true) {
+                return role.depositEnergy(creep, {
+                    depositTo: 'construction'
+                })
             } else {
-                if (this.room.name === this.memory.target) {
-                    if (this.memory.target !== this.memory.home) {
-                        return this.getEnergy(false, true);
-                    } else {
-                        return this.getEnergy(true, true);
-                    }
-                } else {
-                    var exit = this.room.findExitTo(this.memory.target);
-
-                    return this.moveTo(this.pos.findClosestByRange(exit));
-                }
+                return role.getEnergy(creep, {
+                    gatherFrom: 'container'
+                });
             }
         } catch(e) {
             console.log('Builder error')
-            console.log(this)
             console.log(e)
         }
     }

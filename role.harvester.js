@@ -4,31 +4,17 @@ module.exports = {
     run: function() {
         let creep = this;
         let role = new Role();
-        console.log('getting setting')
-        // role.workingState = '123'
-        // console.log(role.workingState)
-        console.log('exit gs')
 
-        console.log('First invocation', role.fixWorkingState(creep))
-        // creep.memory.working = role.fixWorkingState(creep)
-        console.log(JSON.stringify(creep))
-        console.log('did it error here')
-        console.log('in main role',creep.memory.working)
+        creep.memory.working = role.setWorkingState(creep);
+        creep.say('h')
         if (creep.memory.working === true) {
-            let structure = role.getClosestLivingTower(creep, {
-                structureType: 'living'
+            return role.depositEnergy(creep, {
+                depositTo: 'living'
             })
-            // console.log(structure)
-            if (structure !== undefined) {
-                if (creep.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    return creep.moveTo(structure);
-                }
-            }
-            // } else {
-            //     return roleBuilder.run.call(creep);
-            // }
         } else {
-            return creep.getEnergy(true, true);
+            return role.getEnergy(creep, {
+                gatherFrom: 'source'
+            });
         }
     }
 }

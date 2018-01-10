@@ -6,41 +6,133 @@
  * @type {[type]}
  */
 module.exports = class Role {
-    // constructor() {}
+    /**
+     * [getEnergy description]
+     * @param  {[type]} creep [description]
+     * @param  {[type]} opts  [description]
+     * @return {[type]}       [description]
+     */
+    getEnergy(creep, opts) {
+        let energySource;
 
+        if (opts.gatherFrom === 'container' || opts.gatherFrom === 'anything') {
+            energySource = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+                filter: s => s.structureType === STRUCTURE_CONTAINER &&
+                s.store[RESOURCE_ENERGY] > 500
+            });
+        }
+
+        if (!energySource && opts.gatherFrom === 'storage' || opts.gatherFrom === 'anything') {
+            if (creep.room.storage && creep.room.storage.store[RESOURCE_ENERGY] >= 500) {
+                energySource = creep.room.storage;
+            }
+        }
+
+        if (energySource) {
+            return Role.withdrawEnergy(creep, energySource);
+        }
+
+        // Send to a source otherwise
+        return Role.harvestEnergy(creep);
+    }
+
+    static withdrawEnergy(creep, energySource) {
+        if (creep.withdraw(energySource, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+            return creep.moveTo(energySource);
+        }
+    }
+
+    static harvestEnergy(creep) {
+        let energySource;
+
+        if (creep.memory.binaryID === 'odd') {
+            energySource = creep.room.sources[1]
+        } else {
+            energySource = creep.room.sources[0]
+        }
+
+        if (creep.harvest(energySource) === ERR_NOT_IN_RANGE) {
+            return creep.moveTo(energySource);
+        }
+    }
+    /** END GET ENERGY METHODS **/
+    /** BEGIN DEPOSIT ENERGY METHODS **/
+
+    /**
+     * [depositEnergy description]
+     * @param  {[type]} creep [description]
+     * @param  {[type]} opts  [description]
+     * @return {[type]}       [description]
+     */
+    depositEnergy(creep, opts) {
+        if (opts.depositTo === 'construction') {
+            return Role.depositToConstructionSite(creep)
+        }
+
+        if (opts.depositTo === 'repair_site') {
+            return Role.depositToRepairStructure(creep)
+        }
+
+        if (opts.depositTo === 'controller') {
+            return Role.depositToController(creep)
+        }
+
+        return Role.depositToLivingStructure(creep)
+    }
+
+    static depositToLivingStructure(creep) {
+        const structure = Role.getClosestUnfilledLivingStructure(creep);
+
+        if (structure) {
+            if (creep.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                return creep.moveTo(structure);
+            }
+        }
+    }
+
+    static depositToConstructionSite(creep) {
+        const constructionSite= Role.getClosestConstructionSite(creep);
+
+        if (constructionSite !== undefined && creep.build(constructionSite) === ERR_NOT_IN_RANGE) {
+            return creep.moveTo(constructionSite);
+        }
+    }
+
+    static depositToController(creep) {
+        if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
+            return creep.moveTo(creep.room.controller);
+        }
+    }
+
+    static depositToRepairStructure(creep) {
+        const repairSite = Role.getClosestDamagedStructure(creep);
+
+        if (repairSite != undefined) {
+            if (creep.repair(repairSite) == ERR_NOT_IN_RANGE) {
+                return creep.moveTo(repairSite);
+            }
+        }
+    }
     /**
      * Working is defined as any action involving depositing resources into anything
      * NOT working just means they are withdrawing, or travelling to withdraw resources
      * @param {[type]} creep [description]
      */
-    fixWorkingState(creep) {
+    setWorkingState(creep) {
 
-        if (creep.memory.working === false) {
-            console.log('well this working')
-
-        }
-        console.log(creep.memory.working)
         if (creep.memory.working === true && creep.carry.energy === 0) {
-            console.log('wjay tjhe fuck')
-            creep.memory.working = false
-        } else if (creep.memory.working === false && creep.carry.energy === creep.carryCapacity) {
-            console.log('going to return true now')
-            creep.memory.working =  true
-        } else if (creep.working.memory === undefined) {
-            console.log('returning true from udnef')
-            creep.memory.working =  true
+            return false
         }
-        console.log('Didnt return')
+        if (creep.memory.working === false && creep.carry.energy === creep.carryCapacity) {
+            return true
+        }
+        if (creep.memory.working === undefined) {
+            return true
+        }
+
+        return creep.memory.working;
     }
 
-    // get workingState() {
-    //     return 'value'
-    // }
-    // 
-    // set workingState(value) {
-    //     console.log(value)
-    //     this.workingState = value
-    // }
     /**
      * [setDestination description]
      * @param {[type]} creep [description]
@@ -48,7 +140,10 @@ module.exports = class Role {
      */
     setDestination(creep, opts) {
         if (opts.structureType === 'living') {
-            return getClosestLivingTower(creep, opts)
+            return Role.getClosestUnfilledLivingStructure(creep, opts)
+        }
+        if (opts.structureType === 'construction_site') {
+            return Role.getClosestConstructionSite(creep, opts)
         }
 
     }
@@ -60,25 +155,46 @@ module.exports = class Role {
      */
 
     /**
-     * [getClosestLivingTower description]
+     * [getClosestUnfilledLivingStructure description]
      * @return {[type]} [description]
      */
-    getClosestLivingTower(creep, opts) {
+    static getClosestUnfilledLivingStructure(creep, opts) {
 
-        let struct = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
+        return creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
                 filter: (s) => (
                         s.structureType == STRUCTURE_SPAWN
                         || s.structureType == STRUCTURE_EXTENSION
                         || s.structureType == STRUCTURE_TOWER
                     ) && s.energy < s.energyCapacity
                 });
-        console.log('get living tower', struct)
-        return struct
+    }
+
+    static getClosestConstructionSite(creep, opts) {
+        return creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
+    }
+
+    static getClosestDamagedStructure(creep, opts) {
+        return creep.pos.findClosestByRange(FIND_STRUCTURES, {
+            filter: (s) => s.hits < s.hitsMax && s.structureType != STRUCTURE_WALL
+        });
+    }
+
+    /**
+     * Needs work INCOMPLETE
+     * @param  {[type]} creep [description]
+     * @param  {[type]} opts  [description]
+     * @return {[type]}       [description]
+     */
+    static getClosestDamagedWall(creep, opts) {
+        return creep.pos.findClosestByRange(FIND_STRUCTURES, {
+            filter: (s) => s.hits < s.hitsMax &&
+            (s.structureType === STRUCTURE_WALL || s.structureType == STRUCTURE_RAMPART)
+        });
     }
 }
 
 /**
  * @typedef {Object} SetDestinationOptions
  * @property {string} structureType
- * @property {string} filter
+ * @property {string} gatherFrom
  */

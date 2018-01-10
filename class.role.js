@@ -13,32 +13,46 @@ module.exports = class Role {
      * NOT working just means they are withdrawing, or travelling to withdraw resources
      * @param {[type]} creep [description]
      */
-    setWorkingState(creep) {
+    fixWorkingState(creep) {
+
+        if (creep.memory.working === false) {
+            console.log('well this working')
+
+        }
+        console.log(creep.memory.working)
         if (creep.memory.working === true && creep.carry.energy === 0) {
-            return false
+            console.log('wjay tjhe fuck')
+            creep.memory.working = false
+        } else if (creep.memory.working === false && creep.carry.energy === creep.carryCapacity) {
+            console.log('going to return true now')
+            creep.memory.working =  true
+        } else if (creep.working.memory === undefined) {
+            console.log('returning true from udnef')
+            creep.memory.working =  true
         }
-
-        if (creep.memory.working === false && creep.carry.energy === creep.carryCapacity) {
-            return true
-        }
-
-        // Set working to true just in case something awful happens
-        if (creep.memory.working === undefined) {
-            creep.memory.working = true
-            return
-        }
+        console.log('Didnt return')
     }
+
+    // get workingState() {
+    //     return 'value'
+    // }
+    // 
+    // set workingState(value) {
+    //     console.log(value)
+    //     this.workingState = value
+    // }
     /**
      * [setDestination description]
      * @param {[type]} creep [description]
-     * @param {...SetDestinationOptions} 
+     * @param {...SetDestinationOptions}
      */
     setDestination(creep, opts) {
-        if (structureType === 'living') {
+        if (opts.structureType === 'living') {
             return getClosestLivingTower(creep, opts)
         }
 
     }
+
     /**
      * It's not the best jargon, but for now structures are either LIVING or LIFELESS
      * Living structures are spawns, extensions and towers (anything that can consume the resource)
@@ -50,13 +64,16 @@ module.exports = class Role {
      * @return {[type]} [description]
      */
     getClosestLivingTower(creep, opts) {
-        creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
-                filter: (s) => (s.structureType == STRUCTURE_SPAWN
-                    || s.structureType == STRUCTURE_EXTENSION
-                    || s.structureType == STRUCTURE_TOWER)
-                    && s.energy < s.energyCapacity
-                });
 
+        let struct = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
+                filter: (s) => (
+                        s.structureType == STRUCTURE_SPAWN
+                        || s.structureType == STRUCTURE_EXTENSION
+                        || s.structureType == STRUCTURE_TOWER
+                    ) && s.energy < s.energyCapacity
+                });
+        console.log('get living tower', struct)
+        return struct
     }
 }
 

@@ -12,15 +12,13 @@ const roles = {
     grunt: require('military.grunt')
 };
 
-Creep.prototype.runRole = function() {
+Creep.prototype.runRole = function(creep) {
     try {
-        roles[this.memory.role].run.call(this);
+        roles[creep.memory.role].run.call(creep);
     } catch(e) {
-        console.log('Creep coord error');
-        console.log(this)
-        console.log(this.pos)
-        console.log(JSON.stringify(this.memory))
-        console.log(e)
+        // console.log('Creep error in role', creep.memory.role, 'creep named', creep);
+        // console.log('Naughty creep', JSON.stringify(creep))
+        // console.log(e)
     }
 };
 

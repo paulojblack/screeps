@@ -1,7 +1,7 @@
 const architect = require('architect');
 let constants = require('constants');
 
-Room.prototype.getRoomRoleMap = (roomLevel) => {
+Room.prototype.creepCountByCtrlLevel = (roomLevel) => {
     let roleMap = constants.roleMap;
 
     if (roomLevel === 1) {
@@ -30,7 +30,7 @@ Room.prototype.getRoomRoleMap = (roomLevel) => {
     }
 
     if (roomLevel >= 4) {
-        roleMap['harvester'].count = 3;
+        roleMap['harvester'].count = 2;
         roleMap['builder'].count = 2;
         roleMap['upgrader'].count = 3;
         roleMap['miner'].count = 2;
@@ -41,44 +41,45 @@ Room.prototype.getRoomRoleMap = (roomLevel) => {
     return roleMap;
 };
 
-Room.prototype.composeScavenge = function() {
-    const parent = Game.rooms[this.config.companionRoom];
-    if (parent.energyAvailable === parent.energyCapacityAvailable && Game.time % 3 === 0) {
-        const spawn = parent.find(FIND_MY_SPAWNS)[0];
-        spawn.createScavengers(this);
-    }
-}
+/*
+This object will collect all the more complex room level specifications that are
+not tightly coupled to a room fixture. The items configured here should only be "inferred"
+rather than observed.
 
-// Caching/memory extensions
-// Object.defineProperty(Room.prototype, 'config', {
-//     get: function() {
-//         if (!this._config) {
-//             let config = constants.myRooms[this.name];
-//             if (config.type === 'base') {
-//                 config.localOrder = this.baseOrder(this.controller.level);
-//             }
-//
-//             this._config = config;
-//         }
-//         return this._config
-//     },
-//     enumerable: false,
-//     configurable: true
-// });
+To be clear, this object will NOT assign information related to the sources in the room (that is done below)
+rather it specifies things like how many creeps to create and how they are composed
+ */
 
-//NEED TO ADD A CACHE REFRESH
-Object.defineProperty(Room.prototype, 'containers', {
+Object.defineProperty(Room.prototype, 'config', {
     get: function() {
-        if (!this._containers) {
-            if (!this.memory.containerIds) {
-                this.memory.containerIds = this.find(FIND_STRUCTURES, {
-                    filter: s => s.structureType === STRUCTURE_CONTAINER
-                }).map(cont => cont.id);
+        let room = this;
+
+        if (!room._config) {
+            let config = {
+                creepConfig: room.creepCountByCtrlLevel(room.controller.level),
+                desiredBuildings: constants.constructionPlanner[room.controller.level]
             }
 
-            this._containers = this.memory.containerIds.map(id => Game.getObjectById(id))
+
+            room._config = config;
         }
-        return this._containers
+        return room._config
+    },
+    enumerable: false,
+    configurable: true
+});
+
+Object.defineProperty(Room.prototype, 'containers', {
+    get: function() {
+        let room = this;
+
+        if (!room._containers) {
+            room._containers = room.find(FIND_STRUCTURES, {
+                filter: s => s.structureType === STRUCTURE_CONTAINER
+            }).map(cont => cont.id);
+
+        }
+        return room._containers
     },
     enumerable: false,
     configurable: true
@@ -86,38 +87,34 @@ Object.defineProperty(Room.prototype, 'containers', {
 
 Object.defineProperty(Room.prototype, 'sources', {
     get: function() {
-        if (!this._sources) {
-            if (!this.memory.sourceIds) {
-                this.memory.sourceIds = this.find(FIND_SOURCES)
+        let room = this;
+        if (!room._sources) {
+            if (!room.memory.sourceIds) {
+                room.memory.sourceIds = room.find(FIND_SOURCES)
                                         .map(source => source.id);
             }
-            this._sources = this.memory.sourceIds.map(id => Game.getObjectById(id));
+            room._sources = room.memory.sourceIds.map(id => Game.getObjectById(id));
         }
-        return this._sources;
+        return room._sources;
     },
     set: function(newValue) {
-        this.memory.sources = newValue.map(source => source.id);
-        this._sources = newValue;
+        room.memory.sources = newValue.map(source => source.id);
+        room._sources = newValue;
     },
     enumerable: false,
     configurable: true
 });
 
-// Object.defineProperty(Room.prototype, 'sources', {
-//     get: function() {
-//         if (!this._sources) {
-//             if (!this.memory.sourceIds) {
-//                 this.memory.sourceIds = this.find(FIND_SOURCES)
-//                                         .map(source => source.id);
-//             }
-//             this._sources = this.memory.sourceIds.map(id => Game.getObjectById(id));
-//         }
-//         return this._sources;
-//     },
-//     set: function(newValue) {
-//         this.memory.sources = newValue.map(source => source.id);
-//         this._sources = newValue;
-//     },
-//     enumerable: false,
-//     configurable: true
-// });
+
+
+/*
+Here be the wtf section
+ */
+
+ Room.prototype.composeScavenge = function() {
+     const parent = Game.rooms[this.config.companionRoom];
+     if (parent.energyAvailable === parent.energyCapacityAvailable && Game.time % 3 === 0) {
+         const spawn = parent.find(FIND_MY_SPAWNS)[0];
+         spawn.createScavengers(this);
+     }
+ }

@@ -8,6 +8,21 @@ exports.myRooms = {
     }
 }
 
+//Keys are the possible levels a room controller can have, each entry is the desired number of that building
+//to construct
+exports.constructionPlanner = {
+    1: {},
+    2: {
+        STRUCTURE_EXTENSION: 5,
+        STRUCTURE_CONTAINER: 3
+    },
+    3: {
+        STRUCTURE_EXTENSION: 10,
+        STRUCTURE_CONTAINER: 3,
+        STRUCTURE_TOWER: 1
+    }
+}
+
 exports.roleMap = {
     harvester: {
         count: 0,

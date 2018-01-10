@@ -13,7 +13,6 @@ module.exports = {
             let target = this.room.controller.pos.findClosestByRange(FIND_STRUCTURES, {
                 filter: s => s.structureType == STRUCTURE_CONTAINER
             });
-            console.log(target)
 
             if (target && target.store[RESOURCE_ENERGY] <= target.storeCapacity) {
 

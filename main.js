@@ -10,9 +10,11 @@ profiler.enable();
 
 module.exports.loop = function() {
   profiler.wrap(function() {
+
       // Handle room coordination
       for (let room in constants.myRooms) {
           if (Game.rooms[room]) {
+              // console.log(JSON.stringify(Game.rooms[room].config))
               roomOrchestra.call(Game.rooms[room])
               // extensionSitePlanner.call(Game.rooms[room]);
           }
@@ -60,20 +62,18 @@ var extensionSitePlanner = function(offset_x, offset_y) {
         [x,y] = [offset_x, offset_y]
     }
     // Corners of box, the true bool value is for lookAtArea to return in array form
-    let boundingBox= [y - 1, x - 1, y + 1, x + 1, true]
+    let boundingBox= [y - 1, x - 1, y + 1, x + 1]
 
-    const terriainDetails = room.lookAtArea(...boundingBox)
+    const terrainDetails = room.lookAtArea(...boundingBox, true)
 
     // How many structures? Return if any.
-    let structureCount = _.filter(terriainDetails, 'structure').length
+    let structureCount = _.filter(terrainDetails, 'structure').length
     // Desire 9 terrain plots
-    let plainCount = _.filter(terriainDetails, {'terrain': 'plain'}).length
+    let plainCount = _.filter(terrainDetails, {'terrain': 'plain'}).length
 
-    // Return recursively if this fails
     if (structureCount === 0 && plainCount === 9) {
-        console.log('Its all ship shape!')
         //Place construction sites
-        return 'Great Job'
+        return createExtensionSites.call(room, boundingBox);
     }
 
     // Return recursively if above failed
@@ -87,6 +87,37 @@ var extensionSitePlanner = function(offset_x, offset_y) {
         return extensionSitePlanner.call(room, x-1, y)
     }
 
+}
+
+/**
+ * Receives an array containing two x,y pairs representing opposite (left, right) corners
+ * of a 3x3 box. From these coords, create one extension construction site at each corner and one
+ * in the middle of the box
+ * ALL ARGUMENTS ORDERED X,Y
+ * @param  {[Array]} boundingBox [description]
+ * @return {[type]}             [description]
+ */
+let createExtensionSites = function(boundingBox) {
+    let room = this;
+    const topLeftSite = [boundingBox[0], boundingBox[1]];
+    const constructionSites = {
+        topLeftSite: topLeftSite,
+        lowRightSite: [boundingBox[2], boundingBox[3]],
+        topRightSite: [topLeftSite[0] + 2, topLeftSite[1]],
+        lowLeftSite: [topLeftSite[0], topLeftSite[1] + 2],
+        centerSite: [topLeftSite[0] + 1, topLeftSite[1] + 1]
+    }
+
+    for (site in constructionSites) {
+        // console.log('Creating new extension')
+        // console.log('The name of the site is', site);
+        // console.log('And the pos is ', constructionSites[site])
+    }
+    // room.createConstructionSite(...topLeftSite, STRUCTURE_EXTENSION)
+    // room.createConstructionSite(...lowRightSite, STRUCTURE_EXTENSION)
+    // room.createConstructionSite(...topRightSite, STRUCTURE_EXTENSION)
+    // room.createConstructionSite(...lowLeftSite, STRUCTURE_EXTENSION)
+    // room.createConstructionSite(...centerSite, STRUCTURE_EXTENSION)
 }
 
 const roomOrchestra = function() {

@@ -2,7 +2,7 @@
 StructureSpawn.prototype.spawnCreepsIfNecessary = function() {
     let spawn = this;
     let room = this.room;
-    let roleMap = room.getRoomRoleMap(room.controller.level)
+    const roleMap = room.config.creepConfig
     let desiredCreeps =  _.mapValues(roleMap, (role) => {return role.count});
     let existingCreeps = _.mapValues(desiredCreeps, (role) => 0);
 

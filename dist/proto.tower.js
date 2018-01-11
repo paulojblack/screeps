@@ -28,3 +28,5 @@ StructureTower.prototype.defend = function() {
         }
     }
 };
+
+module.exports = {}

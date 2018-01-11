@@ -76,3 +76,5 @@ let checkForContainer = function(source) {
         }
     }
 }
+
+module.exports = {}

@@ -1,2 +1,3 @@
 node_modules
-gruntfile.js
+credentials.json
+package-lock.json

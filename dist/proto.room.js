@@ -1,5 +1,5 @@
-const architect = require('architect');
-let constants = require('constants');
+const architect = require('util.architect');
+let constants = require('util.constants');
 
 Room.prototype.creepCountByCtrlLevel = (room) => {
     let roleMap = constants.roleMap;
@@ -184,3 +184,5 @@ Object.defineProperty(Room.prototype, 'constructionSites', {
     enumerable: false,
     configurable: true
 });
+
+module.exports = {}

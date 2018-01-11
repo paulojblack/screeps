@@ -1,11 +1,11 @@
 //https://www.npmjs.com/package/screeps-profiler
-require('prototype.spawn');
-require('prototype.room');
-require('prototype.creep');
-require('prototype.tower');
-require('prototype.source');
-const constants = require('constants');
-const architect = require('architect').architectOrchestra;
+var protoSpawn = require('proto.spawn');
+var protoRoom = require('proto.room');
+var protoCreep = require('proto.creep');
+var protoTower = require('proto.tower');
+var protoSource = require('proto.source');
+const constants = require('util.constants');
+const architect = require('util.architect').architectOrchestra;
 const profiler = require('screeps-profiler');
 profiler.enable();
 

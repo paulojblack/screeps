@@ -219,7 +219,7 @@ StructureSpawn.prototype.createCustomCreep = function(energy, roleName, initialM
         body.push(CARRY);
     }
     for (let i = 0; i < numberOfParts; i++) {
-        body.push(MOVE);
+        body.push(MOVE); 
     }
 
     if (initialMemory === undefined) {
@@ -256,3 +256,5 @@ StructureSpawn.prototype.createScavengers = function(childRoom) {
     }
     }
 };
+
+module.exports = {}

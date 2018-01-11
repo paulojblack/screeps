@@ -3,7 +3,7 @@ exports.farmRooms = {
 }
 
 exports.myRooms = {
-    W6N1: {
+    W8N3: {
         type: 'base'
     }
 }

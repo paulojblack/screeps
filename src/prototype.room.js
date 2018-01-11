@@ -28,7 +28,7 @@ Room.prototype.creepCountByCtrlLevel = (room) => {
     }
 
     // If there are constructionsites, 2, if not, none.
-    roleMap['builder'] = room.memory.constructionSites.length ? 2 : 0;
+    roleMap['builder'] = room.constructionSites.length ? 2 : 0;
     // Counts the number of sources with containers built
     roleMap['miner'].count = getMinerCount(room);
 
@@ -169,6 +169,7 @@ Object.defineProperty(Room.prototype, 'constructionSites', {
         if (!room._constructionSites) {
 
             if (!room.memory.constructionSites) {
+                console.log('in here')
                 room.memory.constructionSites = room.find(FIND_MY_CONSTRUCTION_SITES);
             }
             room._constructionSites = room.memory.constructionSites

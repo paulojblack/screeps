@@ -14,7 +14,7 @@ module.exports = {
                 })
             } else {
                 return role.getEnergy(creep, {
-                    gatherFrom: 'container'
+                    gatherFrom: 'controller_container'
                 });
             }
         } catch(e) {

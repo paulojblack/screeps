@@ -6,43 +6,40 @@ Room.prototype.creepCountByCtrlLevel = (room) => {
     let roomLevel = room.controller.level
 
     if (roomLevel === 1) {
-        roleMap['harvester'].count = 3;
-        roleMap['builder'].count = 2;
         roleMap['upgrader'].count = 3;
     }
 
     if (roomLevel === 2) {
-        roleMap['harvester'].count = 2;
-        roleMap['builder'].count = 3;
         roleMap['upgrader'].count = 3;
-        roleMap['repairer'].count = 1;
-        roleMap['lorry'].count = 2;
-        roleMap['longLorry'].count = 0;
+        roleMap['repairer'].count = 2;
+        roleMap['lorry'].count = 4;
     }
 
     if (roomLevel === 3) {
-        roleMap['harvester'].count = 2;
-        roleMap['builder'].count = 2;
         roleMap['upgrader'].count = 3;
         roleMap['repairer'].count = 1;
         roleMap['lorry'].count = 1;
     }
 
     if (roomLevel >= 4) {
-        roleMap['harvester'].count = 2;
-        roleMap['builder'].count = 2;
         roleMap['upgrader'].count = 3;
         roleMap['repairer'].count = 1;
         roleMap['lorry'].count = 1;
     }
 
+    // If there are constructionsites, 2, if not, none.
+    roleMap['builder'] = room.memory.constructionSites.length ? 2 : 0;
     // Counts the number of sources with containers built
-    roleMap['miner'].count = _.filter(room.sources, function(source) {
-        return _.get(source, 'sourceConfig.hasContainer') === true
-    }).length;
+    roleMap['miner'].count = getMinerCount(room);
 
     return roleMap;
 };
+
+var getMinerCount = function(room) {
+    return _.filter(room.sources, function(source) {
+        return _.get(source, 'sourceConfig.hasContainer') === true
+    }).length;
+}
 
 /**
  * Receives an array containing two x,y pairs representing opposite (left, right) corners
@@ -54,7 +51,7 @@ Room.prototype.creepCountByCtrlLevel = (room) => {
  */
 Room.prototype.createExtensionSites = function(boundingBox) {
     let room = this;
-    console.log(JSON.stringify(room))
+
     const topLeftSite = [boundingBox[0], boundingBox[1]];
     const constructionSites = {
         topLeftSite: topLeftSite,
@@ -114,9 +111,32 @@ Object.defineProperty(Room.prototype, 'containers', {
             room._containers = room.find(FIND_STRUCTURES, {
                 filter: s => s.structureType === STRUCTURE_CONTAINER
             }).map(cont => cont.id);
-
+            // _room._containers
         }
         return room._containers
+    },
+    enumerable: false,
+    configurable: true
+});
+
+/**
+ * Returns ID of controller container
+ * @type {[type]}
+ */
+Object.defineProperty(Room.prototype, 'controllerContainer', {
+    get: function() {
+        let room = this;
+
+        if (!room._controller_container) {
+            room._controller_container = room.controller.pos.findInRange(FIND_STRUCTURES, 6, {
+                filter: s => s.structureType === STRUCTURE_CONTAINER
+            }).map(cont => cont.id);
+        }
+        if (room._controller_container) {
+            return room._controller_container
+        }
+
+        return undefined
     },
     enumerable: false,
     configurable: true
@@ -142,16 +162,24 @@ Object.defineProperty(Room.prototype, 'sources', {
     configurable: true
 });
 
+Object.defineProperty(Room.prototype, 'constructionSites', {
+    get: function() {
+        let room = this;
 
+        if (!room._constructionSites) {
 
-/*
-Here be the wtf section
- */
+            if (!room.memory.constructionSites) {
+                room.memory.constructionSites = room.find(FIND_MY_CONSTRUCTION_SITES);
+            }
+            room._constructionSites = room.memory.constructionSites
+        }
+        return room._constructionSites;
+    },
+    set: function(newValue) {
 
- Room.prototype.composeScavenge = function() {
-     const parent = Game.rooms[this.config.companionRoom];
-     if (parent.energyAvailable === parent.energyCapacityAvailable && Game.time % 3 === 0) {
-         const spawn = parent.find(FIND_MY_SPAWNS)[0];
-         spawn.createScavengers(this);
-     }
- }
+        this.memory.constructionSites = this.find(FIND_MY_CONSTRUCTION_SITES)
+        this._constructionSites = this.find(FIND_MY_CONSTRUCTION_SITES);
+    },
+    enumerable: false,
+    configurable: true
+});

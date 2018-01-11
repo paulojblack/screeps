@@ -24,6 +24,7 @@ StructureSpawn.prototype.spawnCreepsIfNecessary = function() {
 StructureSpawn.prototype.composeCreeps = function(roleMap, existingCreeps) {
     let spawn = this;
     let room = spawn.room;
+
     for (role in roleMap) {
         let buildSchema = roleMap[role];
         // Go to next iteration if number of workers is satisfied

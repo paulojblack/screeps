@@ -25,7 +25,7 @@ exports.constructionPlanner = {
 
 exports.roleMap = {
     harvester: {
-        count: 0,
+        count: 2,
         partsRatio: {
             CARRY: 0.5,
             MOVE: 0.5

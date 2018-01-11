@@ -15,8 +15,16 @@ module.exports = class Role {
     getEnergy(creep, opts) {
         let energySource;
 
+        if (opts.gatherFrom === 'controller_container') {
+            energySource = creep.room.controller.pos.findClosestByRange(FIND_STRUCTURES, {
+                filter: s => s.structureType === STRUCTURE_CONTAINER &&
+                s.store[RESOURCE_ENERGY] > 1
+            });
+        }
+
         if (opts.gatherFrom === 'container' || opts.gatherFrom === 'anything') {
-            energySource = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+            //TODO fix this insanity
+            energySource = creep.room.sources[0].pos.findClosestByRange(FIND_STRUCTURES, {
                 filter: s => s.structureType === STRUCTURE_CONTAINER &&
                 s.store[RESOURCE_ENERGY] > 500
             });
@@ -73,21 +81,15 @@ module.exports = class Role {
             return Role.depositToRepairStructure(creep)
         }
 
-        if (opts.depositTo === 'controller') {
-            return Role.depositToController(creep)
+        if (opts.depositTo === 'living') {
+            return Role.depositToLivingStructure(creep)
         }
 
-        return Role.depositToLivingStructure(creep)
-    }
-
-    static depositToLivingStructure(creep) {
-        const structure = Role.getClosestUnfilledLivingStructure(creep);
-
-        if (structure) {
-            if (creep.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                return creep.moveTo(structure);
-            }
+        if (opts.depositTo === 'controller_container') {
+            return Role.depositToControllerContainer(creep)
         }
+
+        return Role.depositToController(creep)
     }
 
     static depositToConstructionSite(creep) {
@@ -96,6 +98,52 @@ module.exports = class Role {
         if (constructionSite !== undefined && creep.build(constructionSite) === ERR_NOT_IN_RANGE) {
             return creep.moveTo(constructionSite);
         }
+
+        if (!constructionSite) {
+            return Role.depositToControllerContainer(creep)
+        }
+    }
+
+
+    static depositToRepairStructure(creep) {
+        const repairSite = Role.getClosestDamagedStructure(creep);
+
+        if (!repairSite){
+            return Role.depositToControllerContainer(creep)
+        }
+
+        if (repairSite && creep.repair(repairSite) == ERR_NOT_IN_RANGE) {
+            return creep.moveTo(repairSite);
+        }
+
+    }
+
+    static depositToLivingStructure(creep) {
+        const structure = Role.getClosestUnfilledLivingStructure(creep);
+
+        if (!structure) {
+            return Role.depositToControllerContainer(creep)
+        }
+
+        if (structure && creep.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+            return creep.moveTo(structure);
+        }
+    }
+
+    static depositToControllerContainer(creep) {
+        const controllerContainer = Game.getObjectById(creep.room.controllerContainer)
+
+        if (!controllerContainer) {
+            return Role.depositToController(creep)
+        }
+
+        if (controllerContainer.store[RESOURCE_ENERGY] < controllerContainer.storeCapacity) {
+
+            if (creep.transfer(controllerContainer, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                return creep.moveTo(controllerContainer);
+            }
+        }
+
     }
 
     static depositToController(creep) {
@@ -104,15 +152,6 @@ module.exports = class Role {
         }
     }
 
-    static depositToRepairStructure(creep) {
-        const repairSite = Role.getClosestDamagedStructure(creep);
-
-        if (repairSite != undefined) {
-            if (creep.repair(repairSite) == ERR_NOT_IN_RANGE) {
-                return creep.moveTo(repairSite);
-            }
-        }
-    }
     /**
      * Working is defined as any action involving depositing resources into anything
      * NOT working just means they are withdrawing, or travelling to withdraw resources
@@ -191,6 +230,7 @@ module.exports = class Role {
             (s.structureType === STRUCTURE_WALL || s.structureType == STRUCTURE_RAMPART)
         });
     }
+
 }
 
 /**

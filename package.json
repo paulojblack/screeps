@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/paulojblack/screeps#readme",
   "dependencies": {
+    "grunt-contrib-watch": "^1.0.0",
     "grunt-screeps-customserver": "0.0.1"
   }
 }

@@ -1,5 +1,6 @@
 var roleUpgrader = require('role.upgrader');
 let Role = require('class.role')
+
 module.exports = {
     run: function() {
         try {

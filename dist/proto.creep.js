@@ -5,8 +5,7 @@ const roles = {
     repairer: require('role.repairer'),
     wallRepairer: require('role.wallRepairer'),
     miner: require('role.miner'),
-    lorry: require('role.lorry'),
-    grunt: require('military.grunt')
+    lorry: require('role.lorry')
 };
 
 Creep.prototype.runRole = function(creep) {
@@ -18,3 +17,5 @@ Creep.prototype.runRole = function(creep) {
         console.log(e)
     }
 };
+
+module.exports = {}

@@ -17,6 +17,7 @@ module.exports.loop = function() {
           const thisRoom = Game.rooms[room];
           if (thisRoom) {
               for (const spawn of thisRoom.find(FIND_MY_SPAWNS)) {
+                  // architect(spawn)
                   spawn.spawnCreepsIfNecessary(spawn);
               }
               refreshTimers(thisRoom);

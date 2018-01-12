@@ -8,7 +8,9 @@
 module.exports = class Role {
     constructor(creep) {
         this.creep = creep;
+        // this.memory = creep.memory;
     }
+
     /**
      * [getEnergy description]
      * @param  {[type]} creep [description]
@@ -27,6 +29,7 @@ module.exports = class Role {
 
         if (opts.gatherFrom === 'container' || opts.gatherFrom === 'anything') {
             //TODO fix this insanity
+
             energySource = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                 filter: s => s.structureType === STRUCTURE_CONTAINER &&
                 s.store[RESOURCE_ENERGY] > 0 && s.id !== creep.room.controllerContainer

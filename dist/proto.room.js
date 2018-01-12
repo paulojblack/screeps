@@ -46,7 +46,7 @@ let getBuilderCount = function(room) {
         return 2
     }
 
-    if (sites.length > 5) {
+    if (sites.length >= 5) {
         return 4
     }
 
@@ -118,7 +118,7 @@ Object.defineProperty(Room.prototype, 'controllerContainer', {
             }).map(cont => cont.id);
         }
         if (room._controller_container) {
-            return room._controller_container
+            return room._controller_container[0]
         }
 
         return undefined

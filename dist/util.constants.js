@@ -5,6 +5,9 @@ exports.farmRooms = {
 exports.myRooms = {
     W8N3: {
         type: 'base'
+    },
+    W22N48: {
+        type: 'base'
     }
 }
 
@@ -31,7 +34,9 @@ exports.roleMap = {
             MOVE: 0.5
         },
         partsLiteral: {
-            WORK: 2
+            WORK: 2,
+            CARRY: 2,
+            MOVE: 2
         }
     },
     upgrader: {
@@ -41,7 +46,9 @@ exports.roleMap = {
             MOVE: 0.5
         },
         partsLiteral: {
-            WORK: 2
+            WORK: 2,
+            CARRY: 2,
+            MOVE: 2
         }
     },
     repairer: {
@@ -51,7 +58,9 @@ exports.roleMap = {
             MOVE: 0.5
         },
         partsLiteral: {
-            WORK: 2
+            WORK: 2,
+            CARRY: 2,
+            MOVE: 2
         }
     },
     builder: {
@@ -61,16 +70,19 @@ exports.roleMap = {
             MOVE: 0.5
         },
         partsLiteral: {
-            WORK: 2
+            WORK: 2,
+            CARRY:2,
+            MOVE: 2
         }
     },
     miner: {
         count: 0,
         partsRatio: {
-            WORK: 0.5
+
         },
         partsLiteral: {
-            MOVE: 1
+            MOVE: 1,
+            WORK: 5
         }
     },
     lorry: {
@@ -80,7 +92,9 @@ exports.roleMap = {
             MOVE: 0.5
         },
         partsLiteral: {
-            WORK: 1
+            WORK: 2,
+            CARRY:2,
+            MOVE: 2
         }
     },
     longLorry: {
@@ -96,12 +110,36 @@ exports.roleMap = {
 }
 
 exports.partCosts = {
-    WORK: 100,
-    MOVE: 50,
-    CARRY: 50,
-    ATTACK: 80,
-    RANGED_ATTACK: 150,
-    HEAL: 250,
-    CLAIM: 600,
-    TOUGH: 10
+    work: 100,
+    move: 50,
+    carry: 50,
+    attack: 80,
+    ranged_attack: 150,
+    heal: 250,
+    claim: 600,
+    tough: 10
+}
+
+
+//unused
+//var getBodyConstant = function(value) {
+    switch (value) {
+        case 'WORK':
+            return WORK
+        case 'MOVE':
+            return MOVE
+        case 'CARRY':
+            return CARRY
+        case 'ATTACK':
+            return ATTACK
+        case 'RANGED_ATTACK':
+            return RANGED_ATTACK
+        case 'HEAL':
+            return HEAL
+        case 'CLAIM':
+            return CLAIM
+        case 'TOUGH':
+            return TOUGH
+    }
+
 }

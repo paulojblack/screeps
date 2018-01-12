@@ -1,5 +1,6 @@
 module.exports = function(grunt) {
 
+    // grunt.loadNpmTasks('grunt-screeps');
     grunt.loadNpmTasks('grunt-screeps-customserver');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-clean');
@@ -9,6 +10,17 @@ module.exports = function(grunt) {
 
     grunt.initConfig({
         screeps: {
+            //prod
+            // options: {
+            //     email: creds.liveemail,
+            //     password: creds.livepw,
+            //     branch: 'default',
+            //     ptr: false
+            // },
+            // dist: {
+            //     src: ['dist/*.js']
+            // }
+            //stg
             options: {
                 hostname: creds.hostname,
                 port: creds.port,
@@ -22,6 +34,8 @@ module.exports = function(grunt) {
                 src: ['dist/*.js']
             }
         },
+
+
 
         copy: {
             screeps: {
@@ -51,5 +65,5 @@ module.exports = function(grunt) {
         }
 
     });
-    grunt.registerTask('default', ['clean','copy','screeps']);
+    grunt.registerTask('default', ['clean','copy','screeps', /*'screeps:production', 'screeps:staging'*/]);
 }

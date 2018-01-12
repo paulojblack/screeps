@@ -1,21 +1,24 @@
-var roleUpgrader = require('role.upgrader');
 let Role = require('class.role')
 
-module.exports = {
-    run: function() {
-        try {
-            let creep = this;
-            let role = new Role();
+module.exports = class RoleBuilder extends Role {
+    constructor(creep) {
+        super(creep)
+    }
 
-            creep.memory.working = role.setWorkingState(creep);
+    run () {
+        try {
+            let builder = this;
+            let creep = builder.creep;
+
+            creep.memory.working = builder.setWorkingState(creep);
             creep.say('b')
 
             if (creep.memory.working == true) {
-                return role.depositEnergy(creep, {
+                return this.depositEnergy(creep, {
                     depositTo: 'construction'
                 })
             } else {
-                return role.getEnergy(creep, {
+                return this.getEnergy(creep, {
                     gatherFrom: 'container'
                 });
             }
@@ -24,4 +27,49 @@ module.exports = {
             console.log(e)
         }
     }
-};
+
+    /**
+     * TODO refactor
+     * @param  {[type]} budget [description]
+     * @param  {[type]} room   [description]
+     * @return {[type]}        [description]
+     */
+    static getDesign(budget, room) {
+        var design = [MOVE, CARRY, CARRY, WORK];
+		var spent = 250;
+
+		var budget = Math.min(1000, budget)
+
+		//Add as many WORK, CARRY and MOVE as we can
+		while(spent + 50 <= budget){
+			design[design.length] = CARRY;
+			spent = spent + 50;
+
+			if(spent + 50 > budget){
+				return design;
+			}
+			design[design.length] = MOVE;
+			spent = spent + 50;
+
+			if(spent + 50 > budget){
+				return design;
+			}
+			design[design.length] = MOVE;
+			spent = spent + 50;
+
+			if(spent + 50 > budget){
+				return design;
+			}
+			design[design.length] = CARRY;
+			spent = spent + 50;
+
+			if(spent + 100 > budget){
+				return design;
+			}
+			design[design.length] = WORK;
+			spent = spent + 100;
+		}
+
+		return design;
+    }
+}

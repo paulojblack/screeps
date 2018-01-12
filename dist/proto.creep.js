@@ -10,10 +10,14 @@ const roles = {
 
 Creep.prototype.runRole = function(creep) {
     try {
-        roles[creep.memory.role].run.call(creep);
+        let roleSubClass = new roles[creep.memory.role](creep)
+
+        roleSubClass.run()
+
     } catch(e) {
         console.log('Creep error in role', creep.memory.role, 'creep named', creep);
         console.log('Naughty creep', JSON.stringify(creep))
+        console.log(JSON.stringify(creep.memory))
         console.log(e)
     }
 };

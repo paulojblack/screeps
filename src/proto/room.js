@@ -17,7 +17,7 @@ Room.prototype.creepCountByCtrlLevel = (room) => {
 
     if (roomLevel === 3) {
         roleMap['upgrader'].count = 3;
-        roleMap['repairer'].count = 1;
+        roleMap['repairer'].count = 2;
         roleMap['lorry'].count = 1;
     }
 
@@ -97,7 +97,6 @@ Object.defineProperty(Room.prototype, 'containers', {
             room._containers = room.find(FIND_STRUCTURES, {
                 filter: s => s.structureType === STRUCTURE_CONTAINER
             }).map(cont => cont.id);
-            // _room._containers
         }
         return room._containers
     },

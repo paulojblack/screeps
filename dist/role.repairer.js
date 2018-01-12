@@ -2,19 +2,34 @@ var Role = require('class.role');
 
 module.exports = {
     run: function() {
-        let creep = this;
-        let role = new Role();
+        let repairer = new RoleRepairer(this)
 
-        creep.memory.working = role.setWorkingState(creep)
+        repairer.memory.working = repairer.setWorkingState()
 
-        if (this.memory.working == true) {
-            return role.depositEnergy(creep, {
+        if (repairer.memory.working == true) {
+            return repairer.depositEnergy(repairer.creep, {
                 depositTo: 'repair_site'
             })
         } else {
-            return role.getEnergy(creep, {
+            return repairer.getEnergy(repairer.creep, {
                 gatherFrom: 'container'
             });
         }
     }
+
 };
+
+const RoleRepairer = class RoleRepairer extends Role {
+    constructor(creep) {
+        super()
+        this.creep = creep;
+        //TODO remove if CPU prohibits
+        this.memory = this.creep.memory;
+    }
+
+    static getClosestDamagedStructure(creep, opts) {
+        return creep.pos.findClosestByRange(FIND_STRUCTURES, {
+            filter: (s) => s.hits < s.hitsMax && s.structureType != STRUCTURE_WALL
+        });
+    }
+}

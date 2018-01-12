@@ -6,6 +6,9 @@
  * @type {[type]}
  */
 module.exports = class Role {
+    constructor(creep) {
+        this.creep = creep;
+    }
     /**
      * [getEnergy description]
      * @param  {[type]} creep [description]
@@ -24,9 +27,9 @@ module.exports = class Role {
 
         if (opts.gatherFrom === 'container' || opts.gatherFrom === 'anything') {
             //TODO fix this insanity
-            energySource = creep.room.sources[0].pos.findClosestByRange(FIND_STRUCTURES, {
+            energySource = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                 filter: s => s.structureType === STRUCTURE_CONTAINER &&
-                s.store[RESOURCE_ENERGY] > 500
+                s.store[RESOURCE_ENERGY] > 0 && s.id !== creep.room.controllerContainer
             });
         }
 
@@ -175,6 +178,11 @@ module.exports = class Role {
      * @param {[type]} creep [description]
      */
     setWorkingState(creep) {
+        //Feature flag while building out inheritance classes
+        // console.log('out',JSON.stringify(this.creep.memory))
+        if (this.creep) {
+            creep = this.creep;
+        }
 
         if (creep.memory.working === true && creep.carry.energy === 0) {
             return false

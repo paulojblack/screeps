@@ -1,37 +1,40 @@
+let caches = require('util.caches')
 
 StructureSpawn.prototype.spawnCreepsIfNecessary = function() {
     let spawn = this;
     let room = this.room;
     const roleMap = room.config.creepConfig
+
     let desiredCreeps =  _.mapValues(roleMap, (role) => {return role.count});
-    let existingCreeps = _.mapValues(desiredCreeps, (role) => 0);
+    let existingCreeps = _.reduce(Game.creeps, function(acc, creep, key) {
+        if (creep.memory.target === room.name) {
+            acc[creep.memory.role] += 1
+            return acc
+        }
+    }, _.mapValues(desiredCreeps, (count) => 0));
 
-    const creepList = _.filter(Game.creeps, function(c) {return c.memory.target === room.name});
-
-    for (role in roleMap) {
-        existingCreeps[role] = _.sum(creepList, (c) => c.memory.role === role)
-    }
 
     console.log('I have', JSON.stringify(existingCreeps))
     console.log('I want', JSON.stringify(desiredCreeps))
     // 300 is the amount a spawn can hold
     if (room.energyAvailable >= 300) {
-        return spawn.composeCreeps.call(spawn, roleMap, existingCreeps)
-    }
+        for (let role in roleMap) {
+            if (existingCreeps[role] >= desiredCreeps[role]) {
+                continue
+            }
+            return spawn.composeCreeps.call(spawn, roleMap, existingCreeps, role)
 
+        }
+    }
 };
 
-StructureSpawn.prototype.composeCreeps = function(roleMap, existingCreeps) {
+StructureSpawn.prototype.composeCreeps = function(roleMap, existingCreeps, role) {
     let spawn = this;
     let room = spawn.room;
 
-    for (role in roleMap) {
         let buildSchema = roleMap[role];
         // Go to next iteration if number of workers is satisfied
 
-        if (existingCreeps[role] >= buildSchema.count) {
-            continue
-        }
 
         let tempBody = [];
         let literalCost = 0;
@@ -46,7 +49,9 @@ StructureSpawn.prototype.composeCreeps = function(roleMap, existingCreeps) {
         }
 
         if (role === 'miner') {
-            memory.sourceId = getMinerSource(room)
+            if (getAssignedSource(spawn.room)) {
+                memory.targetSource = getAssignedSource(spawn.room)['id']
+            }
         }
 
         // Start by adding literals
@@ -75,8 +80,7 @@ StructureSpawn.prototype.composeCreeps = function(roleMap, existingCreeps) {
         }
 
         spawn.createCreep(tempBody.map(getBodyConstant), undefined, memory);
-        break;
-    }
+        caches.refreshSourceConfig(spawn.room);
 }
 
 var getBodyConstant = function(value) {
@@ -101,7 +105,14 @@ var getBodyConstant = function(value) {
 
 }
 
-var getMinerSource = function(room) {
+let getAssignedSource = function(room) {
+
+    return _.find(room.sources, function(source) {
+        return source.config.needsCreeps === true
+    });
+}
+
+let getMinerSource = function(room) {
     let sources = room.sources;
     let targetName = room.name;
     const creepList = _.filter(Game.creeps, function(c) {return c.memory.target === room.name});
@@ -219,7 +230,7 @@ StructureSpawn.prototype.createCustomCreep = function(energy, roleName, initialM
         body.push(CARRY);
     }
     for (let i = 0; i < numberOfParts; i++) {
-        body.push(MOVE); 
+        body.push(MOVE);
     }
 
     if (initialMemory === undefined) {

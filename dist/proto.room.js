@@ -28,52 +28,38 @@ Room.prototype.creepCountByCtrlLevel = (room) => {
     }
 
     // If there are constructionsites, 2, if not, none.
-    roleMap['builder'] = room.constructionSites.length ? 2 : 0;
-    // Counts the number of sources with containers built
-    roleMap['miner'].count = getMinerCount(room);
+    roleMap['builder'].count = getBuilderCount(room)
+
+    roleMap['miner'].count = room.sources.length * 2
 
     return roleMap;
 };
 
+let getBuilderCount = function(room) {
+    sites = room.constructionSites
+
+    if (!sites.length) {
+        return 0
+    }
+
+    if (sites.length < 5) {
+        return 2
+    }
+
+    if (sites.length > 5) {
+        return 4
+    }
+
+    console.log('Something is wrong with proto.room.getBuilderCount')
+
+}
+
+// Deprecated
 var getMinerCount = function(room) {
     return _.filter(room.sources, function(source) {
-        return _.get(source, 'sourceConfig.hasContainer') === true
+        return _.get(source, 'config.hasContainer') === true
     }).length;
 }
-
-/**
- * Receives an array containing two x,y pairs representing opposite (left, right) corners
- * of a 3x3 box. From these coords, create one extension construction site at each corner and one
- * in the middle of the box
- * ALL ARGUMENTS ORDERED X,Y
- * @param  {[Array]} boundingBox [description]
- * @return {[type]}             [description]
- */
-Room.prototype.createExtensionSites = function(boundingBox) {
-    let room = this;
-
-    const topLeftSite = [boundingBox[0], boundingBox[1]];
-    const constructionSites = {
-        topLeftSite: topLeftSite,
-        lowRightSite: [boundingBox[2], boundingBox[3]],
-        topRightSite: [topLeftSite[0] + 2, topLeftSite[1]],
-        lowLeftSite: [topLeftSite[0], topLeftSite[1] + 2],
-        centerSite: [topLeftSite[0] + 1, topLeftSite[1] + 1]
-    }
-
-    for (site in constructionSites) {
-        // console.log('Creating new extension')
-        // console.log('The name of the site is', site);
-        // console.log('And the pos is ', constructionSites[site])
-    }
-    // room.createConstructionSite(...topLeftSite, STRUCTURE_EXTENSION)
-    // room.createConstructionSite(...lowRightSite, STRUCTURE_EXTENSION)
-    // room.createConstructionSite(...topRightSite, STRUCTURE_EXTENSION)
-    // room.createConstructionSite(...lowLeftSite, STRUCTURE_EXTENSION)
-    // room.createConstructionSite(...centerSite, STRUCTURE_EXTENSION)
-}
-
-
 
 /*
 This object will collect all the more complex room level specifications that are
@@ -169,7 +155,6 @@ Object.defineProperty(Room.prototype, 'constructionSites', {
         if (!room._constructionSites) {
 
             if (!room.memory.constructionSites) {
-                console.log('in here')
                 room.memory.constructionSites = room.find(FIND_MY_CONSTRUCTION_SITES);
             }
             room._constructionSites = room.memory.constructionSites
@@ -186,3 +171,36 @@ Object.defineProperty(Room.prototype, 'constructionSites', {
 });
 
 module.exports = {}
+
+
+/**
+ * Receives an array containing two x,y pairs representing opposite (left, right) corners
+ * of a 3x3 box. From these coords, create one extension construction site at each corner and one
+ * in the middle of the box
+ * ALL ARGUMENTS ORDERED X,Y
+ * @param  {[Array]} boundingBox [description]
+ * @return {[type]}             [description]
+ */
+Room.prototype.createExtensionSites = function(boundingBox) {
+    let room = this;
+
+    const topLeftSite = [boundingBox[0], boundingBox[1]];
+    const constructionSites = {
+        topLeftSite: topLeftSite,
+        lowRightSite: [boundingBox[2], boundingBox[3]],
+        topRightSite: [topLeftSite[0] + 2, topLeftSite[1]],
+        lowLeftSite: [topLeftSite[0], topLeftSite[1] + 2],
+        centerSite: [topLeftSite[0] + 1, topLeftSite[1] + 1]
+    }
+
+    for (site in constructionSites) {
+        // console.log('Creating new extension')
+        // console.log('The name of the site is', site);
+        // console.log('And the pos is ', constructionSites[site])
+    }
+    // room.createConstructionSite(...topLeftSite, STRUCTURE_EXTENSION)
+    // room.createConstructionSite(...lowRightSite, STRUCTURE_EXTENSION)
+    // room.createConstructionSite(...topRightSite, STRUCTURE_EXTENSION)
+    // room.createConstructionSite(...lowLeftSite, STRUCTURE_EXTENSION)
+    // room.createConstructionSite(...centerSite, STRUCTURE_EXTENSION)
+}

@@ -52,6 +52,13 @@ module.exports = class Role {
 
     static harvestEnergy(creep) {
         let energySource;
+        let droppedEnergy = Role.getDroppedEnergy(creep)
+
+        if (droppedEnergy) {
+            if (creep.pickup(droppedEnergy[0]) === ERR_NOT_IN_RANGE) {
+                return creep.moveTo(droppedEnergy[0].pos);
+            }
+        }
 
         if (creep.memory.binaryID === 'odd') {
             energySource = creep.room.sources[1]
@@ -59,9 +66,18 @@ module.exports = class Role {
             energySource = creep.room.sources[0]
         }
 
+        if (creep.memory.targetSource) {
+            energySource = creep.memory.targetSource
+        }
         if (creep.harvest(energySource) === ERR_NOT_IN_RANGE) {
             return creep.moveTo(energySource);
         }
+    }
+
+    static getDroppedEnergy(creep) {
+        return creep.room.find(FIND_DROPPED_RESOURCES, {
+            filter: r => r.resourceType === 'energy'
+        })
     }
     /** END GET ENERGY METHODS **/
     /** BEGIN DEPOSIT ENERGY METHODS **/
@@ -95,13 +111,14 @@ module.exports = class Role {
     static depositToConstructionSite(creep) {
         const constructionSite= Role.getClosestConstructionSite(creep);
 
+        if (!constructionSite) {
+            return Role.depositToControllerContainer(creep)
+        }
+
         if (constructionSite !== undefined && creep.build(constructionSite) === ERR_NOT_IN_RANGE) {
             return creep.moveTo(constructionSite);
         }
 
-        if (!constructionSite) {
-            return Role.depositToControllerContainer(creep)
-        }
     }
 
 
@@ -109,10 +126,10 @@ module.exports = class Role {
         const repairSite = Role.getClosestDamagedStructure(creep);
 
         if (!repairSite){
-            return Role.depositToControllerContainer(creep)
+            return Role.depositToConstructionSite(creep)
         }
 
-        if (repairSite && creep.repair(repairSite) == ERR_NOT_IN_RANGE) {
+        if (creep.repair(repairSite) == ERR_NOT_IN_RANGE) {
             return creep.moveTo(repairSite);
         }
 

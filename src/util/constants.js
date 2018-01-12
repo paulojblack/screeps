@@ -93,24 +93,15 @@ exports.roleMap = {
             WORK: 1
         }
     }
-    // wallRepairer: {
-    //     count: 0,
-    //     partsRatio: {
-    //         CARRY: 0.5,
-    //         MOVE: 0.5
-    //     },
-    //     partsLiteral: {
-    //         WORK: 1
-    //     }
-    // },
-    // grunt: {
-    //     count: 0,
-    //     partsRatio: {
-    //         CARRY: 0.5,
-    //         MOVE: 0.5
-    //     },
-    //     partsLiteral: {
-    //         WORK: 1
-    //     }
-    // }
+}
+
+exports.partCosts = {
+    WORK: 100,
+    MOVE: 50,
+    CARRY: 50,
+    ATTACK: 80,
+    RANGED_ATTACK: 150,
+    HEAL: 250,
+    CLAIM: 600,
+    TOUGH: 10
 }

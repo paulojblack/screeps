@@ -1,3 +1,5 @@
+        let util = require('proto.util.source')
+
 /*
 TODO
 Consolidate the look at area for structures and land into one query
@@ -26,55 +28,76 @@ Object.defineProperty(Source.prototype, 'memory', {
     }
 });
 
-Object.defineProperty(Source.prototype, 'sourceConfig', {
+Object.defineProperty(Source.prototype, 'config', {
     get: function () {
         let source = this;
-
-        if (source._sourceConfig === undefined) {
-                const terrainDetails = getSurroundingPlains(source).map((plot) => {
+        delete source.memory.sourceConfig
+        if (source._config === undefined) {
+            if (source.memory.config === undefined) {
+                const terrainDetails = util.getSurroundingPlains(source).map((plot) => {
                     return {
                         x: plot.x,
-                        y: plot.y
+                        y: plot.y,
+                        creep: undefined
                     }
                 })
 
-                source.memory.sourceConfig = Object.assign({},
-                    {freeSpaces: terrainDetails},
-                    checkForContainer(source)
+                source.memory.config = Object.assign({},
+                    {
+                        workSlot: terrainDetails,
+                        workSlotTotal: terrainDetails.length
+                    },
+                    util.checkForContainer(source)
                 );
+            }
 
-            source._sourceConfig = source.memory.sourceConfig;
+            source._config = source.memory.config;
         }
-        return source._sourceConfig;
+        return source._config;
+    },
+    set: function(postedObj) {
+        let source = this;
+        let minerWorkSlots = 2;
+        let updateObj = {
+            needsCreeps: false
+        }
+
+        let assignedCreeps = getMinersAssignedToSource(source);
+        // if (!source.config.workSlotTotal || assignedCreeps <= source.config.workSlotTotal) {
+        //     updateObj.needsCreeps = false
+        // } else {
+        //     updateObj.needsCreeps = true;
+        //     updateObj.availableWorkSlots = source.config.workSlotTotal - assignedCreeps;
+        // }
+
+        if (assignedCreeps.length < minerWorkSlots) {
+            updateObj.needsCreeps = true
+            updateObj.availableMinerSlots = minerWorkSlots - assignedCreeps.length;
+        } else {
+            updateObj.needsCreeps = false;
+        }
+
+        if (_.isObject(updateObj)) {
+
+            // console.log(updateObj)
+        }
+
+        Object.assign(source.memory.config,
+            util.checkForContainer(source),
+            updateObj
+        );
+
+        source._config = source.memory.config;
     },
     enumerable: false,
     configurable: true
 });
 
-let getSurroundingPlains = function(source) {
-    const boundingBox = [source.pos.y - 1, source.pos.x - 1, source.pos.y + 1, source.pos.x + 1];
-    const surroundingTerrain = source.room.lookForAtArea(LOOK_TERRAIN, ...boundingBox, true);
-    return _.filter(surroundingTerrain, {'terrain': 'plain'})
-}
-
-let checkForContainer = function(source) {
-    const boundingBox = [source.pos.y - 1, source.pos.x - 1, source.pos.y + 1, source.pos.x + 1];
-    const structures = source.room.lookForAtArea(LOOK_STRUCTURES, ...boundingBox, true);
-    const containers = _.filter(structures, function(land) {
-        return land.structure.structureType === 'container'
+//For now just using this for miners
+let getMinersAssignedToSource = function(source) {
+    return source.room.find(FIND_MY_CREEPS, {
+        filter: (c) => c.memory.targetSource === source.id && c.memory.role === 'miner'
     });
-
-    if (containers.length) {
-        return {
-            hasContainer: true,
-            container: containers[0]
-        }
-    } else {
-        return {
-            hasContainer: false,
-            container: {}
-        }
-    }
 }
 
 module.exports = {}

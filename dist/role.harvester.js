@@ -1,7 +1,7 @@
 var roleBuilder = require('role.builder');
 let Role = require('class.role')
 
-module.exports = class RoleHarvester extends Role {
+module.exports = class Harvester extends Role {
     constructor(creep) {
         super(creep)
     }
@@ -11,15 +11,13 @@ module.exports = class RoleHarvester extends Role {
         let creep = harvester.creep;
 
         creep.memory.working = harvester.setWorkingState(creep);
-        creep.say('h')
+
         if (creep.memory.working === true) {
             return harvester.depositEnergy(creep, {
                 depositTo: 'living'
             })
         } else {
-            return harvester.getEnergy(creep, {
-                gatherFrom: 'source'
-            });
+            return harvester.harvestEnergyFromAssignedSource()
         }
     }
 
@@ -27,13 +25,20 @@ module.exports = class RoleHarvester extends Role {
         var design = [MOVE, CARRY, WORK];
 	    var spent = 200;
 
-        while(spent + 100 <= budget){
-	        design[design.length] = WORK;
+        while(spent + 200 <= budget){
+	        design.push(MOVE);
+	        design.push(CARRY);
+	        design.push(WORK);
+	        spent = spent + 200;
+	    }
+
+        if(spent + 100 <= budget){
+	        design.push(WORK)
 	        spent = spent + 100;
 	    }
 
-        if(budget == spent + 50){
-	        design[design.length] = MOVE;
+        if(spent + 50 <= budget){
+	        design.push(CARRY)
 	        spent = spent + 50;
 	    }
 

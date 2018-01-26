@@ -11,6 +11,62 @@ const roles = {
     lorry: require('role.lorry')
 };
 
+StructureSpawn.prototype.spawnHarvester = function(bindSource, target, home, panicFlag) {
+    //Two cases, default to home room, then find nearest untapped sources
+    let spawn = this;
+    let budget = spawn.room.energyCapacityAvailable;
+    const memory = {
+        role: 'harvester',
+        working: false,
+        boundSource: bindSource,
+        home: home,
+        target: target
+    };
+
+    if (panicFlag === 1) {
+        //Time to panic
+        budget = spawn.room.energyAvailable;
+    }
+    let body = roles.harvester.getDesign(budget, spawn.room)
+
+    return spawn.createCreep(body, undefined, memory)
+}
+
+StructureSpawn.prototype.spawnMiner = function(bindSource, target, home, panicFlag) {
+    //Two cases, default to home room, then find nearest untapped sources
+    let spawn = this;
+    let budget = spawn.room.energyCapacityAvailable;
+    const memory = {
+        role: 'miner',
+        working: false,
+        boundSource: bindSource,
+        home: home,
+        target: target
+    };
+
+    let body = roles.miner.getDesign(budget, spawn.room)
+
+    return spawn.createCreep(body, undefined, memory)
+}
+
+StructureSpawn.prototype.spawnGeneric = function(bindSource, target, home, role) {
+    //Two cases, default to home room, then find nearest untapped sources
+    let spawn = this;
+    let budget = spawn.room.energyCapacityAvailable;
+    const memory = {
+        role: role,
+        working: false,
+        boundSource: bindSource,
+        home: home,
+        target: target
+    };
+
+    let body = roles[role].getDesign(budget, spawn.room)
+
+    return spawn.createCreep(body, undefined, memory)
+}
+
+/*
 StructureSpawn.prototype.spawnCreepsIfNecessary = function() {
     let spawn = this;
     let room = this.room;
@@ -25,8 +81,8 @@ StructureSpawn.prototype.spawnCreepsIfNecessary = function() {
         }
     }, _.mapValues(desiredCreeps, (count) => 0));
 
-    console.log('I have', JSON.stringify(existingCreeps))
-    console.log('I want', JSON.stringify(desiredCreeps))
+    // console.log('I have', JSON.stringify(existingCreeps))
+    // console.log('I want', JSON.stringify(desiredCreeps))
 
     // 300 is the amount a spawn can hold
     for (let role in roleMap) {
@@ -49,7 +105,7 @@ StructureSpawn.prototype.composeCreeps = function(roleMap, existingCreeps, role)
         working: false,
         //TODO change this so we have unique IDs (1,2,3,4) which the creep spawned to replace
         //a dead creep will be assigned.
-        binaryID: existingCreeps['harvester'] % 2 === 0 ? 'even' : 'odd',
+        binaryID: existingCreeps[role] % 2 === 0 ? 'even' : 'odd',
         home: room.name,
         target: room.name
     }
@@ -62,7 +118,6 @@ StructureSpawn.prototype.composeCreeps = function(roleMap, existingCreeps, role)
         }
     }
 
-    // Start by adding literals
     if (role === 'harvester') {
         body = roles[role].getDesign(room.energyAvailable, room)
     } else {
@@ -79,5 +134,5 @@ let getAssignedSource = function(room) {
         return source.config.needsCreeps === true
     });
 }
-
+*/
 module.exports = {}

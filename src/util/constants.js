@@ -3,13 +3,20 @@ exports.farmRooms = {
 }
 
 exports.myRooms = {
-    W8N3: {
-        type: 'base'
-    },
+    W3N8: 'OWNED_BASE',
     W22N48: {
         type: 'base'
     }
 }
+
+exports.roomStates = {
+    STATE_OWNED_HOME: 1,
+    STATE_START: 2,
+    STATE_MED: 3,
+    STATE_END: 4,
+    STATE_PANIC: 0
+}
+
 
 //Keys are the possible levels a room controller can have, each entry is the desired number of that building
 //to construct
@@ -36,6 +43,28 @@ exports.roleMap = {
         partsLiteral: {
             WORK: 2,
             CARRY: 2,
+            MOVE: 2
+        }
+    },
+    miner: {
+        count: 0,
+        partsRatio: {
+
+        },
+        partsLiteral: {
+            MOVE: 1,
+            WORK: 5
+        }
+    },
+    lorry: {
+        count: 0,
+        partsRatio: {
+            CARRY: 0.5,
+            MOVE: 0.5
+        },
+        partsLiteral: {
+            WORK: 2,
+            CARRY:2,
             MOVE: 2
         }
     },
@@ -74,38 +103,6 @@ exports.roleMap = {
             CARRY:2,
             MOVE: 2
         }
-    },
-    miner: {
-        count: 0,
-        partsRatio: {
-
-        },
-        partsLiteral: {
-            MOVE: 1,
-            WORK: 5
-        }
-    },
-    lorry: {
-        count: 0,
-        partsRatio: {
-            CARRY: 0.5,
-            MOVE: 0.5
-        },
-        partsLiteral: {
-            WORK: 2,
-            CARRY:2,
-            MOVE: 2
-        }
-    },
-    longLorry: {
-        count: 0,
-        partsRatio: {
-            CARRY: 0.5,
-            MOVE: 0.5
-        },
-        partsLiteral: {
-            WORK: 1
-        }
     }
 }
 
@@ -122,7 +119,7 @@ exports.partCosts = {
 
 
 //unused
-//var getBodyConstant = function(value) {
+var getBodyConstant = function(value) {
     switch (value) {
         case 'WORK':
             return WORK

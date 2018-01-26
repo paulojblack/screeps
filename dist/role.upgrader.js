@@ -1,6 +1,6 @@
 let Role = require('class.role');
 
-module.exports = class RoleUpgrader extends Role {
+module.exports = class Upgrader extends Role {
     constructor(creep) {
         super(creep)
     }
@@ -38,37 +38,37 @@ module.exports = class RoleUpgrader extends Role {
 
 	    //Add as many WORK, CARRY and MOVE as we can
 	    while(spent + 50 <= budget){
-	        design[design.length] = CARRY;
+	        design.push(CARRY)
 	        spent = spent + 50;
 
 	        if(spent + 50 > budget){
 	            return design;
 	        }
-	        design[design.length] = MOVE;
+	        design.push(MOVE)
 	        spent = spent + 50;
 
 	        if(spent + 50 > budget){
 	            return design;
 	        }
-	        design[design.length] = CARRY;
+	        design.push(CARRY)
 	        spent = spent + 50;
 
 	        if(spent + 50 > budget){
 	            return design;
 	        }
-	        design[design.length] = CARRY;
+	        design.push(CARRY)
 	        spent = spent + 50;
 
 	        if(spent + 50 > budget){
 	            return design;
 	        }
-	        design[design.length] = MOVE;
+	        design.push(MOVE)
 	        spent = spent + 50;
 
 	        if(spent + 100 > budget){
 	            return design;
 	        }
-	        design[design.length] = WORK;
+	        design.push(WORK)
 	        spent = spent + 100;
 	    }
 

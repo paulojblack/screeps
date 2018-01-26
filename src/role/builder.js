@@ -1,6 +1,6 @@
 let Role = require('class.role')
 
-module.exports = class RoleBuilder extends Role {
+module.exports = class Builder extends Role {
     constructor(creep) {
         super(creep)
     }
@@ -41,34 +41,22 @@ module.exports = class RoleBuilder extends Role {
 		var budget = Math.min(1000, budget)
 
 		//Add as many WORK, CARRY and MOVE as we can
-		while(spent + 50 <= budget){
-			design[design.length] = CARRY;
-			spent = spent + 50;
+        while(spent + 200 <= budget){
+            design.push(WORK);
+            design.push(CARRY);
+	        design.push(MOVE);
+	        spent = spent + 200;
+	    }
 
-			if(spent + 50 > budget){
-				return design;
-			}
-			design[design.length] = MOVE;
-			spent = spent + 50;
+        if(spent + 100 <= budget){
+	        design.push(WORK)
+	        spent = spent + 100;
+	    }
 
-			if(spent + 50 > budget){
-				return design;
-			}
-			design[design.length] = MOVE;
-			spent = spent + 50;
-
-			if(spent + 50 > budget){
-				return design;
-			}
-			design[design.length] = CARRY;
-			spent = spent + 50;
-
-			if(spent + 100 > budget){
-				return design;
-			}
-			design[design.length] = WORK;
-			spent = spent + 100;
-		}
+        if(spent + 50 <= budget){
+	        design.push(CARRY)
+	        spent = spent + 50;
+	    }
 
 		return design;
     }

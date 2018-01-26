@@ -30,7 +30,7 @@ Room.prototype.creepCountByCtrlLevel = (room) => {
     // If there are constructionsites, 2, if not, none.
     roleMap['builder'].count = getBuilderCount(room)
 
-    roleMap['miner'].count = room.sources.length * 2
+    roleMap['miner'].count = Math.min(room.sources.length,room.containers.length);
 
     return roleMap;
 };
@@ -43,11 +43,11 @@ let getBuilderCount = function(room) {
     }
 
     if (sites.length < 5) {
-        return 2
+        return 1
     }
 
     if (sites.length >= 5) {
-        return 4
+        return 2
     }
 
     console.log('Something is wrong with proto.room.getBuilderCount')
@@ -84,6 +84,21 @@ Object.defineProperty(Room.prototype, 'config', {
             room._config = config;
         }
         return room._config
+    },
+    enumerable: false,
+    configurable: true
+});
+
+Object.defineProperty(Room.prototype, 'containers', {
+    get: function() {
+        let room = this;
+
+        if (!room._containers) {
+            room._containers = room.find(FIND_STRUCTURES, {
+                filter: s => s.structureType === STRUCTURE_CONTAINER
+            }).map(cont => cont.id);
+        }
+        return room._containers
     },
     enumerable: false,
     configurable: true

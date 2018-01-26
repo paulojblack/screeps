@@ -1,6 +1,6 @@
 let Role = require('class.role');
 
-module.exports = class RoleLorry extends Role {
+module.exports = class Lorry extends Role {
     constructor(creep) {
         // That dude is a
         super(creep);

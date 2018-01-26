@@ -1,6 +1,6 @@
 var Role = require('class.role');
 
-module.exports = class RoleRepairer extends Role {
+module.exports = class Repairer extends Role {
     constructor(creep) {
         super(creep)
         // this.memory = this.creep.memory;
@@ -24,7 +24,7 @@ module.exports = class RoleRepairer extends Role {
     static getDesign(budget, room){
 		var design = [MOVE, CARRY, WORK];
 		var spent = 200;
-
+        console.log(budget)
 		budget = Math.min(600, budget)
 
 		//Add as many WORK, CARRY and MOVE as we can

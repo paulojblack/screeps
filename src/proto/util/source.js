@@ -1,4 +1,4 @@
-exports.getSurroundingPlains = function(source) {
+exports.getSurroundingWorkableTiles = function(source) {
     const boundingBox = [source.pos.y - 1, source.pos.x - 1, source.pos.y + 1, source.pos.x + 1];
     const surroundingTerrain = source.room.lookForAtArea(LOOK_TERRAIN, ...boundingBox, true);
     return _.filter(surroundingTerrain, {'terrain': 'plain'})

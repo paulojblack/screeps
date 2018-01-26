@@ -1,7 +1,7 @@
 let Role = require('class.role');
 const partCosts = require('util.constants').partCosts
 
-module.exports = class RoleMiner extends Role {
+module.exports = class Miner extends Role {
     constructor(creep) {
         // That dude is a
         super(creep);
@@ -10,31 +10,14 @@ module.exports = class RoleMiner extends Role {
     run() {
         let miner = this;
         let creep = miner.creep;
-        creep.say('m')
-        let source = Game.getObjectById(creep.memory.targetSource);
-        let container;
 
-        // RoleMiner.getDesign(100)
+        let source = Game.getObjectById(creep.memory.boundSource);
 
         try {
             if (!creep.memory.positioned) {
-                if (!creep.memory.target || creep.room.name === creep.memory.target) {
-                    container = source.pos.findInRange(FIND_STRUCTURES, 1, {
-                        filter: s => s.structureType == STRUCTURE_CONTAINER
-                    })[0];
-
-                    if (creep.pos.isNearTo(container.pos)) {
-                        creep.memory.positioned = true;
-                    } else {
-                        creep.moveTo(container);
-                    }
-                } else {
-                    creep.moveTo(source)
-                }
+                return miner.positionMiner(source);
             } else {
-                if (creep.harvest(source) === ERR_NOT_IN_RANGE) {
-                    return creep.moveTo(source);
-                }
+                return miner.harvestEnergyOrApproach(source)
             }
         } catch(e) {
             console.log('A miner has errored')
@@ -42,6 +25,30 @@ module.exports = class RoleMiner extends Role {
 
             console.log(source)
             console.log(e)
+        }
+    }
+
+    positionMiner(source) {
+        const creep = this.creep;
+        const container = source.pos.findInRange(FIND_STRUCTURES, 1, {
+            filter: s => s.structureType == STRUCTURE_CONTAINER
+        })[0];
+
+        if (!creep.memory.target || creep.room.name === creep.memory.target) {
+
+            if (container) {
+                if (creep.pos.isEqualTo(container.pos)) {
+                    creep.memory.positioned = true;
+                } else {
+                    creep.moveTo(container);
+                }
+            } else if (creep.harvest(source) === ERR_NOT_IN_RANGE) {
+                return creep.moveTo(source)
+            } else {
+                creep.memory.positioned = true;
+            }
+
+
         }
     }
     /**
@@ -53,6 +60,15 @@ module.exports = class RoleMiner extends Role {
      * @return {[type]}        [description]
      */
     static getDesign(budget, room) {
-        return [WORK,WORK,WORK,WORK,WORK,MOVE];
+        let design = [WORK, MOVE];
+        let spent = 150;
+        const workSlotsAvailable = Math.floor(budget / 100)
+
+        while(spent + 100 <= budget){
+	        design.push(WORK);
+	        spent = spent + 100;
+	    }
+
+        return design;
     }
 }

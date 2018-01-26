@@ -8,7 +8,32 @@
 module.exports = class Role {
     constructor(creep) {
         this.creep = creep;
-        // this.memory = creep.memory;
+        this.memory = creep.memory;
+    }
+
+    harvestEnergyFromAssignedSource() {
+        const self = this;
+        const source = Game.getObjectById(self.memory.boundSource);
+
+        const droppedEnergy = self.checkDroppedEnergy();
+
+        if (droppedEnergy) {
+            if (self.creep.pickup(droppedEnergy[0]) === ERR_NOT_IN_RANGE) {
+                return self.creep.moveTo(droppedEnergy[0].pos);
+            }
+        }
+
+        if (self.creep.harvest(source) === ERR_NOT_IN_RANGE) {
+            return self.creep.moveTo(source);
+        }
+    }
+
+    checkDroppedEnergy() {
+        let self = this;
+
+        return self.creep.room.find(FIND_DROPPED_RESOURCES, {
+            filter: r => r.resourceType === 'energy'
+        })
     }
 
     /**
@@ -43,20 +68,20 @@ module.exports = class Role {
         }
 
         if (energySource) {
-            return Role.withdrawEnergy(creep, energySource);
+            return Role.withdrawEnergyOrApproach(creep, energySource);
         }
 
         // Send to a source otherwise
-        return Role.harvestEnergy(creep);
+        return Role.harvestEnergyOrApproach(creep);
     }
 
-    static withdrawEnergy(creep, energySource) {
+    static withdrawEnergyOrApproach(creep, energySource) {
         if (creep.withdraw(energySource, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
             return creep.moveTo(energySource);
         }
     }
 
-    static harvestEnergy(creep) {
+    static harvestEnergyOrApproach(creep) {
         let energySource;
         let droppedEnergy = Role.getDroppedEnergy(creep)
 
@@ -77,6 +102,18 @@ module.exports = class Role {
         }
         if (creep.harvest(energySource) === ERR_NOT_IN_RANGE) {
             return creep.moveTo(energySource);
+        }
+    }
+
+    harvestEnergyOrApproach(source) {
+        let creep = this.creep;
+
+        if (source) {
+            if (creep.harvest(source) === ERR_NOT_IN_RANGE) {
+                return creep.moveTo(source);
+            }
+        } else {
+            console.log('A', creep.memory.role, 'has no target source')
         }
     }
 

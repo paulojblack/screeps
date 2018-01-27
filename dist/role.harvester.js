@@ -1,5 +1,5 @@
 var roleBuilder = require('role.builder');
-let Role = require('class.role')
+let Role = require('class.Role')
 
 module.exports = class Harvester extends Role {
     constructor(creep) {
@@ -13,12 +13,18 @@ module.exports = class Harvester extends Role {
         creep.memory.working = harvester.setWorkingState(creep);
 
         if (creep.memory.working === true) {
-            return harvester.depositEnergy(creep, {
-                depositTo: 'living'
-            })
-        } else {
-            return harvester.harvestEnergyFromAssignedSource()
+            if (harvester.depositToLivingStructure() !== 'NO_AVAILABLE_STRUCTURE') {
+                return harvester.depositToLivingStructure();
+            }
+
+            if (harvester.depositToControllerContainer() !== 'NO_AVAILABLE_STRUCTURE') {
+                return harvester.depositToControllerContainer()
+            }
+
+            return harvester.depositToController()
         }
+
+        return harvester.harvestEnergyFromAssignedSource()
     }
 
     static getDesign(budget, room) {

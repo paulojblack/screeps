@@ -3,7 +3,7 @@ var protoRoom = require('proto.room');
 var protoCreep = require('proto.creep');
 var protoTower = require('proto.tower');
 var protoSource = require('proto.source');
-const RoomCommander = require('class.room_commander');
+const RoomCommander = require('class.RoomCommander');
 const constants = require('util.constants');
 const architect = require('util.architect');
 const profiler = require('screeps-profiler');
@@ -12,14 +12,13 @@ profiler.enable();
 
 module.exports.loop = function() {
   profiler.wrap(function() {
+
       // Handle room coordination
       for (const roomName in constants.myRooms) {
           const room = Game.rooms[roomName];
-
           if (room) {
               const roomCommander = new RoomCommander(room)
               roomCommander.processRoom()
-
               // architect.roadPlanner(room);
               refreshTimers(room);
           }

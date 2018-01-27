@@ -1,4 +1,5 @@
-const RoomDecorator = require('class.room_decorator')
+const RoomDecorator = require('class.RoomDecorator')
+const RoomFurnisher = require('class.RoomFurnisher')
 
 module.exports = class RoomCommander extends RoomDecorator {
     constructor(room) {
@@ -7,8 +8,11 @@ module.exports = class RoomCommander extends RoomDecorator {
 
     processRoom() {
         let self = this;
+        let roomFurnisher = new RoomFurnisher(self.room);
 
         self.spawnCreep();
+
+        roomFurnisher.roadPlanner()
     }
 
     spawnCreep() {
@@ -22,21 +26,20 @@ module.exports = class RoomCommander extends RoomDecorator {
             return self.handleSpawnHarvester();
         }
 
-
         if (self.memory.nextCreep === 'miner') {
-            return self.handleSpawnMiner()
+            return self.handleSpawnMiner();
         }
 
         if (self.memory.nextCreep === 'builder') {
             return self.handleSpawnGeneric('builder');
         }
 
-        if (self.memory.nextCreep === 'lorry') {
-            return self.handleSpawnGeneric('lorry');
-        }
-
         if (self.memory.nextCreep === 'upgrader') {
             return self.handleSpawnGeneric('upgrader');
+        }
+
+        if (self.memory.nextCreep === 'lorry') {
+            return self.handleSpawnGeneric('lorry');
         }
 
         if (self.memory.nextCreep === 'repairer') {

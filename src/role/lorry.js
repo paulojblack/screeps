@@ -1,4 +1,4 @@
-let Role = require('class.role');
+let Role = require('class.Role');
 
 module.exports = class Lorry extends Role {
     constructor(creep) {
@@ -13,14 +13,25 @@ module.exports = class Lorry extends Role {
         creep.memory.working = lorry.setWorkingState(creep);
 
         if (creep.memory.working === true) {
-            return lorry.depositEnergy(creep, {
-                depositTo: 'living'
-            })
-        } else {
-            return lorry.getEnergy(creep, {
-                gatherFrom: 'anything'
-            })
+            if (lorry.deposit.livingStructure() !== 'NO_AVAILABLE_STRUCTURE') {
+                return lorry.deposit.livingStructure();
+            }
+
+            if (lorry.deposit.controllerContainer() !== 'NO_AVAILABLE_STRUCTURE') {
+                return lorry.deposit.controllerContainer()
+            }
+
+            if (lorry.deposit.spawnContainer() !== 'NO_AVAILABLE_STRUCTURE') {
+                return lorry.deposit.spawnContainer()
+            }
+
+            return creep.say('lazy lorry')
+
         }
+
+        return lorry.getEnergy(creep, {
+            gatherFrom: 'anything'
+        })
     }
 
     static getDesign(budget, room) {

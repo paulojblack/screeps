@@ -1,26 +1,29 @@
 module.exports = function(grunt) {
 
-    // grunt.loadNpmTasks('grunt-screeps');
+    grunt.loadNpmTasks('grunt-screeps');
+    grunt.task.renameTask('screeps', 'prod');
     grunt.loadNpmTasks('grunt-screeps-customserver');
+    grunt.task.renameTask('screeps', 'staging');
+
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-copy');
-
     const creds = grunt.file.readJSON('credentials.json');
 
     grunt.initConfig({
-        screeps: {
-            //prod
-            // options: {
-            //     email: creds.liveemail,
-            //     password: creds.livepw,
-            //     branch: 'default',
-            //     ptr: false
-            // },
-            // dist: {
-            //     src: ['dist/*.js']
-            // }
-            //stg
+        prod: {
+            options: {
+                email: creds.liveemail,
+                password: creds.livepw,
+                branch: 'default',
+                ptr: false
+            },
+            dist: {
+                src: ['dist/*.js']
+            }
+        },
+        staging: {
+
             options: {
                 hostname: creds.hostname,
                 port: creds.port,
@@ -38,7 +41,7 @@ module.exports = function(grunt) {
 
 
         copy: {
-            screeps: {
+            prod: {
                 files: [{
                     expand: true,
                     cwd: 'src/',
@@ -56,7 +59,7 @@ module.exports = function(grunt) {
         watch: {
             scripts: {
                 files: ['src/**/*.js'],
-                tasks: ['clean', 'copy', 'screeps']
+                tasks: ['clean', 'copy', 'prod', 'staging']
             },
         },
 
@@ -65,5 +68,5 @@ module.exports = function(grunt) {
         }
 
     });
-    grunt.registerTask('default', ['clean','copy','screeps', /*'screeps:production', 'screeps:staging'*/]);
+    // grunt.registerTask('default', ['clean','copy', 'prod', /*'screeps:production', 'screeps:staging'*/]);
 }

@@ -142,6 +142,34 @@ Object.defineProperty(Room.prototype, 'controllerContainer', {
     configurable: true
 });
 
+/**
+ * Returns ID of spawn container
+ * @type {[type]}
+ */
+Object.defineProperty(Room.prototype, 'spawnContainer', {
+    get: function() {
+        let room = this;
+
+        if (!room._spawn_container) {
+            const spawns = room.find(FIND_MY_SPAWNS)
+
+            if (spawns.length) {
+                room._spawn_container = spawns[0].pos.findInRange(FIND_STRUCTURES, 6, {
+                    filter: s => s.structureType === STRUCTURE_CONTAINER
+                }).map(cont => cont.id);
+            }
+        }
+
+        if (room._spawn_container) {
+            return room._spawn_container[0]
+        }
+
+        return undefined
+    },
+    enumerable: false,
+    configurable: true
+});
+
 Object.defineProperty(Room.prototype, 'sources', {
     get: function() {
         let room = this;

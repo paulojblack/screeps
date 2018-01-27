@@ -1,4 +1,4 @@
-let Role = require('class.role');
+let Role = require('class.Role');
 const partCosts = require('util.constants').partCosts
 
 module.exports = class Miner extends Role {

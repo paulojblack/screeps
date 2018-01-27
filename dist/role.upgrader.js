@@ -1,4 +1,4 @@
-let Role = require('class.role');
+let Role = require('class.Role');
 
 module.exports = class Upgrader extends Role {
     constructor(creep) {
@@ -13,14 +13,15 @@ module.exports = class Upgrader extends Role {
             creep.memory.working = upgrader.setWorkingState(creep)
 
             if (creep.memory.working === true) {
-                return upgrader.depositEnergy(creep, {
-                    depositTo: 'controller'
-                })
+                return upgrader.deposit.controller()
             } else {
-                return upgrader.getEnergy(creep, {
-                    gatherFrom: 'controller_container'
-                });
+                if (upgrader.withdrawFromClosestContainer() !== 'NO_AVAILABLE_SOURCE') {
+                    return upgrader.withdrawFromClosestContainer()
+                }
+
+                return upgrader.harvestEnergyFromAssignedSource()
             }
+
         } catch(e) {
             console.log(e);
         }

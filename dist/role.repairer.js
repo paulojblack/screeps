@@ -1,4 +1,4 @@
-var Role = require('class.role');
+var Role = require('class.Role');
 
 module.exports = class Repairer extends Role {
     constructor(creep) {
@@ -7,18 +7,27 @@ module.exports = class Repairer extends Role {
     }
 
     run() {
-        let me = this;
-        me.creep.memory.working = me.setWorkingState()
+        const repairer = this;
+        const creep = repairer.creep;
 
-        if (me.creep.memory.working == true) {
-            return me.depositEnergy(me.creep, {
-                depositTo: 'repair_site'
-            })
-        } else {
-            return me.getEnergy(me.creep, {
-                gatherFrom: 'container'
-            });
+        creep.memory.working = repairer.setWorkingState()
+
+        if (repairer.creep.memory.working == true) {
+            if (repairer.depositToRepairStructure() !== 'NO_AVAILABLE_STRUCTURE') {
+                return repairer.depositToRepairStructure();
+            }
+
+            if (repairer.depositToConstructionSite() !== 'NO_AVAILABLE_STRUCTURE') {
+                return repairer.depositToConstructionSite();
+            }
+
+            return repairer.depositToController()
         }
+
+        return repairer.getEnergy(creep, {
+            gatherFrom: 'container'
+        });
+
     }
 
     static getDesign(budget, room){

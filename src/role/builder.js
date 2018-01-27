@@ -1,4 +1,4 @@
-let Role = require('class.role')
+let Role = require('class.Role')
 
 module.exports = class Builder extends Role {
     constructor(creep) {
@@ -14,14 +14,19 @@ module.exports = class Builder extends Role {
             creep.say('b')
 
             if (creep.memory.working == true) {
-                return this.depositEnergy(creep, {
-                    depositTo: 'construction'
-                })
+                if (builder.depositToConstructionSite() !== 'NO_AVAILABLE_STRUCTURE') {
+                    return builder.depositToConstructionSite();
+                }
+
+                return builder.depositToController()
             } else {
-                return this.getEnergy(creep, {
-                    gatherFrom: 'container'
-                });
+                if (builder.withdrawFromClosestContainer() !== 'NO_AVAILABLE_SOURCE') {
+                    return builder.withdrawFromClosestContainer()
+                }
+
+                return builder.harvestEnergyFromAssignedSource()
             }
+            
         } catch(e) {
             console.log('Builder error')
             console.log(e)

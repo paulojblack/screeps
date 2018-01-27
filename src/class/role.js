@@ -1,3 +1,4 @@
+let Depositer = require('class.private.Depositer');
 /**
  * [exports description]
  * It's not the best jargon, but for now structures are either LIVING or LIFELESS
@@ -9,6 +10,9 @@ module.exports = class Role {
     constructor(creep) {
         this.creep = creep;
         this.memory = creep.memory;
+
+        this.deposit = new Depositer(creep);
+
     }
 
     harvestEnergyFromAssignedSource() {
@@ -28,12 +32,38 @@ module.exports = class Role {
         }
     }
 
+    withdrawFromClosestContainer() {
+        const self = this;
+
+        const energySource = self.creep.pos.findClosestByRange(FIND_STRUCTURES, {
+            filter: s => s.structureType === STRUCTURE_CONTAINER &&
+            s.store[RESOURCE_ENERGY] > 0
+        });
+
+        if (!energySource) {
+            return 'NO_AVAILABLE_SOURCE'
+        }
+
+        return self.withdrawEnergyOrApproach(energySource)
+    }
+
+    withdrawFromSourceContainers() {
+        const self = this;
+    }
+
     checkDroppedEnergy() {
         let self = this;
 
         return self.creep.room.find(FIND_DROPPED_RESOURCES, {
             filter: r => r.resourceType === 'energy'
         })
+    }
+
+    withdrawEnergyOrApproach(energySource) {
+        let self = this
+        if (self.creep.withdraw(energySource, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+            return self.creep.moveTo(energySource);
+        }
     }
 
     /**
@@ -57,7 +87,9 @@ module.exports = class Role {
 
             energySource = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                 filter: s => s.structureType === STRUCTURE_CONTAINER &&
-                s.store[RESOURCE_ENERGY] > 0 && s.id !== creep.room.controllerContainer
+                s.store[RESOURCE_ENERGY] > 0
+                && s.id !== creep.room.controllerContainer
+                && s.id !== creep.room.spawnContainer
             });
         }
 
@@ -125,37 +157,25 @@ module.exports = class Role {
     /** END GET ENERGY METHODS **/
     /** BEGIN DEPOSIT ENERGY METHODS **/
 
-    /**
-     * [depositEnergy description]
-     * @param  {[type]} creep [description]
-     * @param  {[type]} opts  [description]
-     * @return {[type]}       [description]
-     */
-    depositEnergy(creep, opts) {
-        if (opts.depositTo === 'construction') {
-            return Role.depositToConstructionSite(creep)
+    depositToLivingStructure() {
+        const creep = this.creep;
+        const structure = Role.getClosestUnfilledLivingStructure(creep);
+
+        if (!structure) {
+            return 'NO_AVAILABLE_STRUCTURE'
         }
 
-        if (opts.depositTo === 'repair_site') {
-            return Role.depositToRepairStructure(creep)
+        if (structure && creep.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+            return creep.moveTo(structure);
         }
-
-        if (opts.depositTo === 'living') {
-            return Role.depositToLivingStructure(creep)
-        }
-
-        if (opts.depositTo === 'controller_container') {
-            return Role.depositToControllerContainer(creep)
-        }
-
-        return Role.depositToController(creep)
     }
 
-    static depositToConstructionSite(creep) {
+    depositToConstructionSite() {
+        const creep = this.creep;
         const constructionSite= Role.getClosestConstructionSite(creep);
 
         if (!constructionSite) {
-            return Role.depositToControllerContainer(creep)
+            return 'NO_AVAILABLE_STRUCTURE'
         }
 
         if (constructionSite !== undefined && creep.build(constructionSite) === ERR_NOT_IN_RANGE) {
@@ -164,12 +184,12 @@ module.exports = class Role {
 
     }
 
-
-    static depositToRepairStructure(creep) {
+    depositToRepairStructure() {
+        const creep = this.creep;
         const repairSite = Role.getClosestDamagedStructure(creep);
 
         if (!repairSite){
-            return Role.depositToConstructionSite(creep)
+            return 'NO_AVAILABLE_STRUCTURE'
         }
 
         if (creep.repair(repairSite) == ERR_NOT_IN_RANGE) {
@@ -178,23 +198,12 @@ module.exports = class Role {
 
     }
 
-    static depositToLivingStructure(creep) {
-        const structure = Role.getClosestUnfilledLivingStructure(creep);
-
-        if (!structure) {
-            return Role.depositToControllerContainer(creep)
-        }
-
-        if (structure && creep.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-            return creep.moveTo(structure);
-        }
-    }
-
-    static depositToControllerContainer(creep) {
+    depositToControllerContainer() {
+        const creep = this.creep;
         const controllerContainer = Game.getObjectById(creep.room.controllerContainer)
 
         if (!controllerContainer) {
-            return Role.depositToController(creep)
+            return 'NO_AVAILABLE_STRUCTURE'
         }
 
         if (controllerContainer.store[RESOURCE_ENERGY] < controllerContainer.storeCapacity) {
@@ -206,7 +215,25 @@ module.exports = class Role {
 
     }
 
-    static depositToController(creep) {
+    depositToSpawnContainer() {
+        const creep = this.creep;
+        const spawnContainer = Game.getObjectById(creep.room.spawnContainer)
+
+        if (!spawnContainer) {
+            return 'NO_AVAILABLE_STRUCTURE'
+        }
+
+        if (spawnContainer.store[RESOURCE_ENERGY] < spawnContainer.storeCapacity) {
+
+            if (creep.transfer(spawnContainer, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                return creep.moveTo(spawnContainer);
+            }
+        }
+    }
+
+    depositToController() {
+        const creep = this.creep;
+
         if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
             return creep.moveTo(creep.room.controller);
         }
@@ -273,16 +300,33 @@ module.exports = class Role {
                 });
     }
 
+    getClosestUnfilledLivingStructure(creep, opts) {
+
+        return creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
+                filter: (s) => (
+                        s.structureType == STRUCTURE_SPAWN
+                        || s.structureType == STRUCTURE_EXTENSION
+                        || s.structureType == STRUCTURE_TOWER
+                    ) && s.energy < s.energyCapacity
+                });
+    }
+
     static getClosestConstructionSite(creep, opts) {
         return creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
     }
-
+    getClosestConstructionSite(creep, opts) {
+        return creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
+    }
     static getClosestDamagedStructure(creep, opts) {
         return creep.pos.findClosestByRange(FIND_STRUCTURES, {
             filter: (s) => s.hits < s.hitsMax && s.structureType != STRUCTURE_WALL
         });
     }
-
+    getClosestDamagedStructure(creep, opts) {
+        return creep.pos.findClosestByRange(FIND_STRUCTURES, {
+            filter: (s) => s.hits < s.hitsMax && s.structureType != STRUCTURE_WALL
+        });
+    }
     /**
      * Needs work INCOMPLETE
      * @param  {[type]} creep [description]

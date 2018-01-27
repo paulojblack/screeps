@@ -6,8 +6,8 @@ module.exports = class RoomDecorator {
         this.memory = room.memory;
 
         this.memory.creepsList = this.getCreepsAssignedToRoom()
-        this.memory.state = this.getRoomState();
         this.memory.existingRoles = this.getExistingRoomRoles();
+        this.memory.state = this.getRoomState();
         this.memory.nextCreep = this.getDesiredCreeps()
     }
 
@@ -106,16 +106,16 @@ module.exports = class RoomDecorator {
             return 'builder'
         }
 
-        if (self.memory.existingRoles['lorries'] < 1) {
-            return 'lorry'
-        }
-
-        if (self.memory.existingRoles['upgrader'] < 1) {
+        if (self.memory.existingRoles['upgraders'] < 2) {
             return 'upgrader'
         }
 
         if (self.memory.existingRoles['repairers'] < 1) {
             return 'repairer'
+        }
+
+        if (self.memory.existingRoles['lorries'] < 2) {
+            return 'lorry'
         }
 
         return undefined

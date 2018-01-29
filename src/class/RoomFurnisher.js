@@ -66,8 +66,8 @@ module.exports = class RoomFurnisher {
 
         for (const spawn of room.find(FIND_MY_SPAWNS)) {
             if (room.memory.initPaths === undefined) {
-                sourceToSpawn(spawn, room);
-                controllerToSpawn(spawn, room);
+                self.sourceToSpawn(spawn, room);
+                self.controllerToSpawn(spawn, room);
 
                 room.memory.initPaths = true;
             }

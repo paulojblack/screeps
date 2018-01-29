@@ -25,11 +25,11 @@ module.exports = function(grunt) {
         staging: {
 
             options: {
-                hostname: creds.hostname,
+                hostname: creds.julianserver,
                 port: creds.port,
                 'use-https': false,
-                username: creds.user,
-                password: creds.password,
+                username: creds.julianuser,
+                password: creds.julianpw,
                 branch: 'default',
                 ptr: false
             },

@@ -47,15 +47,20 @@ module.exports = class Depositer {
 
     storageStructure() {
         const creep = this.creep;
-        // const repairSite = this.getClosestDamagedStructure(creep);
+        let storage = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
+            filter: (s) => (
+                s.structureType === STRUCTURE_STORAGE &&
+                s.store[RESOURCE_ENERGY] < s.storeCapacity
+            )
+        })
 
-        // if (!repairSite){
-        //     return 'NO_AVAILABLE_STRUCTURE'
-        // }
+        if (!storage) {
+            return 'NO_AVAILABLE_STRUCTURE'
+        }
+        if (creep.transfer(storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+            return creep.moveTo(storage);
+        }
 
-        // if (creep.repair(repairSite) == ERR_NOT_IN_RANGE) {
-        //     return creep.moveTo(repairSite);
-        // }
 
     }
 
@@ -100,14 +105,19 @@ module.exports = class Depositer {
     }
 
     getClosestUnfilledLivingStructure(creep, opts) {
-
-        return creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
+        let structures =  creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
                 filter: (s) => (
                         s.structureType == STRUCTURE_SPAWN
                         || s.structureType == STRUCTURE_EXTENSION
-                        || s.structureType == STRUCTURE_TOWER
                     ) && s.energy < s.energyCapacity
                 });
+                
+        if (!structures || structures.length === 0) {
+            structures = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
+                    filter: (s) => s.structureType == STRUCTURE_TOWER && s.energy <= 100
+                    });
+        }
+        return structures;
     }
 
     getClosestConstructionSite(creep, opts) {

@@ -13,27 +13,29 @@ module.exports = class Repairer extends Role {
         creep.memory.working = repairer.setWorkingState()
 
         if (repairer.creep.memory.working == true) {
-            if (repairer.depositToRepairStructure() !== 'NO_AVAILABLE_STRUCTURE') {
-                return repairer.depositToRepairStructure();
+            if (repairer.deposit.repairStructure() !== 'NO_AVAILABLE_STRUCTURE') {
+                return repairer.deposit.repairStructure();
             }
 
-            if (repairer.depositToConstructionSite() !== 'NO_AVAILABLE_STRUCTURE') {
-                return repairer.depositToConstructionSite();
+            if (repairer.deposit.constructionSite() !== 'NO_AVAILABLE_STRUCTURE') {
+                return repairer.deposit.constructionSite();
             }
 
-            return repairer.depositToController()
+            return repairer.deposit.controller()
+        } else {
+            if (repairer.extract.closestContainer() !== 'NO_AVAILABLE_SOURCE') {
+                return repairer.extract.closestContainer()
+            }
+
+            return repairer.extract.assignedSource()
         }
-
-        return repairer.getEnergy(creep, {
-            gatherFrom: 'container'
-        });
 
     }
 
     static getDesign(budget, room){
 		var design = [MOVE, CARRY, WORK];
 		var spent = 200;
-        console.log(budget)
+
 		budget = Math.min(600, budget)
 
 		//Add as many WORK, CARRY and MOVE as we can

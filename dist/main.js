@@ -12,9 +12,12 @@ profiler.enable();
 
 module.exports.loop = function() {
   profiler.wrap(function() {
-
+      let myflags = Game.flags
       // Handle room coordination
       for (const roomName in constants.myRooms) {
+          const roomCategory = constants.myRooms[roomName]
+          // console.log(roomCategory)
+
           const room = Game.rooms[roomName];
           if (room) {
               const roomCommander = new RoomCommander(room)
@@ -30,7 +33,7 @@ module.exports.loop = function() {
           creep.runRole(creep);
       }
 
-      if((Game.time)%60==0){
+      if((Game.time) % 60 === 0){
           for(let room in Game.rooms){
               architect.runExtensionBuilder(Game.rooms[room]);
           }

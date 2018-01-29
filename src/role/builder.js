@@ -14,19 +14,19 @@ module.exports = class Builder extends Role {
             creep.say('b')
 
             if (creep.memory.working == true) {
-                if (builder.depositToConstructionSite() !== 'NO_AVAILABLE_STRUCTURE') {
-                    return builder.depositToConstructionSite();
+                if (builder.deposit.constructionSite() !== 'NO_AVAILABLE_STRUCTURE') {
+                    return builder.deposit.constructionSite();
                 }
 
-                return builder.depositToController()
+                return builder.deposit.controller()
             } else {
-                if (builder.withdrawFromClosestContainer() !== 'NO_AVAILABLE_SOURCE') {
-                    return builder.withdrawFromClosestContainer()
+                if (builder.extract.closestContainer() !== 'NO_AVAILABLE_SOURCE') {
+                    return builder.extract.closestContainer()
                 }
 
-                return builder.harvestEnergyFromAssignedSource()
+                return builder.extract.assignedSource()
             }
-            
+
         } catch(e) {
             console.log('Builder error')
             console.log(e)

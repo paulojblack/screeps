@@ -10,11 +10,16 @@ module.exports = class Lorry extends Role {
         let lorry = this;
         let creep = lorry.creep;
 
+        creep.say('l')
         creep.memory.working = lorry.setWorkingState(creep);
 
         if (creep.memory.working === true) {
             if (lorry.deposit.livingStructure() !== 'NO_AVAILABLE_STRUCTURE') {
                 return lorry.deposit.livingStructure();
+            }
+
+            if (lorry.deposit.storageStructure() !== 'NO_AVAILABLE_STRUCTURE') {
+                return lorry.deposit.storageStructure()
             }
 
             if (lorry.deposit.controllerContainer() !== 'NO_AVAILABLE_STRUCTURE') {
@@ -27,16 +32,20 @@ module.exports = class Lorry extends Role {
 
             return creep.say('lazy lorry')
 
+        } else {
+            if (lorry.extract.assignedSourceContainer() !== 'NO_AVAILABLE_SOURCE') {
+                return lorry.extract.assignedSourceContainer();
+            }
+
+            console.log('lorry', lorry, 'has no sources')
+
         }
 
-        return lorry.getEnergy(creep, {
-            gatherFrom: 'anything'
-        })
     }
 
     static getDesign(budget, room) {
-        var design = [];
-        var spent = 0;
+        let design = [];
+        let spent = 0;
 
         budget = Math.min(1800, budget)
 

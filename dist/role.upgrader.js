@@ -15,11 +15,11 @@ module.exports = class Upgrader extends Role {
             if (creep.memory.working === true) {
                 return upgrader.deposit.controller()
             } else {
-                if (upgrader.withdrawFromClosestContainer() !== 'NO_AVAILABLE_SOURCE') {
-                    return upgrader.withdrawFromClosestContainer()
+                if (upgrader.extract.closestContainer() !== 'NO_AVAILABLE_SOURCE') {
+                    return upgrader.extract.closestContainer()
                 }
 
-                return upgrader.harvestEnergyFromAssignedSource()
+                return upgrader.extract.assignedSource()
             }
 
         } catch(e) {

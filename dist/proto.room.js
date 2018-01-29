@@ -70,39 +70,24 @@ To be clear, this object will NOT assign information related to the sources in t
 rather it specifies things like how many creeps to create and how they are composed
  */
 
-Object.defineProperty(Room.prototype, 'config', {
-    get: function() {
-        let room = this;
-
-        if (!room._config) {
-            let config = {
-                creepConfig: room.creepCountByCtrlLevel(room),
-                desiredBuildings: constants.constructionPlanner[room.controller.level]
-            }
-
-
-            room._config = config;
-        }
-        return room._config
-    },
-    enumerable: false,
-    configurable: true
-});
-
-Object.defineProperty(Room.prototype, 'containers', {
-    get: function() {
-        let room = this;
-
-        if (!room._containers) {
-            room._containers = room.find(FIND_STRUCTURES, {
-                filter: s => s.structureType === STRUCTURE_CONTAINER
-            }).map(cont => cont.id);
-        }
-        return room._containers
-    },
-    enumerable: false,
-    configurable: true
-});
+// Object.defineProperty(Room.prototype, 'config', {
+//     get: function() {
+//         let room = this;
+//
+//         if (!room._config) {
+//             let config = {
+//                 creepConfig: room.creepCountByCtrlLevel(room),
+//                 desiredBuildings: constants.constructionPlanner[room.controller.level]
+//             }
+//
+//
+//             room._config = config;
+//         }
+//         return room._config
+//     },
+//     enumerable: false,
+//     configurable: true
+// });
 
 Object.defineProperty(Room.prototype, 'containers', {
     get: function() {
@@ -134,6 +119,29 @@ Object.defineProperty(Room.prototype, 'controllerContainer', {
         }
         if (room._controller_container) {
             return room._controller_container[0]
+        }
+
+        return undefined
+    },
+    enumerable: false,
+    configurable: true
+});
+
+Object.defineProperty(Room.prototype, 'sourceContainers', {
+    get: function() {
+        let room = this;
+
+        if (!room._sourceContainers) {
+            const sources = room.sources;
+            let sourceContainers = sources.map(function(source) {
+                    return source.pos.findInRange(FIND_STRUCTURES, 3, {
+                        filter: s => s.structureType === STRUCTURE_CONTAINER
+                    })
+
+            })
+        }
+        if (room._sourceContainers) {
+            return room._sourceContainers
         }
 
         return undefined

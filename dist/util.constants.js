@@ -3,10 +3,10 @@ exports.farmRooms = {
 }
 
 exports.myRooms = {
-    W3N8: 'OWNED_BASE',
-    W22N48: {
-        type: 'base'
-    }
+    W3N8: 'HOMEBASE',
+    W3N7: 'RAID',
+    //Pprod rooms
+    W22N48: 'HOMEBASE'
 }
 
 exports.roomStates = {

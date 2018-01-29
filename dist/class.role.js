@@ -1,4 +1,5 @@
 let Depositer = require('class.private.Depositer');
+let Extractor = require('class.private.Extractor');
 /**
  * [exports description]
  * It's not the best jargon, but for now structures are either LIVING or LIFELESS
@@ -12,6 +13,7 @@ module.exports = class Role {
         this.memory = creep.memory;
 
         this.deposit = new Depositer(creep);
+        this.extract = new Extractor(creep);
 
     }
 
@@ -36,9 +38,11 @@ module.exports = class Role {
         const self = this;
 
         const energySource = self.creep.pos.findClosestByRange(FIND_STRUCTURES, {
-            filter: s => s.structureType === STRUCTURE_CONTAINER &&
-            s.store[RESOURCE_ENERGY] > 0
-        });
+            filter: s => (
+                (s.structureType === STRUCTURE_CONTAINER
+                || s.structureType === STRUCTURE_STORAGE)
+                && s.store[RESOURCE_ENERGY] > 0
+        )});
 
         if (!energySource) {
             return 'NO_AVAILABLE_SOURCE'
@@ -49,6 +53,15 @@ module.exports = class Role {
 
     withdrawFromSourceContainers() {
         const self = this;
+
+        let test = Game.getObjectById(creep.memory.boundSource)
+        test.findInRange(FIND_STRUCTURES, 3, {
+            filter: s => (
+                s.structureType === STRUCTURE_CONTAINER
+                && s.store(RESOURCE_ENERGY) >= 500
+            )
+        })
+        // let sourceContainers = self.creep.room.sources
     }
 
     checkDroppedEnergy() {
@@ -93,11 +106,11 @@ module.exports = class Role {
             });
         }
 
-        if (!energySource && opts.gatherFrom === 'storage' || opts.gatherFrom === 'anything') {
-            if (creep.room.storage && creep.room.storage.store[RESOURCE_ENERGY] >= 500) {
-                energySource = creep.room.storage;
-            }
-        }
+        // if (!energySource && opts.gatherFrom === 'storage' || opts.gatherFrom === 'anything') {
+        //     if (creep.room.storage && creep.room.storage.store[RESOURCE_ENERGY] >= 500) {
+        //         energySource = creep.room.storage;
+        //     }
+        // }
 
         if (energySource) {
             return Role.withdrawEnergyOrApproach(creep, energySource);

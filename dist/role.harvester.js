@@ -7,24 +7,36 @@ module.exports = class Harvester extends Role {
     }
 
     run() {
+
         let harvester = this;
         let creep = harvester.creep;
 
         creep.memory.working = harvester.setWorkingState(creep);
 
         if (creep.memory.working === true) {
-            if (harvester.depositToLivingStructure() !== 'NO_AVAILABLE_STRUCTURE') {
-                return harvester.depositToLivingStructure();
+
+            if (harvester.deposit.livingStructure() !== 'NO_AVAILABLE_STRUCTURE') {
+                return harvester.deposit.livingStructure();
             }
 
-            if (harvester.depositToControllerContainer() !== 'NO_AVAILABLE_STRUCTURE') {
-                return harvester.depositToControllerContainer()
+            if (harvester.deposit.controllerContainer() !== 'NO_AVAILABLE_STRUCTURE') {
+                return harvester.deposit.controllerContainer()
             }
 
-            return harvester.depositToController()
+            return harvester.deposit.controller()
+
+        } else {
+
+            if (harvester.extract.droppedEnergy() !== 'NO_AVAILABLE_SOURCE') {
+                return harvester.extract.droppedEnergy();
+            }
+
+            if (harvester.extract.assignedSourceContainer() !== 'NO_AVAILABLE_SOURCE') {
+                return harvester.extract.assignedSourceContainer();
+            }
+
+            return harvester.extract.assignedSource()
         }
-
-        return harvester.harvestEnergyFromAssignedSource()
     }
 
     static getDesign(budget, room) {

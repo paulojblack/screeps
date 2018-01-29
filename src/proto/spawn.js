@@ -6,7 +6,7 @@ const roles = {
     upgrader: require('role.upgrader'),
     builder: require('role.builder'),
     repairer: require('role.repairer'),
-    wallRepairer: require('role.wallRepairer'),
+    defenseBuilder: require('role.defenseBuilder'),
     miner: require('role.miner'),
     lorry: require('role.lorry')
 };

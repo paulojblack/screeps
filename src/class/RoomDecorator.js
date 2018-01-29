@@ -61,6 +61,7 @@ module.exports = class RoomDecorator {
             lorries: 0,
             claimnants: 0,
             repairers: 0,
+            defenseBuilders: 0,
             roadbuilders: 0,
             extractors: 0
         }
@@ -85,6 +86,8 @@ module.exports = class RoomDecorator {
                     roles.roadbuilders++;
                 } else if (creep.memory.role === 'extractor') {
                     roles.extractors++;
+                } else if (creep.memory.role === 'defenseBuilder') {
+                    roles.defenseBuilder++;
                 }
             }
         }
@@ -102,11 +105,15 @@ module.exports = class RoomDecorator {
             return 'miner'
         }
 
-        if (self.memory.existingRoles['builders'] < 2) {
+        if (self.memory.existingRoles['builders'] < 1) {
             return 'builder'
         }
 
-        if (self.memory.existingRoles['upgraders'] < 2) {
+        if (self.memory.existingRoles['lorries'] < 2) {
+            return 'lorry'
+        }
+
+        if (self.memory.existingRoles['upgraders'] < 1) {
             return 'upgrader'
         }
 
@@ -114,8 +121,9 @@ module.exports = class RoomDecorator {
             return 'repairer'
         }
 
-        if (self.memory.existingRoles['lorries'] < 2) {
-            return 'lorry'
+
+        if (self.memory.existingRoles['defenseBuilders'] < 1) {
+            return 'defenseBuilder'
         }
 
         return undefined

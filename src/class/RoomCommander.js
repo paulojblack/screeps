@@ -45,28 +45,26 @@ module.exports = class RoomCommander extends RoomDecorator {
         if (self.memory.nextCreep === 'repairer') {
             return self.handleSpawnGeneric('repairer');
         }
+
+        if (self.memory.nextCreep === 'defenseBuilder') {
+            return self.handleSpawnGeneric('defenseBuilder');
+        }
     }
 
     handleSpawnHarvester() {
         let self = this;
 
-        const harvesters = self.memory.creepsList.filter(function(creep) {
-            return creep.memory.role === 'harvester'
-        });
-
-        const roomSourceIDs = _.pluck(self.room.sources, 'id')
-        const boundSources = _.pluck(harvesters, 'memory.boundSource')
-
-        const unboundSources = _.difference(roomSourceIDs, boundSources)
+        let unboundSources = self.getBoundSource('harvester');
 
         // Harvester assigned to spawn room
         if (unboundSources.length) {
-            // Pass this in to create minimum energy harvester if none exist
+                // Pass this in to create minimum energy harvester if none exist
             let panicFlag = 0;
 
-            if (unboundSources.length === self.room.sources.length) {
+            if (unboundSources.length > 0) {
                 panicFlag = 1
             }
+
             for (const spawn of self.room.find(FIND_MY_SPAWNS)) {
                 const bindSource = unboundSources[0];
                 const target = self.room.name;
@@ -85,14 +83,7 @@ module.exports = class RoomCommander extends RoomDecorator {
     handleSpawnMiner() {
         let self = this;
 
-        const miners = self.memory.creepsList.filter(function(creep) {
-            return creep.memory.role === 'miner'
-        });
-
-        const roomSourceIDs = _.pluck(self.room.sources, 'id')
-        const boundSources = _.pluck(miners, 'memory.boundSource')
-
-        const unboundSources = _.difference(roomSourceIDs, boundSources)
+        let unboundSources = self.getBoundSource('miner');
 
         if (unboundSources.length) {
             // Pass this in to create minimum energy harvester if none exist
@@ -111,19 +102,12 @@ module.exports = class RoomCommander extends RoomDecorator {
     handleSpawnGeneric(role) {
         let self = this;
 
-        const units = self.memory.creepsList.filter(function(creep) {
-            return creep.memory.role === role
-        });
-
-        const roomSourceIDs = _.pluck(self.room.sources, 'id')
-        const boundSources = _.pluck(units, 'memory.boundSource')
-
-        const unboundSources = _.difference(roomSourceIDs, boundSources)
+        let unboundSources = self.getBoundSource(role);
 
         if (unboundSources.length) {
             // Pass this in to create minimum energy harvester if none exist
             for (const spawn of self.room.find(FIND_MY_SPAWNS)) {
-                const bindSource = unboundSources.unshift();
+                const bindSource = unboundSources[unboundSources.length - 1]
                 const target = self.room.name;
                 const home = self.room.name;
 
@@ -133,6 +117,32 @@ module.exports = class RoomCommander extends RoomDecorator {
 
         // TODO handle neighboring rooms
     }
+
+    getBoundSource(role) {
+        const self = this;
+
+        const units = self.memory.creepsList.filter(function(creep) {
+            return creep.memory.role === role
+        });
+
+        const roomSourceIDs = _.pluck(self.room.sources, 'id')
+        const boundSources = _.pluck(units, 'memory.boundSource')
+
+        return _.difference(roomSourceIDs, boundSources)
+    }
+
+    // getWithdrawalContainer(role) {
+    //     const self = this;
+    //
+    //     const units = self.memory.creepsList.filter(function(creep) {
+    //         return creep.memory.role === role
+    //     });
+    //
+    //     const roomSourceContainers = _.pluck(self.room.sources, 'id')
+    //     const depositContainers = _.pluck(units, 'memory.depositContainer')
+    //
+    //     return _.difference(roomSourceIDs, boundSources)
+    // }
 }
 
 

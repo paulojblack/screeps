@@ -17,7 +17,7 @@ module.exports = class RoomFurnisher {
         }
 
         //100 attempts
-        for (i = 0; i < 50; i++) {
+        for (let i = 0; i < 50; i++) {
             let rand = structs[Math.floor(Math.random()*structs.length)];
 
             const xPlus = Math.floor(Math.random()*2) == 0;
@@ -35,7 +35,7 @@ module.exports = class RoomFurnisher {
                 occupied.length === 0 &&
                 pos.lookFor(LOOK_CONSTRUCTION_SITES).length === 0 &&
                 pos.lookFor(LOOK_TERRAIN) != "wall"
-            /*pos.lookFor(LOOK_CREEPS).length === 0*/){
+            ){
                 return pos;
             }
         }
@@ -46,7 +46,13 @@ module.exports = class RoomFurnisher {
     runExtensionBuilder() {
         let self = this;
 
-        if(!self.room.memory.currentExtentionSite || self.room.getPositionAt(self.room.memory.currentExtentionSite.x, self.room.memory.currentExtentionSite.y).lookFor(LOOK_CONSTRUCTION_SITES).length == 0){
+        if(
+            !self.room.memory.currentExtentionSite
+            || self.room.getPositionAt(
+                self.room.memory.currentExtentionSite.x,
+                self.room.memory.currentExtentionSite.y
+            ).lookFor(LOOK_CONSTRUCTION_SITES).length == 0
+        ){
             let pos = this.getNextVacancy(self.room);
             if(pos){
                 let code = pos.createConstructionSite(STRUCTURE_EXTENSION);

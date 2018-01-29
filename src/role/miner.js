@@ -17,7 +17,7 @@ module.exports = class Miner extends Role {
             if (!creep.memory.positioned) {
                 return miner.positionMiner(source);
             } else {
-                return miner.harvestEnergyOrApproach(source)
+                return miner.extract.harvestEnergyOrApproach(source)
             }
         } catch(e) {
             console.log('A miner has errored')

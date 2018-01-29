@@ -1,29 +1,4 @@
-
-sourcePath = function(spawn, room) {
-    room.sources.forEach((source) => {
-        room.findPath(source.pos, spawn.pos).forEach((tile) => {
-            room.createConstructionSite(tile.x, tile.y, STRUCTURE_ROAD)
-        })
-    });
-};
-
-controllerPath = function(spawn, room) {
-    room.findPath(spawn.pos, room.controller.pos).forEach((tile) => {
-        room.createConstructionSite(tile.x, tile.y, STRUCTURE_ROAD)
-    })
-};
-
 module.exports = {
-    roadPlanner: function(room) {
-        console.log('planner')
-        for (const spawn of room.find(FIND_MY_SPAWNS)) {
-            // if (room.memory.initPaths === undefined) {
-                sourcePath(spawn, room);
-                controllerPath(spawn, room);
-                room.memory.initPaths = true;
-            // }
-        }
-    },
     getNextVacancy: function(room){
         var structs = room.find(FIND_MY_STRUCTURES, {
                 filter: function(structure){

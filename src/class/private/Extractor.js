@@ -45,6 +45,16 @@ module.exports = class Extractor {
 
     }
 
+    roomStorage() {
+        let self = this;
+        let storage = self.creep.room.storage
+        if (!storage) {
+            return 'NO_AVAILABLE_SOURCE'
+        }
+
+        return self.withdrawEnergyOrApproach(storage)
+    }
+
     closestContainer() {
         const self = this;
         const closestContainer = self.creep.pos.findClosestByRange(FIND_STRUCTURES, {
@@ -68,6 +78,18 @@ module.exports = class Extractor {
         }
 
         return self.creep.withdraw(energySource, RESOURCE_ENERGY);
+    }
+
+    harvestEnergyOrApproach(source) {
+        let creep = this.creep;
+
+        if (source) {
+            if (creep.harvest(source) === ERR_NOT_IN_RANGE) {
+                return creep.moveTo(source);
+            }
+        } else {
+            console.log('A', creep.memory.role, 'has no target source')
+        }
     }
 
 }

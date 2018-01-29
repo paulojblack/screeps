@@ -5,9 +5,8 @@ module.exports = class RoomDecorator {
         this.room = room;
         this.memory = room.memory;
 
-        this.memory.creepsList = this.getCreepsAssignedToRoom()
+        this.memory.creepsList = this.getCreepsFromRoom()
         this.memory.existingRoles = this.getExistingRoomRoles();
-        this.memory.state = this.getRoomState();
         this.memory.nextCreep = this.getDesiredCreeps()
     }
 
@@ -15,39 +14,18 @@ module.exports = class RoomDecorator {
      * Get array of creep object with $creep.memory.target === room.name (string)
      * @return {[type]} [description]
      */
-    getCreepsAssignedToRoom() {
+    getCreepsFromRoom() {
         const self = this;
         let roomCreeps = [];
 
         for (const name in Game.creeps) {
-            if (Game.creeps[name].memory.target === this.room.name) {
+            if (Game.creeps[name].memory.home === this.room.name) {
                 roomCreeps.push(Game.creeps[name])
             }
         }
 
         return roomCreeps
 
-    }
-
-    /**
-     * This should handle panic states, standard states, expansion states, resource gathering states
-     * perhaps more, we'll see how it pans out.
-     * @return {[type]} [description]
-     */
-    getRoomState() {
-        const self = this;
-
-        if (self.roomCreeps === 0) {
-            return states.STATE_PANIC
-        }
-
-        if (self.room.name === 'W3N8') {
-            return states.STATE_OWNED_HOME
-        }
-
-        if (self.room.controller.level) {
-            return states.STATE_START
-        }
     }
 
     getExistingRoomRoles() {
@@ -59,7 +37,7 @@ module.exports = class RoomDecorator {
             upgraders: 0,
             miners: 0,
             lorries: 0,
-            claimnants: 0,
+            scouts: 0,
             repairers: 0,
             defenseBuilders: 0,
             roadbuilders: 0,
@@ -69,7 +47,7 @@ module.exports = class RoomDecorator {
         for(let name in Game.creeps) {
             let creep = Game.creeps[name];
 
-            if(creep.memory.target === this.room.name){
+            if(creep.memory.home === this.room.name){
                 if (creep.memory.role === 'harvester') {
                     roles.harvesters++;
                 } else if (creep.memory.role === 'upgrader') {
@@ -82,8 +60,8 @@ module.exports = class RoomDecorator {
                     roles.lorries++;
                 } else if (creep.memory.role === 'repairer') {
                     roles.repairers++;
-                } else if (creep.memory.role === 'roadbuilder') {
-                    roles.roadbuilders++;
+                } else if (creep.memory.role === 'scout') {
+                    roles.scouts++;
                 } else if (creep.memory.role === 'extractor') {
                     roles.extractors++;
                 } else if (creep.memory.role === 'defenseBuilder') {
@@ -101,12 +79,24 @@ module.exports = class RoomDecorator {
             return 'harvester'
         }
 
-        if (self.memory.existingRoles['miners'] < self.room.sources.length) {
+        if (self.memory.existingRoles['miners'] < Math.max(self.room.sources.length - 1, 1)) {
             return 'miner'
         }
 
-        if (self.memory.existingRoles['builders'] < 1) {
-            return 'builder'
+        if (self.memory.existingRoles['lorries'] < 1) {
+            return 'lorry'
+        }
+
+        if (self.memory.existingRoles['builders'] < 2) {
+            if (self.memory.constructionSites.length > 2) {
+                return 'builder'
+            } else if (self.memory.existingRoles['builders'] < 1) {
+                return 'builder'
+            }
+        }
+
+        if (self.memory.existingRoles['miners'] < self.room.sources.length) {
+            return 'miner'
         }
 
         if (self.memory.existingRoles['lorries'] < 2) {
@@ -121,6 +111,9 @@ module.exports = class RoomDecorator {
             return 'repairer'
         }
 
+        if (self.memory.existingRoles['scouts'] < 2) {
+            return 'scout'
+        }
 
         if (self.memory.existingRoles['defenseBuilders'] < 1) {
             return 'defenseBuilder'
@@ -128,4 +121,6 @@ module.exports = class RoomDecorator {
 
         return undefined
     }
+
+
 }

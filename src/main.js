@@ -1,5 +1,6 @@
 var protoSpawn = require('proto.spawn');
 var protoRoom = require('proto.room');
+var protoRoom = require('proto.flag');
 var protoCreep = require('proto.creep');
 var protoTower = require('proto.tower');
 var protoSource = require('proto.source');
@@ -12,7 +13,8 @@ profiler.enable();
 
 module.exports.loop = function() {
   profiler.wrap(function() {
-      let myflags = Game.flags
+      // let testRoomPos= new RoomPosition(25,25, 'W2N8')
+      // console.log(testRoomPos)
       // Handle room coordination
       for (const roomName in constants.myRooms) {
           const roomCategory = constants.myRooms[roomName]
@@ -20,9 +22,10 @@ module.exports.loop = function() {
 
           const room = Game.rooms[roomName];
           if (room) {
+              // console.log(JSON.stringify(room.childRooms))
               const roomCommander = new RoomCommander(room)
               roomCommander.processRoom()
-              // architect.roadPlanner(room);
+
               refreshTimers(room);
           }
       }
@@ -31,12 +34,6 @@ module.exports.loop = function() {
       for (name in Game.creeps) {
           const creep = Game.creeps[name];
           creep.runRole(creep);
-      }
-
-      if((Game.time) % 60 === 0){
-          for(let room in Game.rooms){
-              architect.runExtensionBuilder(Game.rooms[room]);
-          }
       }
 
       // Delete dead creeps

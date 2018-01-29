@@ -19,11 +19,16 @@ module.exports = class Depositer {
 
     constructionSite() {
         const creep = this.creep;
-        const constructionSite= this.getClosestConstructionSite(creep);
+        let constructionSite = this.getClosestConstructionSite(creep);
+
+        if (!constructionSite) {
+            constructionSite = this.getFirstChildConstructionSite(creep)
+        }
 
         if (!constructionSite) {
             return 'NO_AVAILABLE_STRUCTURE'
         }
+
 
         if (constructionSite !== undefined && creep.build(constructionSite) === ERR_NOT_IN_RANGE) {
             return creep.moveTo(constructionSite);
@@ -111,7 +116,7 @@ module.exports = class Depositer {
                         || s.structureType == STRUCTURE_EXTENSION
                     ) && s.energy < s.energyCapacity
                 });
-                
+
         if (!structures || structures.length === 0) {
             structures = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
                     filter: (s) => s.structureType == STRUCTURE_TOWER && s.energy <= 100
@@ -122,6 +127,29 @@ module.exports = class Depositer {
 
     getClosestConstructionSite(creep, opts) {
         return creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
+    }
+
+    getFirstChildConstructionSite(creep) {
+        let childRooms = creep.room.childRooms;
+        if (childRooms && childRooms.length) {
+            console.log('theres a child room')
+
+            const childConstructionSites = _.flatten(childRooms.map((child) => {
+                const childRoomObject = Game.rooms[child.childRoom];
+                console.log(JSON.stringify(childRoomObject))
+                if (!childRoomObject) {
+                    //no scout present
+                    return []
+                }
+                return childRoomObject.constructionSites;
+            }));
+
+            if (childConstructionSites && childConstructionSites.length) {
+                return childConstructionSites[0]
+            }
+            return undefined
+        }
+        return undefined
     }
 
     getClosestDamagedStructure(creep, opts) {

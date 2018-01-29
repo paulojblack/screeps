@@ -37,8 +37,12 @@ module.exports = class Lorry extends Role {
                 return lorry.extract.assignedSourceContainer();
             }
 
-            console.log('lorry', lorry, 'has no sources')
+            if (lorry.extract.droppedEnergy() !== 'NO_AVAILABLE_SOURCE') {
+                return lorry.extract.droppedEnergy();
+            }
 
+            // console.log('lorry', lorry.creep.name, 'has no sources')
+            // creep.say('problem')
         }
 
     }

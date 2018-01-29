@@ -11,6 +11,7 @@ module.exports = class Harvester extends Role {
         let harvester = this;
         let creep = harvester.creep;
 
+        //move to constructor
         creep.memory.working = harvester.setWorkingState(creep);
 
         if (creep.memory.working === true) {

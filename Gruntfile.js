@@ -22,14 +22,29 @@ module.exports = function(grunt) {
                 src: ['dist/*.js']
             }
         },
+        // jbag: {
+        //
+        //     options: {
+        //         hostname: creds.julianserver,
+        //         port: creds.port,
+        //         'use-https': false,
+        //         username: creds.julianuser,
+        //         password: creds.julianpw,
+        //         branch: 'default',
+        //         ptr: false
+        //     },
+        //     dist: {
+        //         src: ['dist/*.js']
+        //     }
+        // },
         staging: {
 
             options: {
-                hostname: creds.julianserver,
+                hostname: creds.hostname,
                 port: creds.port,
                 'use-https': false,
-                username: creds.julianuser,
-                password: creds.julianpw,
+                username: creds.user,
+                password: creds.password,
                 branch: 'default',
                 ptr: false
             },

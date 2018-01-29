@@ -42,8 +42,8 @@ module.exports = class DefenseBuilder extends Role {
                     }
                 }
             } else {
-                if (defenseBuilder.extract.closestContainer() !== 'NO_AVAILABLE_SOURCE') {
-                    return defenseBuilder.extract.closestContainer()
+                if (defenseBuilder.extract.roomStorage() !== 'NO_AVAILABLE_SOURCE') {
+                    return defenseBuilder.extract.roomStorage()
                 }
 
                 return defenseBuilder.extract.assignedSource()

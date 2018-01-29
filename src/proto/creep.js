@@ -4,6 +4,7 @@ const roles = {
     builder: require('role.builder'),
     repairer: require('role.repairer'),
     defenseBuilder: require('role.defenseBuilder'),
+    scout: require('role.scout'),
     miner: require('role.miner'),
     lorry: require('role.lorry')
 };

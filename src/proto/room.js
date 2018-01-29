@@ -1,40 +1,6 @@
 const architect = require('util.architect');
 let constants = require('util.constants');
 
-Room.prototype.creepCountByCtrlLevel = (room) => {
-    let roleMap = constants.roleMap;
-    let roomLevel = room.controller.level
-
-    if (roomLevel === 1) {
-        roleMap['upgrader'].count = 3;
-    }
-
-    if (roomLevel === 2) {
-        roleMap['upgrader'].count = 3;
-        roleMap['repairer'].count = 2;
-        roleMap['lorry'].count = 4;
-    }
-
-    if (roomLevel === 3) {
-        roleMap['upgrader'].count = 3;
-        roleMap['repairer'].count = 2;
-        roleMap['lorry'].count = 1;
-    }
-
-    if (roomLevel >= 4) {
-        roleMap['upgrader'].count = 3;
-        roleMap['repairer'].count = 1;
-        roleMap['lorry'].count = 1;
-    }
-
-    // If there are constructionsites, 2, if not, none.
-    roleMap['builder'].count = getBuilderCount(room)
-
-    roleMap['miner'].count = Math.min(room.sources.length,room.containers.length);
-
-    return roleMap;
-};
-
 let getBuilderCount = function(room) {
     sites = room.constructionSites
 
@@ -54,40 +20,39 @@ let getBuilderCount = function(room) {
 
 }
 
-// Deprecated
-var getMinerCount = function(room) {
-    return _.filter(room.sources, function(source) {
-        return _.get(source, 'config.hasContainer') === true
-    }).length;
-}
+Object.defineProperty(Room.prototype, 'childRooms', {
+    get: function() {
+        let room = this;
 
-/*
-This object will collect all the more complex room level specifications that are
-not tightly coupled to a room fixture. The items configured here should only be "inferred"
-rather than observed.
+        if (!room._childRooms) {
+            let childRooms = [];
+            let flags = Game.flags;
 
-To be clear, this object will NOT assign information related to the sources in the room (that is done below)
-rather it specifies things like how many creeps to create and how they are composed
- */
+            for (f in flags) {
+                let flag = Game.flags[f];
+                let [parentRoom, childRoom, action] = flag.name.split(',');
+                // console.log(flag.sources)
+                if (parentRoom === room.name) {
+                    flag.memory.parentRoom = parentRoom;
+                    flag.memory.action = action;
 
-// Object.defineProperty(Room.prototype, 'config', {
-//     get: function() {
-//         let room = this;
-//
-//         if (!room._config) {
-//             let config = {
-//                 creepConfig: room.creepCountByCtrlLevel(room),
-//                 desiredBuildings: constants.constructionPlanner[room.controller.level]
-//             }
-//
-//
-//             room._config = config;
-//         }
-//         return room._config
-//     },
-//     enumerable: false,
-//     configurable: true
-// });
+                    childRooms.push({
+                        childRoom: childRoom,
+                        parentRoom: parentRoom,
+                        action: action,
+                        flagName: flag.name
+                    })
+                }
+
+            }
+            // console.log(JSON.stringify(flags))
+            room._childRooms = childRooms
+        }
+        return room._childRooms
+    },
+    enumerable: false,
+    configurable: true
+});
 
 Object.defineProperty(Room.prototype, 'containers', {
     get: function() {
@@ -203,54 +168,14 @@ Object.defineProperty(Room.prototype, 'constructionSites', {
         let room = this;
 
         if (!room._constructionSites) {
+            room.memory.constructionSites = room.find(FIND_MY_CONSTRUCTION_SITES);
 
-            if (!room.memory.constructionSites) {
-                room.memory.constructionSites = room.find(FIND_MY_CONSTRUCTION_SITES);
-            }
             room._constructionSites = room.memory.constructionSites
         }
         return room._constructionSites;
-    },
-    set: function(newValue) {
-
-        this.memory.constructionSites = this.find(FIND_MY_CONSTRUCTION_SITES)
-        this._constructionSites = this.find(FIND_MY_CONSTRUCTION_SITES);
     },
     enumerable: false,
     configurable: true
 });
 
 module.exports = {}
-
-
-/**
- * Receives an array containing two x,y pairs representing opposite (left, right) corners
- * of a 3x3 box. From these coords, create one extension construction site at each corner and one
- * in the middle of the box
- * ALL ARGUMENTS ORDERED X,Y
- * @param  {[Array]} boundingBox [description]
- * @return {[type]}             [description]
- */
-Room.prototype.createExtensionSites = function(boundingBox) {
-    let room = this;
-
-    const topLeftSite = [boundingBox[0], boundingBox[1]];
-    const constructionSites = {
-        topLeftSite: topLeftSite,
-        lowRightSite: [boundingBox[2], boundingBox[3]],
-        topRightSite: [topLeftSite[0] + 2, topLeftSite[1]],
-        lowLeftSite: [topLeftSite[0], topLeftSite[1] + 2],
-        centerSite: [topLeftSite[0] + 1, topLeftSite[1] + 1]
-    }
-
-    for (site in constructionSites) {
-        // console.log('Creating new extension')
-        // console.log('The name of the site is', site);
-        // console.log('And the pos is ', constructionSites[site])
-    }
-    // room.createConstructionSite(...topLeftSite, STRUCTURE_EXTENSION)
-    // room.createConstructionSite(...lowRightSite, STRUCTURE_EXTENSION)
-    // room.createConstructionSite(...topRightSite, STRUCTURE_EXTENSION)
-    // room.createConstructionSite(...lowLeftSite, STRUCTURE_EXTENSION)
-    // room.createConstructionSite(...centerSite, STRUCTURE_EXTENSION)
-}

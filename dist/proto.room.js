@@ -163,14 +163,57 @@ Object.defineProperty(Room.prototype, 'sources', {
     configurable: true
 });
 
+Object.defineProperty(Room.prototype, 'childSources', {
+    get: function() {
+        let room = this;
+
+        if (!room._childSources) {
+            let childRooms = _.pluck(room.childRooms, 'childRoom');
+            let childSources = []
+
+            if(childRooms) {
+                childSources = childSources.concat(_.flatten(childRooms.map((cr) => {
+                    if (Game.rooms[cr]) {
+                        return Game.rooms[cr].sources
+                    }
+                    return
+                })))
+            }
+            room._childSources = childSources;
+        }
+        return room._childSources;
+    },
+    set: function(newValue) {
+        room.memory.childSources = newValue.map(source => source.id);
+        room._childSources = newValue;
+    },
+    enumerable: false,
+    configurable: true
+});
+
 Object.defineProperty(Room.prototype, 'constructionSites', {
     get: function() {
         let room = this;
 
         if (!room._constructionSites) {
-            room.memory.constructionSites = room.find(FIND_MY_CONSTRUCTION_SITES);
+            let constructionSites = room.find(FIND_MY_CONSTRUCTION_SITES);
+            let childRooms = room.childRooms;
 
-            room._constructionSites = room.memory.constructionSites
+            if (childRooms) {
+                const childConstructionSites = _.flatten(childRooms.map((child) => {
+                    const childRoomObject = Game.rooms[child.childRoom];
+                    if (!childRoomObject) {
+                        //no scout present
+                        return []
+                    }
+                    return childRoomObject.constructionSites;
+                }));
+
+
+                constructionSites = constructionSites.concat(childConstructionSites)
+            }
+
+            room._constructionSites = constructionSites
         }
         return room._constructionSites;
     },

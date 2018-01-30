@@ -1,5 +1,6 @@
 const RoomDecorator = require('class.RoomDecorator')
 const RoomFurnisher = require('class.RoomFurnisher')
+const RoomExpander = require('class.RoomExpander')
 
 module.exports = class RoomCommander extends RoomDecorator {
     constructor(room) {
@@ -9,17 +10,27 @@ module.exports = class RoomCommander extends RoomDecorator {
     processRoom() {
         let self = this;
         let roomFurnisher = new RoomFurnisher(self.room);
+        let roomExpander = new RoomExpander(self.room);
 
         self.spawnCreep();
+
+        if (Game.time % 20 === 0) {
+            console.log('Creep status at', Game.time, 'real time', new Date())
+            console.log(JSON.stringify(self.memory.existingRoles))
+        }
 
         if (Game.time % 60 === 0) {
             roomFurnisher.runExtensionBuilder()
             roomFurnisher.roadPlanner()
         }
 
-        if (self.room.childRooms.length) {
-            self.processChildRooms();
-        }
+        // if (!self.room.childRooms.length) {
+        //     // Match the coordinates of the current room
+        //     // let [fullName, latDir, latVal, longDir, longVal] = self.room.name.match(/([A-Z])(\d*)([A-z])(\d*)$/)
+        //     // console.log(fullName, latDir, latVal, longDir, longVal)
+        //     // console.log(latDir)
+        //     self.roomExpander();
+        // }
     }
 
     spawnCreep() {
@@ -59,6 +70,10 @@ module.exports = class RoomCommander extends RoomDecorator {
 
         if (self.memory.nextCreep === 'defenseBuilder') {
             return self.handleSpawnGeneric('defenseBuilder');
+        }
+
+        if (self.memory.nextCreep === 'claimnant') {
+            return self.handleSpawnClaimnant('claimnant');
         }
 
     }
@@ -111,7 +126,6 @@ module.exports = class RoomCommander extends RoomDecorator {
         // TODO handle neighboring rooms
     }
 
-
     handleSpawnScout() {
         let self = this;
         const scouts = self.memory.creepsList.filter(function(creep) {
@@ -126,12 +140,31 @@ module.exports = class RoomCommander extends RoomDecorator {
             for (const spawn of self.room.find(FIND_MY_SPAWNS)) {
                 const home = self.room.name;
                 const target = unreservedRooms[0];
-                console.log(unreservedRooms)
+
                 return spawn.spawnGeneric(undefined, target, home, 'scout')
             }
-
         }
+    }
 
+
+    handleSpawnClaimnant() {
+        let self = this;
+        const claimnants = self.memory.creepsList.filter(function(creep) {
+            return creep.memory.role === 'claimnant'
+        });
+
+        const childRooms = _.pluck(self.room.childRooms, 'childRoom')
+        const claimnantTargets = _.pluck(claimnants, 'memory.target');
+        const unreservedRooms = _.difference(childRooms, claimnantTargets)
+
+        if (unreservedRooms && unreservedRooms.length) {
+            for (const spawn of self.room.find(FIND_MY_SPAWNS)) {
+                const home = self.room.name;
+                const target = unreservedRooms[0];
+
+                return spawn.spawnGeneric(undefined, target, home, 'claimnant')
+            }
+        }
     }
 
     handleSpawnGeneric(role) {
@@ -163,36 +196,17 @@ module.exports = class RoomCommander extends RoomDecorator {
         const roomSourceIDs = _.pluck(self.room.sources, 'id')
         const boundSources = _.pluck(units, 'memory.boundSource')
 
-        return _.difference(roomSourceIDs, boundSources)
-    }
+        let unboundSources =  _.difference(roomSourceIDs, boundSources)
 
-    processChildRooms() {
-        let self = this;
-        let parentRoom = self.room;
-        let childRooms = parentRoom.childRooms;
+        if (unboundSources.length) {
 
-        for (let child of childRooms) {
-            let childFlag = Game.flags[[child.parentRoom,child.childRoom,child.action].join(',')]
-
-            if (childFlag.memory.intialized === undefined) {
-                self.initializeChildRoom(childFlag)
-            }
-
-            // console.log(childFlag)
-            // console.log(JSON.stringify(childFlag.memory))
+            return unboundSources
         }
-        // console.log('processing child room')
-    }
 
-    initializeChildRoom(childFlag) {
-        let self = this;
-        let parentRoom = self.room;
-        const flagPos = childFlag.pos;
-        const parentRoomStoragePos = parentRoom.storage.pos;
-        // console.log(flagPos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES))
-        // console.log(flagPos, parentRoomStoragePos)
-        let connectionPath = parentRoomStoragePos.findPathTo(flagPos)
-        // console.log(JSON.stringify(connectionPath))
+        const childSourceIDs = _.pluck(self.room.childSources, 'id');
+        const boundChildSources = _.pluck(units, 'memory.boundSource');
+
+        return _.difference(childSourceIDs, boundChildSources);
 
     }
 

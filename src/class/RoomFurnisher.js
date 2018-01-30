@@ -71,11 +71,28 @@ module.exports = class RoomFurnisher {
         const room = self.room;
 
         for (const spawn of room.find(FIND_MY_SPAWNS)) {
-            if (room.memory.initPaths === undefined) {
-                self.sourceToSpawn(spawn, room);
-                self.controllerToSpawn(spawn, room);
+            // if (room.memory.initPaths === undefined) {
+            //     self.sourceToSpawn(spawn, room);
+            //     self.controllerToSpawn(spawn, room);
+            //
+            //     room.memory.initPaths = true;
+            // }
 
-                room.memory.initPaths = true;
+
+            if (room.childRooms) {
+                for (let child of room.childRooms) {
+                    let childRoom = Game.rooms[child.childRoom]
+
+                    if (childRoom && childRoom.memory.connected === undefined) {
+                        let path = PathFinder.search(childRoom.sources[0].pos, spawn.pos).path
+                        path.forEach((tile) => {
+                            let pos = new RoomPosition(tile.x, tile.y, tile.roomName)
+                            pos.createConstructionSite(STRUCTURE_ROAD);
+                        })
+
+                        childRoom.memory.connected = true;
+                    }
+                }
             }
 
             // if (room.memory.controllerToSourcePaths === true) {
@@ -98,19 +115,24 @@ module.exports = class RoomFurnisher {
         })
     }
 
+    roomToRoom(spawn, room) {
+
+    }
     /**
      * pretty fucked up
      */
-    sourcesToController() {
-        let self = this;
-        let upper;
-        self.room.sources.forEach((source) => {
-            upper = self.room.findPath(source.pos, self.room.controller.pos)[10]
-            self.room.findPath(source.pos, self.room.controller.pos).forEach((tile) => {
-                self.room.createConstructionSite(tile.x, tile.y, STRUCTURE_ROAD)
-            })
-        });
-
-        self.room.memory.controllerToSourcePaths = true
-    }
+    // sourcesToController() {
+    //     let self = this;
+    //     let upper;
+    //     self.room.sources.forEach((source) => {
+    //         // upper = self.room.findPath(source.pos, self.room.controller.pos)[10]
+    //         // console.log(JSON.stringify(upper))
+    //         self.room.findPath(source.pos, self.room.controller.pos).forEach((tile) => {
+    //
+    //             // self.room.createConstructionSite(tile.x, tile.y, STRUCTURE_ROAD)
+    //         })
+    //     });
+    //
+    //     self.room.memory.controllerToSourcePaths = true
+    // }
 }

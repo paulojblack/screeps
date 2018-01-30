@@ -22,7 +22,7 @@ module.exports = function(grunt) {
                 src: ['dist/*.js']
             }
         },
-        // jbag: {
+        // staging: {
         //
         //     options: {
         //         hostname: creds.julianserver,

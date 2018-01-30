@@ -24,6 +24,10 @@ module.exports = class Builder extends Role {
                     return builder.extract.closestContainer()
                 }
 
+                if (builder.extract.droppedEnergy() !== 'NO_AVAILABLE_SOURCE') {
+                    return builder.extract.droppedEnergy();
+                }
+
                 return builder.extract.assignedSource()
             }
 
@@ -33,12 +37,6 @@ module.exports = class Builder extends Role {
         }
     }
 
-    /**
-     * TODO refactor
-     * @param  {[type]} budget [description]
-     * @param  {[type]} room   [description]
-     * @return {[type]}        [description]
-     */
     static getDesign(budget, room) {
         var design = [MOVE, CARRY, CARRY, WORK];
 		var spent = 250;

@@ -9,6 +9,7 @@ module.exports = class Upgrader extends Role {
         try {
             let upgrader = this;
             let creep = upgrader.creep;
+            creep.say('u')
 
             creep.memory.working = upgrader.setWorkingState(creep)
 

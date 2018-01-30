@@ -51,7 +51,7 @@ module.exports = class Lorry extends Role {
         let design = [];
         let spent = 0;
 
-        budget = Math.min(1800, budget)
+        budget = Math.min(1200, budget)
 
         //Add as many CARRY and MOVE as we can
         while(spent + 150 <= budget){

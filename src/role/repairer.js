@@ -27,6 +27,10 @@ module.exports = class Repairer extends Role {
                 return repairer.extract.closestContainer()
             }
 
+            if (repairer.extract.droppedEnergy() !== 'NO_AVAILABLE_SOURCE') {
+                return repairer.extract.droppedEnergy();
+            }
+
             return repairer.extract.assignedSource()
         }
 

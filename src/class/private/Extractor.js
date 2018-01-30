@@ -15,12 +15,14 @@ module.exports = class Extractor {
 
     assignedSourceContainer() {
         const self = this;
-
         const source = Game.getObjectById(self.creep.memory.boundSource);
+        let sourceContainer;
 
-        const sourceContainer = source.pos.findInRange(FIND_STRUCTURES, 3, {
-            filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] > 0
-        })
+        if (source) {
+            sourceContainer = source.pos.findInRange(FIND_STRUCTURES, 3, {
+                filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] > 0
+            })
+        }
 
         if (!sourceContainer || !sourceContainer.length) {
             return 'NO_AVAILABLE_SOURCE'
@@ -31,11 +33,21 @@ module.exports = class Extractor {
 
     droppedEnergy() {
         let self = this;
-        const droppedEnergy = self.creep.room.find(FIND_DROPPED_RESOURCES, {
-            filter: r => r.resourceType === 'energy'
-        });
+        let boundSource = Game.getObjectById(self.creep.memory.boundSource);
+        let droppedEnergy;
+        if (boundSource) {
+            droppedEnergy = boundSource.room.find(FIND_DROPPED_RESOURCES, {
+                filter: r => r.resourceType === 'energy' && r.amount >= 200
+            });
+        }
 
-        if (droppedEnergy.length === 0) {
+        if (!droppedEnergy || droppedEnergy.length === 0) {
+            droppedEnergy = self.creep.room.find(FIND_DROPPED_RESOURCES, {
+                filter: r => r.resourceType === 'energy' && r.amount >= 200
+            });
+        }
+
+        if (!droppedEnergy || droppedEnergy.length === 0) {
             return 'NO_AVAILABLE_SOURCE'
         }
 

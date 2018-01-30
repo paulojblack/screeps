@@ -1,24 +1,30 @@
 var protoSpawn = require('proto.spawn');
 var protoRoom = require('proto.room');
 var protoRoom = require('proto.flag');
-var protoCreep = require('proto.creep');
+// var protoCreep = require('proto.creep');
 var protoTower = require('proto.tower');
 var protoSource = require('proto.source');
 const RoomCommander = require('class.RoomCommander');
 const constants = require('util.constants');
-const architect = require('util.architect');
 const profiler = require('screeps-profiler');
-const refreshTimers = require('util.caches').refreshTimers
+// const refreshTimers = require('util.caches').refreshTimers;
+const roles = {
+    harvester: require('role.harvester'),
+    upgrader: require('role.upgrader'),
+    builder: require('role.builder'),
+    repairer: require('role.repairer'),
+    defenseBuilder: require('role.defenseBuilder'),
+    scout: require('role.scout'),
+    claimnant: require('role.claimnant'),
+    miner: require('role.miner'),
+    lorry: require('role.lorry')
+};
 profiler.enable();
 
 module.exports.loop = function() {
   profiler.wrap(function() {
-      // let testRoomPos= new RoomPosition(25,25, 'W2N8')
-      // console.log(testRoomPos)
-      // Handle room coordination
       for (const roomName in constants.myRooms) {
           const roomCategory = constants.myRooms[roomName]
-          // console.log(roomCategory)
 
           const room = Game.rooms[roomName];
           if (room) {
@@ -26,14 +32,23 @@ module.exports.loop = function() {
               const roomCommander = new RoomCommander(room)
               roomCommander.processRoom()
 
-              refreshTimers(room);
           }
       }
 
       // Run creep roles
-      for (name in Game.creeps) {
-          const creep = Game.creeps[name];
-          creep.runRole(creep);
+      for (const name in Game.creeps) {
+          try {
+              const creep = Game.creeps[name];
+              const roleSubClass = new roles[creep.memory.role](creep);
+
+              roleSubClass.run();
+
+          } catch(e) {
+              console.log('Creep error in role', creep.memory.role, 'creep named', creep);
+              console.log('Naughty creep', JSON.stringify(creep))
+              console.log(JSON.stringify(creep.memory))
+              console.log(e)
+          }
       }
 
       // Delete dead creeps

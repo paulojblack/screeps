@@ -1,4 +1,4 @@
-let caches = require('util.caches');
+// let caches = require('util.caches');
 let util = require('proto.util.spawn');
 const constants = require('util.constants');
 const roles = {
@@ -7,6 +7,7 @@ const roles = {
     builder: require('role.builder'),
     repairer: require('role.repairer'),
     defenseBuilder: require('role.defenseBuilder'),
+    claimnant: require('role.claimnant'),
     scout: require('role.scout'),
     miner: require('role.miner'),
     lorry: require('role.lorry')
@@ -28,6 +29,7 @@ StructureSpawn.prototype.spawnHarvester = function(bindSource, target, home, pan
         //Time to panic
         budget = spawn.room.energyAvailable;
     }
+
     let body = roles.harvester.getDesign(budget, spawn.room)
 
     return spawn.createCreep(body, undefined, memory)

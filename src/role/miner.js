@@ -62,9 +62,9 @@ module.exports = class Miner extends Role {
     static getDesign(budget, room) {
         let design = [WORK, MOVE];
         let spent = 150;
-        const workSlotsAvailable = Math.floor(budget / 100)
+        // const workSlotsAvailable = Math.min(Math.floor(budget / 100), 400)
 
-        while(spent + 100 <= budget){
+        while(spent + 100 <= Math.min(budget, 550)) {
 	        design.push(WORK);
 	        spent = spent + 100;
 	    }

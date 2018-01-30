@@ -52,12 +52,7 @@ module.exports = class Depositer {
 
     storageStructure() {
         const creep = this.creep;
-        let storage = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
-            filter: (s) => (
-                s.structureType === STRUCTURE_STORAGE &&
-                s.store[RESOURCE_ENERGY] < s.storeCapacity
-            )
-        })
+        let storage = Game.rooms[creep.memory.home].storage
 
         if (!storage) {
             return 'NO_AVAILABLE_STRUCTURE'
@@ -119,7 +114,7 @@ module.exports = class Depositer {
 
         if (!structures || structures.length === 0) {
             structures = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
-                    filter: (s) => s.structureType == STRUCTURE_TOWER && s.energy <= 100
+                    filter: (s) => s.structureType == STRUCTURE_TOWER && s.energy < 1000
                     });
         }
         return structures;
@@ -132,11 +127,10 @@ module.exports = class Depositer {
     getFirstChildConstructionSite(creep) {
         let childRooms = creep.room.childRooms;
         if (childRooms && childRooms.length) {
-            console.log('theres a child room')
 
             const childConstructionSites = _.flatten(childRooms.map((child) => {
                 const childRoomObject = Game.rooms[child.childRoom];
-                console.log(JSON.stringify(childRoomObject))
+
                 if (!childRoomObject) {
                     //no scout present
                     return []

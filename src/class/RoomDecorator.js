@@ -1,4 +1,5 @@
 const states = require('util.constants').roomStates;
+const roomNeighbors = require('class.private.roomNeighbors');
 
 module.exports = class RoomDecorator {
     constructor(room) {
@@ -8,6 +9,7 @@ module.exports = class RoomDecorator {
         this.memory.creepsList = this.getCreepsFromRoom()
         this.memory.existingRoles = this.getExistingRoomRoles();
         this.memory.nextCreep = this.getDesiredCreeps()
+        this.memory.neighbors = roomNeighbors(room);
     }
 
     /**
@@ -41,7 +43,7 @@ module.exports = class RoomDecorator {
             repairers: 0,
             defenseBuilders: 0,
             roadbuilders: 0,
-            extractors: 0
+            claimnants: 0
         }
 
         for(let name in Game.creeps) {
@@ -62,10 +64,10 @@ module.exports = class RoomDecorator {
                     roles.repairers++;
                 } else if (creep.memory.role === 'scout') {
                     roles.scouts++;
-                } else if (creep.memory.role === 'extractor') {
-                    roles.extractors++;
+                } else if (creep.memory.role === 'claimnant') {
+                    roles.claimnants++;
                 } else if (creep.memory.role === 'defenseBuilder') {
-                    roles.defenseBuilder++;
+                    roles.defenseBuilders++;
                 }
             }
         }
@@ -88,7 +90,7 @@ module.exports = class RoomDecorator {
         }
 
         if (self.memory.existingRoles['builders'] < 2) {
-            if (self.memory.constructionSites.length > 2) {
+            if (self.room.constructionSites.length > 2) {
                 return 'builder'
             } else if (self.memory.existingRoles['builders'] < 1) {
                 return 'builder'
@@ -111,7 +113,7 @@ module.exports = class RoomDecorator {
             return 'repairer'
         }
 
-        if (self.memory.existingRoles['scouts'] < 2) {
+        if (self.memory.existingRoles['scouts'] < self.room.childRooms.length) {
             return 'scout'
         }
 
@@ -119,8 +121,56 @@ module.exports = class RoomDecorator {
             return 'defenseBuilder'
         }
 
+        if (self.memory.existingRoles['miners'] < (self.room.sources.length + self.room.childSources.length)) {
+            return 'miner'
+        }
+
+        if (self.memory.existingRoles['lorries'] < (self.room.sources.length + self.room.childSources.length)) {
+            return 'lorry'
+        }
+
+        if (self.memory.existingRoles['builders'] < (self.room.sources.length + self.room.childSources.length)) {
+            return 'builder'
+        }
+
+        if (self.memory.existingRoles['claimnants'] < (self.room.childRooms.length)) {
+            return 'claimnant'
+        }
+
         return undefined
     }
 
+    // getRoomNeighbors() {
+    //     let self = this;
+    //     let exits = {
+    //         left: {
+    //
+    //         },
+    //         right: {
+    //
+    //         },
+    //         top: {
+    //
+    //         },
+    //         bottom: {
+    //
+    //         },
+    //     };
+    //
+    //     // if (self.room.find(FIND_EXIT_LEFT).length) {
+    //     //     exits.push('LEFT')
+    //     // }
+    //     // if (self.room.find(FIND_EXIT_TOP).length) {
+    //     //     exits.push('TOP')
+    //     // }
+    //     // if (self.room.find(FIND_EXIT_RIGHT).length) {
+    //     //     exits.push('RIGHT')
+    //     // }
+    //     // if (self.room.find(FIND_EXIT_BOTTOM).length) {
+    //     //     exits.push('BOTTOM')
+    //     // }
+    //
+    //     return exits;
+    // }
 
 }

@@ -14,9 +14,24 @@ module.exports = class RoomCommander extends RoomDecorator {
 
         self.spawnCreep();
 
-        if (Game.time % 20 === 0) {
-            console.log('Creep status at', Game.time, 'real time', new Date())
+        // if (self.room.name === 'W3N8') {
+        //     console.log(self.room)
+        //     console.log('neigh',JSON.stringify(self.room.memory.neighbors))
+        // }
+        if (Game.time % 30 === 0) {
+            console.log('Room:', self.room, 'creep status at', Game.time, 'real time', new Date())
+            console.log('Next creep', self.memory.nextCreep)
             console.log(JSON.stringify(self.memory.existingRoles))
+
+            if (!self.room.childRooms.length) {
+
+                roomExpander.expand();
+            } else {
+                let stagingFlag = new RoomPosition(22, 22, self.room.name).lookFor(LOOK_FLAGS);
+                if (stagingFlag.length !== 0) {
+                    roomExpander.moveStagingFlag(stagingFlag[0])
+                }
+            }
         }
 
         if (Game.time % 60 === 0) {
@@ -24,13 +39,10 @@ module.exports = class RoomCommander extends RoomDecorator {
             roomFurnisher.roadPlanner()
         }
 
-        // if (!self.room.childRooms.length) {
-        //     // Match the coordinates of the current room
-        //     // let [fullName, latDir, latVal, longDir, longVal] = self.room.name.match(/([A-Z])(\d*)([A-z])(\d*)$/)
-        //     // console.log(fullName, latDir, latVal, longDir, longVal)
-        //     // console.log(latDir)
-        //     self.roomExpander();
-        // }
+        if (Game.time % 120 === 0) {
+            roomFurnisher.surroundStructures()
+        }
+
     }
 
     spawnCreep() {
@@ -74,6 +86,10 @@ module.exports = class RoomCommander extends RoomDecorator {
 
         if (self.memory.nextCreep === 'claimnant') {
             return self.handleSpawnClaimnant('claimnant');
+        }
+
+        if (self.memory.nextCreep === 'grunt') {
+            return self.handleSpawnClaimnant('grunt');
         }
 
     }

@@ -10,6 +10,7 @@ const roles = {
     claimnant: require('role.claimnant'),
     scout: require('role.scout'),
     miner: require('role.miner'),
+    grunt: require('role.grunt'),
     lorry: require('role.lorry')
 };
 

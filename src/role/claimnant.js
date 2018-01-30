@@ -9,10 +9,10 @@ module.exports = class Claimnant extends Role {
 
         let scout = this;
         let creep = scout.creep;
-        console.log(creep.memory.target)
-        //move to constructor
+        creep.say('c')
+
         try {
-            if (creep.room.name === creep.memory.target) {
+            if (creep.room.name !== creep.memory.target) {
                 creep.moveTo(new RoomPosition(25,25, creep.memory.target))
             }
 
@@ -26,8 +26,8 @@ module.exports = class Claimnant extends Role {
                 }
             }
         } catch(e) {
-            console.log(e)
-            console.log('Scout error')
+            console.log(e.stack)
+            console.log('Claimnant error')
         }
     }
 

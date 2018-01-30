@@ -42,6 +42,7 @@ module.exports = class RoomDecorator {
             scouts: 0,
             repairers: 0,
             defenseBuilders: 0,
+            grunts: 0,
             roadbuilders: 0,
             claimnants: 0
         }
@@ -68,6 +69,8 @@ module.exports = class RoomDecorator {
                     roles.claimnants++;
                 } else if (creep.memory.role === 'defenseBuilder') {
                     roles.defenseBuilders++;
+                } else if (creep.memory.role === 'grunt') {
+                    roles.grunts++;
                 }
             }
         }
@@ -135,6 +138,10 @@ module.exports = class RoomDecorator {
 
         if (self.memory.existingRoles['claimnants'] < (self.room.childRooms.length)) {
             return 'claimnant'
+        }
+
+        if (self.memory.existingRoles['grunts'] < 1) {
+            return 'grunt'
         }
 
         return undefined

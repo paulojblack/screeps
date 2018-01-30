@@ -20,11 +20,9 @@ module.exports = class Miner extends Role {
                 return miner.extract.harvestEnergyOrApproach(source)
             }
         } catch(e) {
-            console.log('A miner has errored')
-            console.log(creep)
-
-            console.log(source)
-            console.log(e)
+            creep.say('error')
+            console.log(e.stack)
+            console.log('In room', creep.room.name)
         }
     }
 

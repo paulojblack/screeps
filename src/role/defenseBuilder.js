@@ -38,7 +38,7 @@ module.exports = class DefenseBuilder extends Role {
 
                 if (target !== undefined) {
                     if (defenseBuilder.creep.repair(target) == ERR_NOT_IN_RANGE) {
-                        defenseBuilder.creep.moveTo(target);
+                        defenseBuilder.creep.travelTo(target);
                     }
                 }
             } else {

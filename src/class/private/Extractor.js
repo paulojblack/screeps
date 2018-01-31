@@ -9,7 +9,7 @@ module.exports = class Extractor {
         const source = Game.getObjectById(self.creep.memory.boundSource);
 
         if (self.creep.harvest(source) === ERR_NOT_IN_RANGE) {
-            return self.creep.moveTo(source);
+            return self.creep.travelTo(source);
         }
     }
 
@@ -52,7 +52,7 @@ module.exports = class Extractor {
         }
 
         if (self.creep.pickup(droppedEnergy[0]) === ERR_NOT_IN_RANGE) {
-            return self.creep.moveTo(droppedEnergy[0].pos);
+            return self.creep.travelTo(droppedEnergy[0].pos);
         }
 
     }
@@ -86,7 +86,7 @@ module.exports = class Extractor {
     withdrawEnergyOrApproach(energySource) {
         let self = this
         if (self.creep.withdraw(energySource, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-            return self.creep.moveTo(energySource);
+            return self.creep.travelTo(energySource);
         }
 
         return self.creep.withdraw(energySource, RESOURCE_ENERGY);
@@ -97,7 +97,7 @@ module.exports = class Extractor {
 
         if (source) {
             if (creep.harvest(source) === ERR_NOT_IN_RANGE) {
-                return creep.moveTo(source);
+                return creep.travelTo(source);
             }
         } else {
             console.log('A', creep.memory.role, 'has no target source')

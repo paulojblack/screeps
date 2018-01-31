@@ -14,24 +14,20 @@ module.exports = class RoomCommander extends RoomDecorator {
 
         self.spawnCreep();
 
-        // if (self.room.name === 'W3N8') {
-        //     console.log(self.room)
-        //     console.log('neigh',JSON.stringify(self.room.memory.neighbors))
-        // }
         if (Game.time % 30 === 0) {
             console.log('Room:', self.room, 'creep status at', Game.time, 'real time', new Date())
             console.log('Next creep', self.memory.nextCreep)
             console.log(JSON.stringify(self.memory.existingRoles))
 
-            if (!self.room.childRooms.length) {
-
-                roomExpander.expand();
-            } else {
-                let stagingFlag = new RoomPosition(22, 22, self.room.name).lookFor(LOOK_FLAGS);
-                if (stagingFlag.length !== 0) {
-                    roomExpander.moveStagingFlag(stagingFlag[0])
-                }
-            }
+            // if (!self.room.childRooms.length) {
+            //
+            //     roomExpander.expand();
+            // } else {
+            //     let stagingFlag = new RoomPosition(22, 22, self.room.name).lookFor(LOOK_FLAGS);
+            //     if (stagingFlag.length !== 0) {
+            //         roomExpander.moveStagingFlag(stagingFlag[0])
+            //     }
+            // }
         }
 
         if (Game.time % 60 === 0) {
@@ -89,7 +85,7 @@ module.exports = class RoomCommander extends RoomDecorator {
         }
 
         if (self.memory.nextCreep === 'grunt') {
-            return self.handleSpawnClaimnant('grunt');
+            return self.handleSpawnGeneric('grunt');
         }
 
     }

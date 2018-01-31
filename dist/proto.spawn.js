@@ -1,5 +1,4 @@
 // let caches = require('util.caches');
-let util = require('proto.util.spawn');
 const constants = require('util.constants');
 const roles = {
     harvester: require('role.harvester'),

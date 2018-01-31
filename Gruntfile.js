@@ -11,17 +11,17 @@ module.exports = function(grunt) {
     const creds = grunt.file.readJSON('credentials.json');
 
     grunt.initConfig({
-        prod: {
-            options: {
-                email: creds.liveemail,
-                password: creds.livepw,
-                branch: 'default',
-                ptr: false
-            },
-            dist: {
-                src: ['dist/*.js']
-            }
-        },
+        // prod: {
+        //     options: {
+        //         email: creds.liveemail,
+        //         password: creds.livepw,
+        //         branch: 'default',
+        //         ptr: false
+        //     },
+        //     dist: {
+        //         src: ['dist/*.js']
+        //     }
+        // },
         // staging: {
         //
         //     options: {
@@ -74,7 +74,7 @@ module.exports = function(grunt) {
         watch: {
             scripts: {
                 files: ['src/**/*.js'],
-                tasks: ['clean', 'copy', 'prod', 'staging']
+                tasks: ['clean', 'copy', 'staging']
             },
         },
 

@@ -32,22 +32,22 @@ module.exports = class Miner extends Role {
             filter: s => s.structureType == STRUCTURE_CONTAINER
         })[0];
 
-        if (!creep.memory.target || creep.room.name === creep.memory.target) {
+        // if (!creep.memory.target || creep.room.name === creep.memory.target) {
 
-            if (container) {
-                if (creep.pos.isEqualTo(container.pos)) {
-                    creep.memory.positioned = true;
-                } else {
-                    creep.moveTo(container);
-                }
-            } else if (creep.harvest(source) === ERR_NOT_IN_RANGE) {
-                return creep.moveTo(source)
-            } else {
+        if (container) {
+            if (creep.pos.isEqualTo(container.pos)) {
                 creep.memory.positioned = true;
+            } else {
+                creep.travelTo(container);
             }
-
-
+        } else if (creep.harvest(source) === ERR_NOT_IN_RANGE) {
+            return creep.travelTo(source)
+        } else {
+            creep.memory.positioned = true;
         }
+
+
+        // }
     }
     /**
      * One work harvest 2 energy per tick. In an owned room, sources have 3000 energy,

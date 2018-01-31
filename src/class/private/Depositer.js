@@ -13,7 +13,7 @@ module.exports = class Depositer {
         }
 
         if (structure && creep.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-            return creep.moveTo(structure);
+            return creep.travelTo(structure);
         }
     }
 
@@ -31,7 +31,7 @@ module.exports = class Depositer {
 
 
         if (constructionSite !== undefined && creep.build(constructionSite) === ERR_NOT_IN_RANGE) {
-            return creep.moveTo(constructionSite);
+            return creep.travelTo(constructionSite);
         }
 
     }
@@ -45,7 +45,7 @@ module.exports = class Depositer {
         }
 
         if (creep.repair(repairSite) == ERR_NOT_IN_RANGE) {
-            return creep.moveTo(repairSite);
+            return creep.travelTo(repairSite);
         }
 
     }
@@ -58,7 +58,7 @@ module.exports = class Depositer {
             return 'NO_AVAILABLE_STRUCTURE'
         }
         if (creep.transfer(storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-            return creep.moveTo(storage);
+            return creep.travelTo(storage);
         }
 
 
@@ -75,7 +75,7 @@ module.exports = class Depositer {
         if (controllerContainer.store[RESOURCE_ENERGY] < controllerContainer.storeCapacity) {
 
             if (creep.transfer(controllerContainer, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                return creep.moveTo(controllerContainer);
+                return creep.travelTo(controllerContainer);
             }
         }
     }
@@ -91,7 +91,7 @@ module.exports = class Depositer {
         if (spawnContainer.store[RESOURCE_ENERGY] < spawnContainer.storeCapacity) {
 
             if (creep.transfer(spawnContainer, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                return creep.moveTo(spawnContainer);
+                return creep.travelTo(spawnContainer);
             }
         }
     }
@@ -100,7 +100,7 @@ module.exports = class Depositer {
         const creep = this.creep;
 
         if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
-            return creep.moveTo(creep.room.controller);
+            return creep.travelTo(creep.room.controller);
         }
     }
 

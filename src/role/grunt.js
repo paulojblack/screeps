@@ -1,7 +1,10 @@
 let Role = require('class.Role');
 
 module.exports = class Grunt extends Role {
-    run (creep){
+    run (){
+        let grunt = this;
+        let creep = grunt.creep;
+
         var target = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS, {
             filter: function(enemy) {
                 for(var part in enemy.body){
@@ -15,7 +18,7 @@ module.exports = class Grunt extends Role {
         //creep.say(target)
         if(target){
             if(creep.attack(target) != OK){
-                creep.moveTo(target);
+                creep.travelTo(target);
                 //console.log(target.pos)
                 if(!creep.room.controller || !creep.room.controller.my){
                     var walls = creep.pos.findInRange(FIND_STRUCTURES, 1,
@@ -40,7 +43,7 @@ module.exports = class Grunt extends Role {
             var target = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES, filterToUse);
             if(target){
                 if(creep.attack(target) == ERR_NOT_IN_RANGE){
-                    creep.moveTo(target);
+                    creep.travelTo(target);
                 }
             }
         } else {
@@ -48,7 +51,7 @@ module.exports = class Grunt extends Role {
             if(target){
                 //These targets are specifically enemies WITHOUT any warfare body parts.
                 if(creep.attack(target) == ERR_NOT_IN_RANGE){
-                    creep.moveTo(target);
+                    creep.travelTo(target);
                 }
             } else {
                 var flag;
@@ -61,12 +64,12 @@ module.exports = class Grunt extends Role {
                         flag = Game.flags["Rally_"+creep.memory.home];
                     } else if (!flag) {
                         creep.say("Remote room")
-                        creep.moveTo(new RoomPosition(25, 25, creep.memory.home))
+                        creep.travelTo(new RoomPosition(25, 25, creep.memory.home))
                     }
                 }
 
                 if(flag && !creep.pos.isEqualTo(flag.pos)){
-                    creep.moveTo(flag);
+                    creep.travelTo(flag);
                     //console.log(flag.pos)
                 }
             }
@@ -75,10 +78,13 @@ module.exports = class Grunt extends Role {
     }
 
     static getDesign(budget) {
-	    var design = [MOVE, ATTACK, ATTACK];
-	    var spent = 230;
+        let design = []
+        let spent = 0;
 
-	    budget = Math.max(1200, budget);
+        while(spent + 10 <= 100) {
+            design.push(TOUGH)
+            spent += 10;
+        }
 
 	    //Add as many ATTACK, TOUGH and MOVE as we can
 	    while(spent + 50 <= budget){

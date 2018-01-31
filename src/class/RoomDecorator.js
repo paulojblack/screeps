@@ -112,7 +112,7 @@ module.exports = class RoomDecorator {
             return 'upgrader'
         }
 
-        if (self.memory.existingRoles['repairers'] < 1) {
+        if (self.memory.existingRoles['repairers'] < 2) {
             return 'repairer'
         }
 
@@ -140,7 +140,7 @@ module.exports = class RoomDecorator {
             return 'claimnant'
         }
 
-        if (self.memory.existingRoles['grunts'] < 1) {
+        if (self.memory.existingRoles['grunts'] < 4) {
             return 'grunt'
         }
 

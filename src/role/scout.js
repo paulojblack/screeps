@@ -29,9 +29,9 @@ module.exports = class Scout extends Role {
         let creep = scout.creep;
 
         // if (creep.room.name === creep.memory.target) {
-        return creep.moveTo(new RoomPosition(25,25, creep.memory.target))
+        return creep.travelTo(new RoomPosition(25,25, creep.memory.target))
         // } else {
-            // creep.moveTo(creep.memory.)
+            // creep.travelTo(creep.memory.)
         // }
     }
 

@@ -9,19 +9,20 @@ module.exports = class Claimnant extends Role {
 
         let scout = this;
         let creep = scout.creep;
+        let targetRoom = Game.rooms[creep.memory.target]
         creep.say('c')
 
         try {
-            if (creep.room.name !== creep.memory.target) {
-                creep.moveTo(new RoomPosition(25,25, creep.memory.target))
+            if (creep.room.name !== targetRoom.name) {
+                return creep.travelTo(new RoomPosition(25,25, targetRoom.name))
             }
 
-            if (creep.room.name === creep.memory.target) {
+            if (creep.room.name === targetRoom.name) {
                 if(creep.room.controller) {
-                    if (creep.claimController(creep.room.controller) === ERR_NOT_IN_RANGE) {
-                        return creep.moveTo(creep.room.controller)
+                    if (creep.claimController(targetRoom.controller) === ERR_NOT_IN_RANGE) {
+                        return creep.travelTo(targetRoom.controller)
                     } else {
-                        return creep.claimController(creep.room.controller)
+                        return creep.claimController(targetRoom.controller)
                     }
                 }
             }

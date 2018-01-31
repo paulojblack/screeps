@@ -1,8 +1,9 @@
-var protoSpawn = require('proto.spawn');
-var protoRoom = require('proto.room');
-var protoRoom = require('proto.flag');
-var protoTower = require('proto.tower');
-var protoSource = require('proto.source');
+let Traveler = require('util.traveler');
+let protoSpawn = require('proto.spawn');
+let protoRoom = require('proto.room');
+let protoFlag = require('proto.flag');
+let protoTower = require('proto.tower');
+let protoSource = require('proto.source');
 const RoomCommander = require('class.RoomCommander');
 const constants = require('util.constants');
 const profiler = require('screeps-profiler');
@@ -23,12 +24,14 @@ profiler.enable();
 module.exports.loop = function() {
   profiler.wrap(function() {
       try {
-          for (const roomName in constants.myRooms) {
-              const roomCategory = constants.myRooms[roomName]
-
+          for (const roomName in Game.rooms) {
+              // const roomCategory = constants.myRooms[roomName]
               const room = Game.rooms[roomName];
+              if (room === undefined) {
+                  continue
+              }
               if (room) {
-                  console.log(room.controller.my)
+                  // console.log(room.controller.my)
 
                   // console.log(JSON.stringify(room.childRooms))
                   const roomCommander = new RoomCommander(room)
@@ -38,15 +41,7 @@ module.exports.loop = function() {
 
 
           }
-          // for (roomName in Game.rooms) {
-          //     let room = Game.rooms[roomName];
-          //     if (room === undefined) {
-          //        continue
-          //     }
-          //     if(room.controller.my) {
-          //
-          //     }
-          // }
+
           // Run creep roles
           for (const name in Game.creeps) {
               try {

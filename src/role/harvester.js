@@ -1,5 +1,5 @@
-var roleBuilder = require('role.builder');
-let Role = require('class.Role')
+var roleBuilder = require('./role.builder');
+let Role = require('./class.Role')
 
 module.exports = class Harvester extends Role {
     constructor(creep) {

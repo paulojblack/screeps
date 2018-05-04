@@ -1,5 +1,5 @@
-const architect = require('util.architect');
-let constants = require('util.constants');
+const architect = require('./util.architect');
+let constants = require('./util.constants');
 
 let getBuilderCount = function(room) {
     sites = room.constructionSites

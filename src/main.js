@@ -1,28 +1,29 @@
-let Traveler = require('util.traveler');
-let protoSpawn = require('proto.spawn');
-let protoRoom = require('proto.room');
-let protoFlag = require('proto.flag');
-let protoTower = require('proto.tower');
-let protoSource = require('proto.source');
-const RoomCommander = require('class.RoomCommander');
-const constants = require('util.constants');
-const profiler = require('screeps-profiler');
+let Traveler = require('./util.traveler');
+let protoSpawn = require('./proto.spawn');
+let protoRoom = require('./proto.room');
+let protoFlag = require('./proto.flag');
+let protoTower = require('./proto.tower');
+let protoSource = require('./proto.source');
+const RoomCommander = require('./class.RoomCommander');
+const constants = require('./util.constants');
 const roles = {
-    harvester: require('role.harvester'),
-    upgrader: require('role.upgrader'),
-    builder: require('role.builder'),
-    repairer: require('role.repairer'),
-    defenseBuilder: require('role.defenseBuilder'),
-    scout: require('role.scout'),
-    claimnant: require('role.claimnant'),
-    miner: require('role.miner'),
-    grunt: require('role.grunt'),
-    lorry: require('role.lorry')
+    harvester: require('./role.harvester'),
+    upgrader: require('./role.upgrader'),
+    builder: require('./role.builder'),
+    repairer: require('./role.repairer'),
+    defenseBuilder: require('./role.defenseBuilder'),
+    scout: require('./role.scout'),
+    claimnant: require('./role.claimnant'),
+    miner: require('./role.miner'),
+    grunt: require('./role.grunt'),
+    lorry: require('./role.lorry')
 };
+const profiler = require('./screeps-profiler');
 profiler.enable();
 
 module.exports.loop = function() {
   profiler.wrap(function() {
+      console.log('running')
       try {
           for (const roomName in Game.rooms) {
               // const roomCategory = constants.myRooms[roomName]

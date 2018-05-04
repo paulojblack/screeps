@@ -1,4 +1,4 @@
-let Role = require('class.Role')
+let Role = require('./class.Role')
 
 module.exports = class Claimnant extends Role {
     constructor(creep) {

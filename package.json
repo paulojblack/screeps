@@ -22,6 +22,7 @@
     "grunt-contrib-watch": "^1.0.0",
     "grunt-screeps": "^1.4.0",
     "grunt-screeps-customserver": "0.0.1",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "screeps-server-mockup": "^1.1.0"
   }
 }

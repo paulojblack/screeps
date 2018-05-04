@@ -11,17 +11,17 @@ module.exports = function(grunt) {
     const creds = grunt.file.readJSON('credentials.json');
 
     grunt.initConfig({
-        // prod: {
-        //     options: {
-        //         email: creds.liveemail,
-        //         password: creds.livepw,
-        //         branch: 'default',
-        //         ptr: false
-        //     },
-        //     dist: {
-        //         src: ['dist/*.js']
-        //     }
-        // },
+        prod: {
+            options: {
+                email: creds.liveemail,
+                password: creds.livepw,
+                branch: 'default',
+                ptr: false
+            },
+            dist: {
+                src: ['dist/*.js']
+            }
+        },
         // staging: {
         //
         //     options: {
@@ -37,21 +37,21 @@ module.exports = function(grunt) {
         //         src: ['dist/*.js']
         //     }
         // },
-        staging: {
+        // staging: {
 
-            options: {
-                hostname: creds.hostname,
-                port: creds.port,
-                'use-https': false,
-                username: creds.user,
-                password: creds.password,
-                branch: 'default',
-                ptr: false
-            },
-            dist: {
-                src: ['dist/*.js']
-            }
-        },
+        //     options: {
+        //         hostname: creds.hostname,
+        //         port: creds.port,
+        //         'use-https': false,
+        //         username: creds.user,
+        //         password: creds.password,
+        //         branch: 'default',
+        //         ptr: false
+        //     },
+        //     dist: {
+        //         src: ['dist/*.js']
+        //     }
+        // },
 
 
 
@@ -74,7 +74,7 @@ module.exports = function(grunt) {
         watch: {
             scripts: {
                 files: ['src/**/*.js'],
-                tasks: ['clean', 'copy', 'staging']
+                tasks: ['clean', 'copy', 'prod']
             },
         },
 

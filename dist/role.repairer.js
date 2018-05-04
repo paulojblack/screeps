@@ -1,4 +1,4 @@
-var Role = require('class.Role');
+var Role = require('./class.Role');
 
 module.exports = class Repairer extends Role {
     constructor(creep) {

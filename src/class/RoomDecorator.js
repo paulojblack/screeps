@@ -1,5 +1,5 @@
-const states = require('util.constants').roomStates;
-const roomNeighbors = require('class.private.roomNeighbors');
+const states = require('./util.constants').roomStates;
+const roomNeighbors = require('./class.private.roomNeighbors');
 
 module.exports = class RoomDecorator {
     constructor(room) {

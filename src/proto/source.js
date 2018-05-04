@@ -1,4 +1,4 @@
-let util = require('proto.util.source')
+let util = require('./proto.util.source')
 
 Source.prototype.getSlots = function(){
 	var slots = 0;

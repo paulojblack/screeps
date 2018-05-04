@@ -1,6 +1,6 @@
-const RoomDecorator = require('class.RoomDecorator')
-const RoomFurnisher = require('class.RoomFurnisher')
-const RoomExpander = require('class.RoomExpander')
+const RoomDecorator = require('./class.RoomDecorator')
+const RoomFurnisher = require('./class.RoomFurnisher')
+const RoomExpander = require('./class.RoomExpander')
 
 module.exports = class RoomCommander extends RoomDecorator {
     constructor(room) {

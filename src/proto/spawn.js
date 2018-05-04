@@ -1,16 +1,16 @@
 // let caches = require('util.caches');
-const constants = require('util.constants');
+const constants = require('./util.constants');
 const roles = {
-    harvester: require('role.harvester'),
-    upgrader: require('role.upgrader'),
-    builder: require('role.builder'),
-    repairer: require('role.repairer'),
-    defenseBuilder: require('role.defenseBuilder'),
-    claimnant: require('role.claimnant'),
-    scout: require('role.scout'),
-    miner: require('role.miner'),
-    grunt: require('role.grunt'),
-    lorry: require('role.lorry')
+    harvester: require('./role.harvester'),
+    upgrader: require('./role.upgrader'),
+    builder: require('./role.builder'),
+    repairer: require('./role.repairer'),
+    defenseBuilder: require('./role.defenseBuilder'),
+    claimnant: require('./role.claimnant'),
+    scout: require('./role.scout'),
+    miner: require('./role.miner'),
+    grunt: require('./role.grunt'),
+    lorry: require('./role.lorry')
 };
 
 StructureSpawn.prototype.spawnHarvester = function(bindSource, target, home, panicFlag) {

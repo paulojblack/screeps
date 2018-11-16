@@ -49,7 +49,7 @@ module.exports = class DefenseBuilder extends Role {
                 return defenseBuilder.extract.assignedSource()
             }
         } catch (e) {
-            throw e;
+            console.log(e.stack)
         }
     }
 

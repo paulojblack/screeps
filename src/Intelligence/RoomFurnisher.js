@@ -57,7 +57,7 @@ module.exports = class RoomFurnisher {
             if(pos){
                 let code = pos.createConstructionSite(STRUCTURE_EXTENSION);
                 if(code === 0){
-                    console.log("New extention being built at "+pos);
+                    console.log("New extension being built at "+pos);
                     self.room.memory.currentExtentionSite = pos;
                 } else {
                     self.room.memory.currentExtentionSite = null;
@@ -115,6 +115,29 @@ module.exports = class RoomFurnisher {
         })
     }
 
+    surroundStructures(spawn, room) {
+        let self = this;
+        let pos, leftx, rightx, topy, boty;
+
+        let structures = self.room.find(FIND_MY_STRUCTURES, {
+            filter: (s) => (
+                s.structureType !== STRUCTURE_ROAD
+                && s.structureType !== STRUCTURE_WALL
+            )
+        });
+        let terrain = structures.map(structure => {
+            pos = structure.pos;
+            [topy, leftx, boty, rightx] = [pos.y - 1, pos.x - 1, pos.y + 1, pos.x + 1]
+
+            for (let y = pos.y - 1; y <= pos.y + 1; y++) {
+                for (let x = pos.x - 1; x <= pos.x + 1; x++) {
+                    self.room.createConstructionSite(x,y, STRUCTURE_ROAD)
+
+                }
+            }
+        })
+        console.log('created roads surrounding all structures')
+    }
     roomToRoom(spawn, room) {
 
     }

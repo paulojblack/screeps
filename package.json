@@ -1,46 +1,27 @@
 {
-  "name": "screeps-typescript-starter",
-  "version": "3.0.0",
+  "name": "default",
+  "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "//": "If you add or change the names of destinations in screeps.json, make sure you update these scripts to reflect the changes",
+  "main": "main.js",
   "scripts": {
-    "lint": "tslint \"src/**/*.ts\"",
-    "push-main": "rollup -c --environment DEST:main",
-    "push-pserver": "rollup -c --environment DEST:pserver",
-    "push-sim": "rollup -c --environment DEST:sim",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "watch-main": "rollup -cw --environment DEST:main",
-    "watch-pserver": "rollup -cw --environment DEST:pserver",
-    "watch-sim": "rollup -cw --environment DEST:sim"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/screepers/screeps-typescript-starter.git"
+    "url": "git+https://github.com/paulojblack/screeps.git"
   },
   "author": "",
-  "license": "Unlicense",
+  "license": "ISC",
   "bugs": {
-    "url": "https://github.com/screepers/screeps-typescript-starter/issues"
+    "url": "https://github.com/paulojblack/screeps/issues"
   },
-  "homepage": "https://github.com/screepers/screeps-typescript-starter#readme",
-  "devDependencies": {
-    "@types/lodash": "^3.10.2",
-    "@types/screeps": "^2.2.1",
-    "rollup": "^0.57.1",
-    "rollup-plugin-clean": "^1.0.0",
-    "rollup-plugin-commonjs": "^9.1.0",
-    "rollup-plugin-node-resolve": "^3.3.0",
-    "rollup-plugin-screeps": "^0.1.2",
-    "rollup-plugin-typescript2": "^0.12.0",
-    "tslint": "^5.9.1",
-    "typescript": "^2.8.1"
-  },
+  "homepage": "https://github.com/paulojblack/screeps#readme",
   "dependencies": {
-    "@types/screeps-profiler": "^1.2.1",
-    "lodash": "^4.17.10",
-    "screeps-profiler": "^2.0.1",
-    "screeps-server-mockup": "^1.1.0",
-    "source-map": "~0.6.1"
+    "grunt-contrib-clean": "^1.1.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-screeps": "^1.4.0",
+    "grunt-screeps-customserver": "0.0.1",
+    "lodash": "^4.17.4"
   }
 }

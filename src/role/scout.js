@@ -1,4 +1,4 @@
-let Role = require('class.Role')
+let Role = require('Execution.Role')
 
 module.exports = class Scout extends Role {
     constructor(creep) {

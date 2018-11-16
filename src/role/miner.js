@@ -1,5 +1,4 @@
-let Role = require('class.Role');
-const partCosts = require('util.constants').partCosts
+let Role = require('Execution.Role')
 
 module.exports = class Miner extends Role {
     constructor(creep) {

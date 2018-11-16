@@ -1,5 +1,5 @@
-let Depositer = require('class.private.Depositer');
-let Extractor = require('class.private.Extractor');
+let Depositer = require('Intelligence.private.Depositer');
+let Extractor = require('Intelligence.private.Extractor');
 /**
  * [exports description]
  * It's not the best jargon, but for now structures are either LIVING or LIFELESS

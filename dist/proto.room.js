@@ -1,5 +1,4 @@
 const architect = require('util.architect');
-let constants = require('util.constants');
 
 let getBuilderCount = function(room) {
     sites = room.constructionSites
@@ -64,6 +63,32 @@ Object.defineProperty(Room.prototype, 'containers', {
             }).map(cont => cont.id);
         }
         return room._containers
+    },
+    enumerable: false,
+    configurable: true
+});
+
+Object.defineProperty(Room.prototype, 'demographics', {
+    get: function() {
+        let room = this;
+        let data = {};
+
+        for (const name in Game.creeps) {
+            const creep = Game.creeps[name]
+            const memory = creep.memory;
+
+            if (!data[memory.role]) {
+                data[memory.role] = {
+                    count: 1,
+                    creeps: [creep]
+                }
+            } else {
+                data[memory.role].count++
+                data[memory.role].creeps.push(creep)
+            }
+        }
+
+        return data
     },
     enumerable: false,
     configurable: true

@@ -1,16 +1,4 @@
-var filter = {
-    filter: function(structure) {
-        return structure.structureType != STRUCTURE_CONTROLLER &&
-        structure.structureType != STRUCTURE_POWER_BANK &&
-        structure.structureType != STRUCTURE_RAMPART && structure.structureType != STRUCTURE_SPAWN;
-    }
-};
-
-var filterTowersOnly = {
-    filter: function(structure) {
-        return structure.structureType == STRUCTURE_TOWER && filter.filter(structure);
-    }
-};
+let Role = require('Execution.Role')
 
 module.exports = class Grunt extends Role {
     run (creep){
@@ -90,38 +78,52 @@ module.exports = class Grunt extends Role {
 	    var design = [MOVE, ATTACK, ATTACK];
 	    var spent = 230;
 
-	    budget = Math.max(750);
+	    budget = Math.max(1200, budget);
 
 	    //Add as many ATTACK, TOUGH and MOVE as we can
 	    while(spent + 50 <= budget){
-	        design[design.length] = MOVE;
+	        design.push(MOVE);
 	        spent = spent + 50;
 
 	        if(spent + 80 > budget){
 	            return design;
 	        }
-	        design[design.length] = ATTACK;
+	        design.push(ATTACK);
 	        spent = spent + 80;
 
 	        if(spent + 50 > budget){
 	            return design;
 	        }
-	        design[design.length] = MOVE;
+	        design.push(MOVE);
 	        spent = spent + 50;
 
 	        if(spent + 80 > budget){
 	            return design;
 	        }
-	        design[design.length] = ATTACK;
+	        design.push(ATTACK);
 	        spent = spent + 80;
 
 	        if(spent + 10 > budget){
 	            return design;
 	        }
-	        design[design.length] = TOUGH;
+	        design.push(TOUGH);
 	        spent = spent + 10;
 	    }
 
 	    return design;
 	}
+};
+
+var filter = {
+    filter: function(structure) {
+        return structure.structureType != STRUCTURE_CONTROLLER &&
+        structure.structureType != STRUCTURE_POWER_BANK &&
+        structure.structureType != STRUCTURE_RAMPART && structure.structureType != STRUCTURE_SPAWN;
+    }
+};
+
+var filterTowersOnly = {
+    filter: function(structure) {
+        return structure.structureType == STRUCTURE_TOWER && filter.filter(structure);
+    }
 };

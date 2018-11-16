@@ -13,8 +13,8 @@ module.exports = function(grunt) {
     grunt.initConfig({
         prod: {
             options: {
-                email: creds.liveemail,
-                password: creds.livepw,
+                email: creds.email,
+                password: creds.password,
                 branch: 'default',
                 ptr: false
             },
@@ -22,38 +22,21 @@ module.exports = function(grunt) {
                 src: ['dist/*.js']
             }
         },
-        // staging: {
-        //
-        //     options: {
-        //         hostname: creds.julianserver,
-        //         port: creds.port,
-        //         'use-https': false,
-        //         username: creds.julianuser,
-        //         password: creds.julianpw,
-        //         branch: 'default',
-        //         ptr: false
-        //     },
-        //     dist: {
-        //         src: ['dist/*.js']
-        //     }
-        // },
-        // staging: {
+        staging: {
 
-        //     options: {
-        //         hostname: creds.hostname,
-        //         port: creds.port,
-        //         'use-https': false,
-        //         username: creds.user,
-        //         password: creds.password,
-        //         branch: 'default',
-        //         ptr: false
-        //     },
-        //     dist: {
-        //         src: ['dist/*.js']
-        //     }
-        // },
-
-
+            options: {
+                hostname: creds.hostname,
+                port: creds.port,
+                'use-https': false,
+                username: creds.localusername,
+                password: creds.localpassword,
+                branch: 'default',
+                ptr: false
+            },
+            dist: {
+                src: ['dist/*.js']
+            }
+        },
 
         copy: {
             prod: {
@@ -74,7 +57,7 @@ module.exports = function(grunt) {
         watch: {
             scripts: {
                 files: ['src/**/*.js'],
-                tasks: ['clean', 'copy', 'prod']
+                tasks: ['clean', 'copy', 'prod', 'staging']
             },
         },
 
@@ -83,5 +66,5 @@ module.exports = function(grunt) {
         }
 
     });
-    // grunt.registerTask('default', ['clean','copy', 'prod', /*'screeps:production', 'screeps:staging'*/]);
+    grunt.registerTask('default', ['clean','copy', 'prod', 'staging'/*'screeps:production', 'screeps:staging'*/]);
 }

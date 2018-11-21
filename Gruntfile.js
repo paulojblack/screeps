@@ -1,5 +1,4 @@
-module.exports = function(grunt) {
-
+module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-screeps');
     grunt.task.renameTask('screeps', 'prod');
     grunt.loadNpmTasks('grunt-screeps-customserver');
@@ -46,9 +45,22 @@ module.exports = function(grunt) {
                     src: '**',
                     dest: 'dist/',
                     filter: 'isFile',
-                    rename: function (dest, src) {
+                    rename(dest, src) {
                         // Change the path name utilize dots for folders
-                        return dest + src.replace(/\//g,'.');
+                        return dest + src.replace(/\//g, '.');
+                    }
+                }]
+            },
+            staging: {
+                files: [{
+                    expand: true,
+                    cwd: 'src/',
+                    src: '**',
+                    dest: 'dist/',
+                    filter: 'isFile',
+                    rename(dest, src) {
+                        // Change the path name utilize dots for folders
+                        return dest + src.replace(/\//g, '.');
                     }
                 }]
             },
@@ -62,9 +74,9 @@ module.exports = function(grunt) {
         },
 
         clean: {
-            'dist': ['dist']
+            dist: ['dist']
         }
 
     });
-    grunt.registerTask('default', ['clean','copy', 'prod', 'staging'/*'screeps:production', 'screeps:staging'*/]);
-}
+    grunt.registerTask('default', ['clean', 'copy', 'prod', 'staging'/* 'screeps:production', 'screeps:staging'*/]);
+};

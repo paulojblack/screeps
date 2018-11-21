@@ -1,29 +1,27 @@
-let Role = require('Execution.Role')
+const Role = require('command.Role');
 
 module.exports = class Upgrader extends Role {
     constructor(creep) {
-        super(creep)
+        super(creep);
     }
 
     run() {
         try {
-            let upgrader = this;
-            let creep = upgrader.creep;
-            creep.say('u')
+            const upgrader = this;
+            const creep = upgrader.creep;
+            creep.say('u');
 
-            creep.memory.working = upgrader.setWorkingState(creep)
+            creep.memory.working = upgrader.setWorkingState(creep);
 
             if (creep.memory.working === true) {
-                return upgrader.deposit.controller()
-            } else {
-                if (upgrader.extract.closestContainer() !== 'NO_AVAILABLE_SOURCE') {
-                    return upgrader.extract.closestContainer()
-                }
-
-                return upgrader.extract.assignedSource()
+                return upgrader.deposit.controller();
+            }
+            if (upgrader.extract.closestContainer() !== 'NO_AVAILABLE_SOURCE') {
+                return upgrader.extract.closestContainer();
             }
 
-        } catch(e) {
+            return upgrader.extract.assignedSource();
+        } catch (e) {
             console.log(e);
         }
     }
@@ -35,45 +33,45 @@ module.exports = class Upgrader extends Role {
      * @return {[type]}        [description]
      */
     static getDesign(budget, room) {
-        var design = [MOVE, CARRY, CARRY, WORK];
-	    var spent = 250;
+        const design = [MOVE, CARRY, CARRY, WORK];
+	    let spent = 250;
 
-	    //Add as many WORK, CARRY and MOVE as we can
-	    while(spent + 50 <= budget){
-	        design.push(CARRY)
-	        spent = spent + 50;
+	    // Add as many WORK, CARRY and MOVE as we can
+	    while (spent + 50 <= budget) {
+	        design.push(CARRY);
+	        spent += 50;
 
-	        if(spent + 50 > budget){
+	        if (spent + 50 > budget) {
 	            return design;
 	        }
-	        design.push(MOVE)
-	        spent = spent + 50;
+	        design.push(MOVE);
+	        spent += 50;
 
-	        if(spent + 50 > budget){
+	        if (spent + 50 > budget) {
 	            return design;
 	        }
-	        design.push(CARRY)
-	        spent = spent + 50;
+	        design.push(CARRY);
+	        spent += 50;
 
-	        if(spent + 50 > budget){
+	        if (spent + 50 > budget) {
 	            return design;
 	        }
-	        design.push(CARRY)
-	        spent = spent + 50;
+	        design.push(CARRY);
+	        spent += 50;
 
-	        if(spent + 50 > budget){
+	        if (spent + 50 > budget) {
 	            return design;
 	        }
-	        design.push(MOVE)
-	        spent = spent + 50;
+	        design.push(MOVE);
+	        spent += 50;
 
-	        if(spent + 100 > budget){
+	        if (spent + 100 > budget) {
 	            return design;
 	        }
-	        design.push(WORK)
-	        spent = spent + 100;
+	        design.push(WORK);
+	        spent += 100;
 	    }
 
 	    return design;
     }
-}
+};

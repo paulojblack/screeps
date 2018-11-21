@@ -1,4 +1,4 @@
-let Role = require('Execution.Role')
+const Role = require('command.Role');
 
 module.exports = class Miner extends Role {
     constructor(creep) {
@@ -7,21 +7,20 @@ module.exports = class Miner extends Role {
     }
 
     run() {
-        let miner = this;
-        let creep = miner.creep;
+        const miner = this;
+        const creep = miner.creep;
 
-        let source = Game.getObjectById(creep.memory.boundSource);
+        const source = Game.getObjectById(creep.memory.boundSource);
 
         try {
             if (!creep.memory.positioned) {
                 return miner.positionMiner(source);
-            } else {
-                return miner.extract.harvestEnergyOrApproach(source)
             }
-        } catch(e) {
-            creep.say('error')
-            console.log(e.stack)
-            console.log('In room', creep.room.name)
+            return miner.extract.harvestEnergyOrApproach(source);
+        } catch (e) {
+            creep.say('error');
+            console.log(e.stack);
+            console.log('In room', creep.room.name);
         }
     }
 
@@ -32,7 +31,6 @@ module.exports = class Miner extends Role {
         })[0];
 
         if (!creep.memory.target || creep.room.name === creep.memory.target) {
-
             if (container) {
                 if (creep.pos.isEqualTo(container.pos)) {
                     creep.memory.positioned = true;
@@ -40,12 +38,10 @@ module.exports = class Miner extends Role {
                     creep.moveTo(container);
                 }
             } else if (creep.harvest(source) === ERR_NOT_IN_RANGE) {
-                return creep.moveTo(source)
+                return creep.moveTo(source);
             } else {
                 creep.memory.positioned = true;
             }
-
-
         }
     }
     /**
@@ -57,15 +53,15 @@ module.exports = class Miner extends Role {
      * @return {[type]}        [description]
      */
     static getDesign(budget, room) {
-        let design = [WORK, MOVE];
+        const design = [WORK, MOVE];
         let spent = 150;
         // const workSlotsAvailable = Math.min(Math.floor(budget / 100), 400)
 
-        while(spent + 100 <= Math.min(budget, 550)) {
+        while (spent + 100 <= Math.min(budget, 550)) {
 	        design.push(WORK);
-	        spent = spent + 100;
+	        spent += 100;
 	    }
 
         return design;
     }
-}
+};

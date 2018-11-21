@@ -4,7 +4,10 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "grunt watch"
   },
   "repository": {
     "type": "git",
@@ -21,7 +24,10 @@
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-screeps": "^1.4.0",
-    "grunt-screeps-customserver": "0.0.1",
-    "lodash": "^4.17.4"
-  }
+    "grunt-screeps-customserver": "0.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^5.9.0",
+    "eslint-config-goodway": "^1.3.0"
+}
 }

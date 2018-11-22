@@ -8,11 +8,11 @@ class Scheduler {
         if (!Memory.twoodos.scheduler) {
             Memory.twoodos.scheduler = {}
         }
-        this.memory = Memory.twoodos.scheduler
-
+        this.mem = Memory.twoodos.scheduler
         this.processCache = {}
-        if (!this.memory.processes) {
-            this.memory.processes = {
+
+        if (!this.mem.processes) {
+            this.mem.processes = {
                 'index': {},
                 'running': false,
                 'completed': [],
@@ -21,34 +21,22 @@ class Scheduler {
             }
         } else {
             // For upgrading
-            if (!this.memory.processes.sleep) {
-                this.memory.processes.sleep = {}
+            if (!this.mem.processes.sleep) {
+                this.mem.processes.sleep = {}
             }
         }
     }
 
-    launchProcess(name, data = {}, parent = false) {
-        const pid = this.getNextPid();
-
-        this.memory.processes.index[pid] = {
-            n: name,
-            d: data,
-            p: parent
-        }
-
-        return pid;
-    }
-
-    shift () {
+    refreshQueue() {
         // Promote processes that did not run.
         for (let x = 0; x <= MAX_PRIORITY; x++) {
             // If we're at the lowest priority merge it with the next priority rather than replacing it, so no pids are lost.
             if (x === 0 || x === WALL) {
-                if (!this.memory.processes.queues[x]) {
-                    this.memory.processes.queues[x] = []
+                if (!this.mem.processes.queues[x]) {
+                    this.mem.processes.queues[x] = []
                 }
-                if (this.memory.processes.queues[x + 1]) {
-                    this.memory.processes.queues[x] = this.memory.processes.queues[x].concat(this.memory.processes.queues[x + 1])
+                if (this.mem.processes.queues[x + 1]) {
+                    this.mem.processes.queues[x] = this.mem.processes.queues[x].concat(this.mem.processes.queues[x + 1])
                 }
                 continue
             }
@@ -59,113 +47,176 @@ class Scheduler {
             }
 
             // If the last tick did not hit the wall then do not promote "above the wall" processes.
-            if (x >= WALL && this.memory.processes.hitwall) {
+            if (x >= WALL && this.mem.processes.hitwall) {
                 break
             }
 
             // Replace the current priority queue with the one above it, or reset this one if there is none.
-            if (this.memory.processes.queues[x + 1]) {
-                this.memory.processes.queues[x] = this.memory.processes.queues[x + 1]
-                this.memory.processes.queues[x + 1] = []
+            if (this.mem.processes.queues[x + 1]) {
+                this.mem.processes.queues[x] = this.mem.processes.queues[x + 1]
+                this.mem.processes.queues[x + 1] = []
             } else {
-                this.memory.processes.queues[x] = []
+                this.mem.processes.queues[x] = []
             }
         }
 
         // Add processes that did run back into the system, including any "running" scripts that never completed
-        if (this.memory.processes.running) {
-            this.memory.processes.completed.push(this.memory.processes.running)
-            this.memory.processes.running = false
+        if (this.mem.processes.running) {
+            this.mem.processes.completed.push(this.mem.processes.running)
+            this.mem.processes.running = false
         }
 
         // Randomize order of completed processes before reinserting them to
         // * prevent error prone combinations (such as two really high processes running back to back) from recurring,
         // * keep specific processes from being favored by the scheduler.
-        const completed = _.shuffle(_.uniq(this.memory.processes.completed))
+        const completed = _.shuffle(_.uniq(this.mem.processes.completed))
         let pid
         for (pid of completed) {
             // If process is dead do not merge it back into the queue system.
-            if (!this.memory.processes.index[pid]) {
+            if (!this.mem.processes.index[pid]) {
                 continue
             }
             try {
                 const priority = this.getPriorityForPid(pid)
-                this.memory.processes.queues[priority].push(pid)
+                this.mem.processes.queues[priority].push(pid)
             } catch (err) {
-                delete this.memory.processes.index[pid]
-                Logger.log(err, LOG_ERROR)
+                delete this.mem.processes.index[pid]
+                Log.error(err, LOG_ERROR)
             }
         }
-        this.memory.processes.hitwall = false
-        this.memory.processes.completed = []
+        this.mem.processes.hitwall = false
+        this.mem.processes.completed = []
     }
 
     getNextProcess () {
         // Reset any "running" pids
-        if (this.memory.processes.running) {
-            this.memory.processes.completed.push(this.memory.processes.running)
-            this.memory.processes.running = false
+        if (this.mem.processes.running) {
+            this.mem.processes.completed.push(this.mem.processes.running)
+            this.mem.processes.running = false
         }
 
         // Iterate through the queues until a pid is found.
         let x
         for (x = 0; x <= MAX_PRIORITY; x++) {
             if (x >= WALL) {
-                this.memory.processes.hitwall = true
+                this.mem.processes.hitwall = true
             }
-            if (!this.memory.processes.queues[x] || this.memory.processes.queues[x].length <= 0) {
+            if (!this.mem.processes.queues[x] || this.mem.processes.queues[x].length <= 0) {
                 continue
             }
 
-            this.memory.processes.running = this.memory.processes.queues[x].shift()
+            this.mem.processes.running = this.mem.processes.queues[x].shift()
 
             // Don't run this pid twice in a single tick.
-            if (this.memory.processes.completed.includes(this.memory.processes.running)) {
+            if (this.mem.processes.completed.includes(this.mem.processes.running)) {
                 continue
             }
 
             // If process doesn't exist anymore don't use it.
-            if (!this.memory.processes.index[this.memory.processes.running]) {
+            if (!this.mem.processes.index[this.mem.processes.running]) {
                 continue
             }
 
             // If process has a parent and the parent has died kill the child process.
-            if (this.memory.processes.index[this.memory.processes.running].p) {
-                if (!this.isPidActive(this.memory.processes.index[this.memory.processes.running].p)) {
-                    this.kill(this.memory.processes.running)
+            if (this.mem.processes.index[this.mem.processes.running].p) {
+                if (!this.isPidActive(this.mem.processes.index[this.mem.processes.running].p)) {
+                    this.pkill(this.mem.processes.running)
                     continue
                 }
             }
 
-            return this.getProcessForPid(this.memory.processes.running)
+            return this.getProcessForPid(this.mem.processes.running)
         }
 
-        // Nothing was found
-        return false
+
+        // Reset any "running" pids
+        // if (this.mem.processes.running) {
+        //     this.mem.processes.completed.push(this.mem.processes.running)
+        //     this.mem.processes.running = false
+        // }
+        //
+        // // Iterate through the queues until a pid is found.
+        // let x
+        // for (x = 0; x <= MAX_PRIORITY; x++) {
+        //     if (x >= WALL) {
+        //         this.mem.processes.hitwall = true
+        //     }
+        //     if (!this.mem.processes.queues[x] || this.mem.processes.queues[x].length <= 0) {
+        //         continue
+        //     }
+        //
+        //     this.mem.processes.running = this.mem.processes.queues[x].shift()
+        //
+        //     // Don't run this pid twice in a single tick.
+        //     if (this.mem.processes.completed.includes(this.mem.processes.running)) {
+        //         continue
+        //     }
+        //
+        //     // If process doesn't exist anymore don't use it.
+        //     if (!this.mem.processes.index[this.mem.processes.running]) {
+        //         continue
+        //     }
+        //
+        //     // If process has a parent and the parent has died kill the child process.
+        //     if (this.mem.processes.index[this.mem.processes.running].p) {
+        //         if (!this.isPidActive(this.mem.processes.index[this.mem.processes.running].p)) {
+        //             this.kill(this.mem.processes.running)
+        //             continue
+        //         }
+        //     }
+        //
+        //     return this.getProcessForPid(this.mem.processes.running)
+        // }
+        //
+        // // Nothing was found
+        // return false
     }
 
     getNextPid () {
-        if (!this.memory.lastPid) {
-            this.memory.lastPid = 0
+        if (!this.mem.lastPid) {
+            this.mem.lastPid = 0
         }
         while (true) {
-            this.memory.lastPid++
-            if (this.memory.lastPid > MAX_PID) {
-                this.memory.lastPid = 0
+            this.mem.lastPid++
+            if (this.mem.lastPid > MAX_PID) {
+                this.mem.lastPid = 0
             }
-            if (this.memory.processes.index[this.memory.lastPid]) {
+            if (this.mem.processes.index[this.mem.lastPid]) {
                 continue
             }
-            return this.memory.lastPid
+            return this.mem.lastPid
         }
+    }
+
+    getProcessForPid (pid) {
+        if (!this.processCache[pid]) {
+            const ProgramClass = this.getProcessClass(this.mem.processes.index[pid].n)
+            this.processCache[pid] = new ProgramClass(pid,
+                this.mem.processes.index[pid].n,
+                this.mem.processes.index[pid].d,
+                this.mem.processes.index[pid].p
+            )
+        }
+        return this.processCache[pid]
+    }
+
+    getProcessClass (process) {
+        return require(`processes.${process}`)
     }
 
     getProcessCount () {
-        return Object.keys(this.memory.processes.index).length
+        return Object.keys(this.mem.processes.index).length
     }
 
     getCompletedProcessCount () {
-        return this.memory.processes.completed.length
+        return this.mem.processes.completed.length
+    }
+
+    isPidActive (pid) {
+        if(this.mem.processes.index[pid]) {
+            return true
+        }
+        return false
     }
 
     getPriorityForPid (pid) {
@@ -178,20 +229,20 @@ class Scheduler {
     }
 
     wake (pid) {
-        if (this.memory.processes.index[pid] && this.memory.processes.sleep.list && this.memory.processes.sleep.list[pid]) {
+        if (this.mem.processes.index[pid] && this.mem.processes.sleep.list && this.mem.processes.sleep.list[pid]) {
             const priority = this.getPriorityForPid(pid)
             // Push the process back to the execution queue
-            this.memory.processes.queues[priority].push(pid)
+            this.mem.processes.queues[priority].push(pid)
             // and remove it from sleep list
-            delete this.memory.processes.sleep.list[pid]
+            delete this.mem.processes.sleep.list[pid]
         }
     }
 
-    kill (pid) {
-        if (this.memory.processes.index[pid]) {
+    pkill (pid) {
+        if (this.mem.processes.index[pid]) {
             // Process needs to be woken up first
             this.wake(pid)
-            delete this.memory.processes.index[pid]
+            delete this.mem.processes.index[pid]
         }
     }
 }

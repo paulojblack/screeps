@@ -2,11 +2,28 @@ class Player extends kernel.process {
     constructor (...args) {
         super(...args)
         this.priority = PRIORITIES_PLAYER
-        console.log(uhh)
+        if (!this.data.gcl) {
+            this.data.gcl = Game.gcl.level
+        }
+        if (this.data.gcl < Game.gcl.level) {
+            this.data.gcl = Game.gcl.level
+        }
     }
 
+    //Game wide process parent
     main() {
-        console.log('player running')
+
+        this.launchChildProcess('cartographer', 'kingdom.cartographer');
+
+
+        for(const townName of Object.keys(Memory.map)) {
+            if (Game.rooms[townName] && Game.rooms[townName].controller && Game.rooms[townName].controller.my) {
+                Log.info(`launching proc for room ${townName}`)
+                this.launchChildProcess(`room_${townName}`, 'town', {
+                        'room': townName
+                    })
+                }
+        }
     }
 }
 

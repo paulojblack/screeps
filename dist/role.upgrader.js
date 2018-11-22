@@ -1,77 +1,50 @@
-const Role = require('command.Role');
+'use strict'
 
-module.exports = class Upgrader extends Role {
-    constructor(creep) {
-        super(creep);
+const MetaRole = require('role.meta')
+
+
+
+class Upgrader extends MetaRole {
+    getBuild (room, options) {
+        this.setBuildDefaults(room, options)
+        return Creep.buildFromTemplate([MOVE, CARRY, WORK], options.energy)
     }
 
-    run() {
-        try {
-            const upgrader = this;
-            const creep = upgrader.creep;
-            creep.say('u');
+    getPriority (creep) {
+        return PRIORITIES_CREEP_UPGRADER
+    }
 
-            creep.memory.working = upgrader.setWorkingState(creep);
-
-            if (creep.memory.working === true) {
-                return upgrader.deposit.controller();
+    manageCreep (creep) {
+        const link = creep.room.controller.getLink()
+        if (creep.carry[RESOURCE_ENERGY] / creep.carryCapacity < 0.5) {
+            if (link && link.energy > 0 && creep.pos.isNearTo(link)) {
+                creep.withdraw(link, RESOURCE_ENERGY)
             }
-            if (upgrader.extract.closestContainer() !== 'NO_AVAILABLE_SOURCE') {
-                return upgrader.extract.closestContainer();
-            }
+        }
+        if (creep.recharge()) {
+            return
+        }
 
-            return upgrader.extract.assignedSource();
-        } catch (e) {
-            console.log(e);
+        if (!creep.room.controller.sign || creep.room.controller.sign.text !== CONTROLLER_MESSAGE) {
+            if (!creep.pos.isNearTo(creep.room.controller)) {
+                creep.travelTo(creep.room.controller)
+            } else {
+                creep.signController(creep.room.controller, CONTROLLER_MESSAGE)
+            }
+        } else {
+            if (link) {
+                if (!creep.pos.isNearTo(link)) {
+                    creep.travelTo(link)
+                }
+            } else if (!creep.pos.inRangeTo(creep.room.controller, 2)) {
+                creep.travelTo(creep.room.controller)
+            }
+        }
+
+        if (creep.pos.inRangeTo(creep.room.controller, 3)) {
+            creep.upgradeController(creep.room.controller)
         }
     }
+}
 
-    /**
-     * TODO refactor
-     * @param  {[type]} budget [description]
-     * @param  {[type]} room   [description]
-     * @return {[type]}        [description]
-     */
-    static getDesign(budget, room) {
-        const design = [MOVE, CARRY, CARRY, WORK];
-	    let spent = 250;
-
-	    // Add as many WORK, CARRY and MOVE as we can
-	    while (spent + 50 <= budget) {
-	        design.push(CARRY);
-	        spent += 50;
-
-	        if (spent + 50 > budget) {
-	            return design;
-	        }
-	        design.push(MOVE);
-	        spent += 50;
-
-	        if (spent + 50 > budget) {
-	            return design;
-	        }
-	        design.push(CARRY);
-	        spent += 50;
-
-	        if (spent + 50 > budget) {
-	            return design;
-	        }
-	        design.push(CARRY);
-	        spent += 50;
-
-	        if (spent + 50 > budget) {
-	            return design;
-	        }
-	        design.push(MOVE);
-	        spent += 50;
-
-	        if (spent + 100 > budget) {
-	            return design;
-	        }
-	        design.push(WORK);
-	        spent += 100;
-	    }
-
-	    return design;
-    }
-};
+module.exports = Upgrader

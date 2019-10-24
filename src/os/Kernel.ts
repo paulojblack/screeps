@@ -19,23 +19,24 @@ export default class Kernel {
     }
 
     public init() {
-        console.log('pcount', this.scheduler.getProcessCount())
-
         if (this.scheduler.getProcessCount() <= 0) {
-            this.launchProcess('universe', 'data', 0)
+            this.launchProcess('universe', {}, 0)
         }
     }
 
     public run() {
 
-        if(this.continueExecutingKernel()) {
+        while(this.continueExecutingKernel()) {
             const proc = this.scheduler.getNextProcess();
-            console.log(JSON.stringify(proc))
-            console.log(proc)
-            // const x = proc.main()
+
+            // To get around TS2532
+            if (proc && proc.main) {
+                proc.main()
+            }
+
             console.log('finished main', JSON.stringify(this.mem.scheduler.procs))
             this.mem.scheduler.procs.running = false;
-            this.mem.scheduler.procs.index = {};
+
         }
     }
 
@@ -49,19 +50,23 @@ export default class Kernel {
             parent
         }
 
+        const priority = this.scheduler.getPriorityForPid(PID);
+
         // Determine importance of process and add it to the queue
-        if (!this.mem.scheduler.procs.priorityQueue[1]) {
-            this.mem.scheduler.procs.priorityQueue[1] = [];
+        if (!this.mem.scheduler.procs.priorityQueue[priority]) {
+            this.mem.scheduler.procs.priorityQueue[priority] = [];
         }
 
-        this.mem.scheduler.procs.priorityQueue[1].push(PID);
+        this.mem.scheduler.procs.priorityQueue[priority].push(PID);
         console.log('launching', JSON.stringify(this.mem.scheduler.procs))
         return PID;
 
     }
 
     public continueExecutingKernel() {
-        return true;
+        if (this.scheduler.getProcessCount() > 0) {
+            return true;
+        }
     }
 
 

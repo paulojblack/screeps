@@ -15,17 +15,20 @@ export default class Process {
         return true;
     }
 
-    public launchChildProcess(pid: number) {
-        if (kernel.scheduler.index) {
-
-            delete kernel.scheduler.index[pid]
+    public launchChildProcess(label: string, name: string, data: any) {
+        if (!this.data.children) {
+            this.data.children = {}
         }
+
+        if (this.data.children[label]) {
+            return true
+        }
+
+        this.data.children[label] = kernel.launchProcess(name, data, this.pid)
+        return this.data.children[label]
     }
 
-    public pkill(pid: number) {
-        if (kernel.scheduler.index) {
-
-            delete kernel.scheduler.index[pid]
-        }
+    public pkill() {
+        delete kernel.scheduler.mem.procs.index[this.pid]
     }
 }

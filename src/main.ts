@@ -9,7 +9,8 @@ if (!Memory.twoodos) {
 
 export const loop = ErrorMapper.wrapLoop(() => {
     console.log(`Current game tick is ${Game.time}`);
-
+    // delete Memory.twoodos
+    // Memory.twoodos = {}
     const kernel = new Kernel();
 
     if (!Memory.twoodos) {

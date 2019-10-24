@@ -8,12 +8,19 @@ priorityQueue - prioritized object of arrays of PIDs, with the keys ranging from
 completed - list of PIDs completed this tick, to be cleaned up at end of cycle.
 **/
 
+import Town from '../process/Town';
 import Universe from '../process/Universe';
+
+export const processTypes = {
+    'town': Town,
+    'universe': Universe
+} as {[type: string]: any}
+
 const MAX_PID = 99;
 export default class Scheduler {
-    mem: any
-    processCache: any
-    procs: any
+    public mem: any
+    public processCache: any
+    public procs: any
 
 
     constructor() {
@@ -44,6 +51,10 @@ export default class Scheduler {
         return  Object.keys(this.mem.procs.index).length
     }
 
+    public getPriorityForPid(pid: number) {
+        return 7;
+    }
+
     public getNextProcess() {
         for (let priority = 1; priority < 15; priority++) {
             if (!this.mem.procs.priorityQueue[priority] || this.mem.procs.priorityQueue[priority].length <= 0) {
@@ -53,20 +64,22 @@ export default class Scheduler {
             this.mem.procs.running = this.mem.procs.priorityQueue[priority].shift()
 
             return this.getProcessForPid(this.mem.procs.running);
-
         }
+
     }
 
     public getProcessForPid(pid: number) {
+
         const processMeta = this.mem.procs.index[pid]
+
         const ProgramClass = this.getProcessClass(processMeta.name);
 
-        // return new ProgramClass(pid, processMeta.name, processMeta.data, processMeta.parent)
         return new ProgramClass(pid, processMeta.name, processMeta.data, processMeta.parent)
     }
 
     public getProcessClass(name: string) {
-        return Universe;
+
+        return processTypes[name];
     }
 
     public getNextPID() {
@@ -82,7 +95,7 @@ export default class Scheduler {
             if (this.mem.lastPID > MAX_PID) {
                 this.mem.lastPID = 0;
             }
-            console.log(this.mem.lastPID)
+
             if (this.mem.procs.index[this.mem.lastPID]) {
                 continue
             }

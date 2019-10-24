@@ -2,6 +2,7 @@
 
 declare const kernel: Kernel
 
+declare const PRIORITY_DEFAULT: 7;
 // declare namespace NodeJS{
 //     interface Global {
 //         kernel: any

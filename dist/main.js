@@ -12,18 +12,38 @@ class Process {
     clean() {
         return true;
     }
-    launchChildProcess(pid) {
-        if (kernel.scheduler.index) {
-            delete kernel.scheduler.index[pid];
+    launchChildProcess(label, name, data) {
+        if (!this.data.children) {
+            this.data.children = {};
         }
+        if (this.data.children[label]) {
+            return true;
+        }
+        this.data.children[label] = kernel.launchProcess(name, data, this.pid);
+        return this.data.children[label];
     }
-    pkill(pid) {
-        if (kernel.scheduler.index) {
-            delete kernel.scheduler.index[pid];
-        }
+    pkill() {
+        delete kernel.scheduler.mem.procs.index[this.pid];
     }
 }
 //# sourceMappingURL=Process.js.map
+
+class Town extends Process {
+    constructor(pid, name, data, parent) {
+        super(pid, name, data, parent);
+    }
+    main() {
+        this.room = Game.rooms[this.data.room];
+        if (!this.room) {
+            return this.pkill();
+        }
+        const maxspawns = CONTROLLER_STRUCTURES[STRUCTURE_SPAWN][this.room.controller.level];
+        console.log(maxspawns);
+        this.pkill();
+        // return 'string'
+    }
+}
+//# sourceMappingURL=Town.js.map
 
 class Universe extends Process {
     constructor(pid, name, data, parent) {
@@ -32,12 +52,12 @@ class Universe extends Process {
     main() {
         // iterate through my rooms and launch the room process for each one
         for (const room of Object.keys(Game.rooms)) {
-            console.log('room universe', Game.rooms[room]);
+            this.launchChildProcess(`room_${room}`, 'town', { room });
         }
-        // super.pkill(this.pid)
-        // return 'string'
+        this.pkill();
     }
 }
+//# sourceMappingURL=Universe.js.map
 
 /**
 The scheduler is responsible for
@@ -48,6 +68,10 @@ index - stores the mapping of PID and relevant data
 priorityQueue - prioritized object of arrays of PIDs, with the keys ranging from 1 (highest priority) to ?? (lowest priority)
 completed - list of PIDs completed this tick, to be cleaned up at end of cycle.
 **/
+const processTypes = {
+    'town': Town,
+    'universe': Universe
+};
 const MAX_PID = 99;
 class Scheduler {
     constructor() {
@@ -75,6 +99,9 @@ class Scheduler {
     getProcessCount() {
         return Object.keys(this.mem.procs.index).length;
     }
+    getPriorityForPid(pid) {
+        return 7;
+    }
     getNextProcess() {
         for (let priority = 1; priority < 15; priority++) {
             if (!this.mem.procs.priorityQueue[priority] || this.mem.procs.priorityQueue[priority].length <= 0) {
@@ -87,11 +114,10 @@ class Scheduler {
     getProcessForPid(pid) {
         const processMeta = this.mem.procs.index[pid];
         const ProgramClass = this.getProcessClass(processMeta.name);
-        // return new ProgramClass(pid, processMeta.name, processMeta.data, processMeta.parent)
         return new ProgramClass(pid, processMeta.name, processMeta.data, processMeta.parent);
     }
     getProcessClass(name) {
-        return Universe;
+        return processTypes[name];
     }
     getNextPID() {
         let nextPID;
@@ -104,7 +130,6 @@ class Scheduler {
             if (this.mem.lastPID > MAX_PID) {
                 this.mem.lastPID = 0;
             }
-            console.log(this.mem.lastPID);
             if (this.mem.procs.index[this.mem.lastPID]) {
                 continue;
             }
@@ -128,20 +153,19 @@ class Kernel {
         this.process = Process;
     }
     init() {
-        console.log('pcount', this.scheduler.getProcessCount());
         if (this.scheduler.getProcessCount() <= 0) {
-            this.launchProcess('universe', 'data', 0);
+            this.launchProcess('universe', {}, 0);
         }
     }
     run() {
-        if (this.continueExecutingKernel()) {
+        while (this.continueExecutingKernel()) {
             const proc = this.scheduler.getNextProcess();
-            console.log(JSON.stringify(proc));
-            console.log(proc);
-            // const x = proc.main()
+            // To get around TS2532
+            if (proc && proc.main) {
+                proc.main();
+            }
             console.log('finished main', JSON.stringify(this.mem.scheduler.procs));
             this.mem.scheduler.procs.running = false;
-            this.mem.scheduler.procs.index = {};
         }
     }
     launchProcess(name, data, parent) {
@@ -152,16 +176,19 @@ class Kernel {
             data,
             parent
         };
+        const priority = this.scheduler.getPriorityForPid(PID);
         // Determine importance of process and add it to the queue
-        if (!this.mem.scheduler.procs.priorityQueue[1]) {
-            this.mem.scheduler.procs.priorityQueue[1] = [];
+        if (!this.mem.scheduler.procs.priorityQueue[priority]) {
+            this.mem.scheduler.procs.priorityQueue[priority] = [];
         }
-        this.mem.scheduler.procs.priorityQueue[1].push(PID);
+        this.mem.scheduler.procs.priorityQueue[priority].push(PID);
         console.log('launching', JSON.stringify(this.mem.scheduler.procs));
         return PID;
     }
     continueExecutingKernel() {
-        return true;
+        if (this.scheduler.getProcessCount() > 0) {
+            return true;
+        }
     }
 }
 //# sourceMappingURL=Kernel.js.map
@@ -2503,6 +2530,8 @@ if (!Memory.twoodos) {
 }
 const loop = ErrorMapper.wrapLoop(() => {
     console.log(`Current game tick is ${Game.time}`);
+    // delete Memory.twoodos
+    // Memory.twoodos = {}
     const kernel = new Kernel();
     if (!Memory.twoodos) {
         Memory.twoodos = {};
@@ -2517,7 +2546,6 @@ const loop = ErrorMapper.wrapLoop(() => {
     //     }
     // }
 });
-//# sourceMappingURL=main.js.map
 
 exports.loop = loop;
 //# sourceMappingURL=main.js.map

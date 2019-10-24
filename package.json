@@ -29,5 +29,5 @@
   "devDependencies": {
     "eslint": "^5.9.0",
     "eslint-config-goodway": "^1.3.0"
-}
+  }
 }

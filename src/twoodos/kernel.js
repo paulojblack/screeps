@@ -19,6 +19,7 @@ const MIN_TICKS_BETWEEN_GC = 20
 const GC_HEAP_TRIGGER = 0.85
 const GLOBAL_LAST_RESET = Game.time
 const IVM = typeof Game.cpu.getHeapStatistics === 'function' && Game.cpu.getHeapStatistics()
+
 class TwoodOSKernel {
     constructor() {
         global.kernel = this
@@ -40,7 +41,7 @@ class TwoodOSKernel {
         this.scheduler.refreshQueue()
         // TODO move to a "from scratch" initialization layer
         // This only runs the very first time the code is executed
-        Log.info(this.scheduler.getProcessCount())
+
         if (this.scheduler.getProcessCount() <= 0) {
             this.launchProcess('player')
         }
@@ -48,8 +49,10 @@ class TwoodOSKernel {
     }
 
     run() {
+
         while (this.shouldContinue()) {
             const runningProcess = this.scheduler.getNextProcess()
+
             if (!runningProcess) {
                 return
             }

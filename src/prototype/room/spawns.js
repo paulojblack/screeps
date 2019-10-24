@@ -1,3 +1,5 @@
+const SPAWN_DEFAULT_PRIORITY = 4
+
 Room.prototype.queueCreep = function (role, options = {}) {
     const name = role + '_' + sos.lib.counter.get(role)
     .toString(36)

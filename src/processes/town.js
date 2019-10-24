@@ -1,8 +1,8 @@
 class Town extends kernel.process {
     constructor (...args) {
         super(...args)
+        this.priority = PRIORITIES_PLAYER;
 
-        this.priority = PRIORITIES_PLAYER
         if (!this.data.gcl) {
             this.data.gcl = Game.gcl.level
         }
@@ -15,21 +15,25 @@ class Town extends kernel.process {
     main() {
         if (!Game.rooms[this.data.room] || !Game.rooms[this.data.room].controller.my) {
             Room.removeTown(this.data.room)
+            Log.warn(`Room ${this.data.room} process terminated early: room not available`)
             return this.pkill()
         }
 
         this.room = Game.rooms[this.data.room];
 
-        // Kill process if mistakenly called
-        if (!this.room) {
-            Log.warn(`Room ${this.data.room} process terminated early: room not available`)
-            return this.pkill()
-        };
-
         this.launchChildProcess('spawns', 'spawns', {'room': this.data.room})
 
         // this.launchUpkeep();
-        this.launchCreeps()
+
+        this.launchCreeps();
+
+        this.launchChildProcess('layout', 'town.layout', {
+            'room': this.data.room
+        })
+
+        this.launchChildProcess('construct', 'town.construct', {
+            'room': this.data.room
+        })
 
     }
 

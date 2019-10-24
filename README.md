@@ -8,6 +8,11 @@ in progress
 3) Create `credentials.json` and fill in
 
 
+## Overview
+1) `main` instantiates kernal
+2) Kernel
+
+
 ## Usage
 
 1) Select your starting room

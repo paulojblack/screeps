@@ -8,7 +8,29 @@ class Process {
         this.parent = parent
     }
 
+    clean () {
+        if (this.data.children) {
+            let label
+            for (label in this.data.children) { // jshint ignore:line
+                if (!kernel.scheduler.isPidActive(this.data.children[label])) {
+                    delete this.data.children[label]
+                }
+            }
+        }
+
+        if (this.data.processes) {
+            let label
+            for (label in this.data.processes) { // jshint ignore:line
+                if (!kernel.scheduler.isPidActive(this.data.processes[label])) {
+                    delete this.data.processes[label]
+                }
+            }
+        }
+    }
+
+    //main() found in each individual process subclass
     run() {
+        this.clean();
         this.main();
     }
 
@@ -43,7 +65,8 @@ class Process {
         if (!this.data.children) {
             this.data.children = {}
         }
-        let x
+        let x;
+
         for (x = 0; x < quantity; x++) {
             const specificLabel = label + x
             if (this.data.children[specificLabel]) {

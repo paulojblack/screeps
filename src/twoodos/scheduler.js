@@ -70,7 +70,9 @@ class Scheduler {
         // * prevent error prone combinations (such as two really high processes running back to back) from recurring,
         // * keep specific processes from being favored by the scheduler.
         const completed = _.shuffle(_.uniq(this.mem.processes.completed))
-        let pid
+
+        let pid;
+
         for (pid of completed) {
             // If process is dead do not merge it back into the queue system.
             if (!this.mem.processes.index[pid]) {
@@ -128,48 +130,8 @@ class Scheduler {
             return this.getProcessForPid(this.mem.processes.running)
         }
 
-
-        // Reset any "running" pids
-        // if (this.mem.processes.running) {
-        //     this.mem.processes.completed.push(this.mem.processes.running)
-        //     this.mem.processes.running = false
-        // }
-        //
-        // // Iterate through the queues until a pid is found.
-        // let x
-        // for (x = 0; x <= MAX_PRIORITY; x++) {
-        //     if (x >= WALL) {
-        //         this.mem.processes.hitwall = true
-        //     }
-        //     if (!this.mem.processes.queues[x] || this.mem.processes.queues[x].length <= 0) {
-        //         continue
-        //     }
-        //
-        //     this.mem.processes.running = this.mem.processes.queues[x].shift()
-        //
-        //     // Don't run this pid twice in a single tick.
-        //     if (this.mem.processes.completed.includes(this.mem.processes.running)) {
-        //         continue
-        //     }
-        //
-        //     // If process doesn't exist anymore don't use it.
-        //     if (!this.mem.processes.index[this.mem.processes.running]) {
-        //         continue
-        //     }
-        //
-        //     // If process has a parent and the parent has died kill the child process.
-        //     if (this.mem.processes.index[this.mem.processes.running].p) {
-        //         if (!this.isPidActive(this.mem.processes.index[this.mem.processes.running].p)) {
-        //             this.kill(this.mem.processes.running)
-        //             continue
-        //         }
-        //     }
-        //
-        //     return this.getProcessForPid(this.mem.processes.running)
-        // }
-        //
-        // // Nothing was found
-        // return false
+        // Nothing was found
+        return false
     }
 
     getNextPid () {
